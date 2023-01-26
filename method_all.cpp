@@ -311,6 +311,11 @@ public:
 		logfile_main.init("log_coless");
 	}
 
+	~COLESS(){
+		cmph_destroy(hash_cmph);
+	}
+
+
 	int hammingDistance (uint64_t x, uint64_t y) {
 		uint64_t res = x ^ y;
 		return __builtin_popcountll (res) ;
@@ -432,7 +437,7 @@ public:
 		// // table of size M 
 		// }
 
-		if(!skip){
+	
 
 			double t_begin,t_end; struct timeval timet;
 			printf("Construct a MPHF with  %lli elements  \n",M);
@@ -442,17 +447,17 @@ public:
 			double elapsed = t_end - t_begin;
 			printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
 	
-
-
-			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-			OutputFile cmp_keys("cmp_keys");  // get frequency count
-			for (uint64_t i=0; i < num_kmers; i+=1){
-				string bv_line;
-				getline (dup_bitmatrix_file.fs,bv_line);
-				cmp_keys.fs<<lookup(bv_line)<<endl;
+			if(!skip){
+				gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+				OutputFile cmp_keys("cmp_keys");  // get frequency count
+				for (uint64_t i=0; i < num_kmers; i+=1){
+					string bv_line;
+					getline (dup_bitmatrix_file.fs,bv_line);
+					cmp_keys.fs<<lookup(bv_line)<<endl;
+				}
+				gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+				printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
 			}
-			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-			printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
 
 			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
 			system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
@@ -481,7 +486,8 @@ public:
 	}
 
 	void method1_pass1(bool skip_pass = false){
-		if(skip_pass) return;
+		dup_bitmatrix_file.rewind();
+		
 
 		store_global_color_class_table();
 		// bit vector values
