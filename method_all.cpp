@@ -376,7 +376,7 @@ public:
 		for(int x=0; x<M; x++){
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
-			unsigned int idx = cmp.lookup(bv_line);		// returns an if in range (0 to M-1)
+			unsigned int idx = cmp_ptr->lookup(bv_line);		// returns an if in range (0 to M-1)
 
 
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ;
@@ -490,7 +490,7 @@ public:
 			//per kmer task
 			num_kmer_in_simplitig+=1;  //start of simplitig id: num_kmer_in_simplitig
 			
-			unsigned int curr_kmer_cc_id = cmp.lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+			unsigned int curr_kmer_cc_id = cmp_ptr->lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
 				
 			if(spss_boundary[i]=='0'){ // non-start
 				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
