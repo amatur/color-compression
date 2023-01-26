@@ -377,8 +377,6 @@ public:
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
 			unsigned int idx = cmp_ptr->lookup(bv_line);		// returns an if in range (0 to M-1)
-
-
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ;
 			write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
 
@@ -770,7 +768,7 @@ int main (int argc, char* argv[]){
 
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	
-	coless.method1_pass0();
+	coless.method1_pass0(true);
 	coless.method1_pass1();
 
 	return EXIT_SUCCESS;
