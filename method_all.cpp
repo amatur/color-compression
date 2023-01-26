@@ -299,6 +299,8 @@ public:
 	int lm = 0;
 	int lc = 0;
 
+	int* per_simplitig_l;
+
 	COLESS(long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname){
 		dedup_bitmatrix_file.init(dedup_bitmatrix_fname);
 		spss_boundary_file.init(spss_boundary_fname);
@@ -310,6 +312,8 @@ public:
 		this->lc = ceil(log2(C));
 		logfile_main.init("log_coless");
 	}
+
+
 
 	~COLESS(){
 		cmph_destroy(hash_cmph);
@@ -368,6 +372,14 @@ public:
 		b_it += binarystring.length();
 	}
 
+	void write_binary_vector_at_loc(vector<uint64_t> & positions, vector<bool> binary_vector, uint64_t& b_it){
+		for (size_t i = 0; i< binary_vector.length(); i++) {
+			if (binary_vector[i]== 1){
+				positions.push_back(b_it+i);
+			}
+		}
+		b_it += binarystring.length();
+	}
 
 	bit_vector store_as_sdsl(vector<uint64_t>& positions, uint64_t bv_size, string filename){
 		//bit_vector bv = bit_vector(bv_size, 0);
@@ -436,34 +448,30 @@ public:
 		// // table of size M 
 		// }
 
-	
+		double t_begin,t_end; struct timeval timet;
+		printf("Construct a MPHF with  %lli elements  \n",M);
+		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+		create_table(dedup_bitmatrix_file.filename);
+		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+		double elapsed = t_end - t_begin;
+		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
 
-			double t_begin,t_end; struct timeval timet;
-			printf("Construct a MPHF with  %lli elements  \n",M);
+		if(!skip_pass){
 			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-			create_table(dedup_bitmatrix_file.filename);
-			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-			double elapsed = t_end - t_begin;
-			printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
-	
-			if(!skip_pass){
-				gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-				OutputFile cmp_keys("cmp_keys");  // get frequency count
-				for (uint64_t i=0; i < num_kmers; i+=1){
-					string bv_line;
-					getline (dup_bitmatrix_file.fs,bv_line);
-					cmp_keys.fs<<lookup(bv_line)<<endl;
-				}
-				gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-				printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
+			OutputFile cmp_keys("cmp_keys");  // get frequency count
+			for (uint64_t i=0; i < num_kmers; i+=1){
+				string bv_line;
+				getline (dup_bitmatrix_file.fs,bv_line);
+				cmp_keys.fs<<lookup(bv_line)<<endl;
 			}
-
-			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-			system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
 			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-			printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
+			printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
+		}
 
-		
+		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
+		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+		printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
 
 		//
 		InputFile infile_freq("frqeuency_sorted");
@@ -484,10 +492,11 @@ public:
 		delete root;
 	}
 
-void method1_pass1(bool skip_pass = false){
-		dup_bitmatrix_file.rewind();
+	void method1_pass1(bool skip_pass = false){ //decide whether to use local hash table, can skip
+		vecor<uint64_t> positions_local_table;
+		uint64_t b_it_local_table = 0;
 		
-
+		dup_bitmatrix_file.rewind();
 		store_global_color_class_table();
 		// bit vector values
 		uint64_t b_it=0;
@@ -528,6 +537,8 @@ void method1_pass1(bool skip_pass = false){
 		OutputFile all_ls("all_ls");
 		InputFile cmp_keys("cmp_keys");
 
+
+		int simplitig_it = 0;
 		//pass 1: collect if local or not 
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
@@ -558,8 +569,8 @@ void method1_pass1(bool skip_pass = false){
 				}else{ //CAT=NRUN
 					case_nonrun += 1;
 					if(skip!=0){ 	//not skipped, write lm
-						write_number_at_loc(positions, CATEGORY_RUN, 2, b_it);
-						write_number_at_loc(positions, skip, 1+floor(log2(skip)), b_it);
+						//write_number_at_loc(positions, CATEGORY_RUN, 2, b_it);
+						//write_number_at_loc(positions, skip, 1+floor(log2(skip)), b_it);
 					}
 					skip=0;
 
@@ -596,6 +607,8 @@ void method1_pass1(bool skip_pass = false){
 				// decide what to do
 				int l = local_col_classes_uniq.size(); //case_lm
 
+				per_simplitig_l[simplitig_it] = l;
+
 				int ll = ceil(log2(l)*1.0);
 				int l_nrun = local_col_classes_uniq_nonrun.size(); //case_lm
 				int ll_nrun = ceil(log2(l)*1.0);
@@ -614,6 +627,18 @@ void method1_pass1(bool skip_pass = false){
 				}
 
 				
+				write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //num, bsize
+				write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
+				// for (int ii = 0; ii<l; ii++){
+				// 	//write huffman
+				// 	write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
+				// }
+				for(uint32_t uniq_col_class_id: local_col_classes_uniq){
+					write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
+				}
+
+				
+
 
 
 				all_ls.fs << l <<" "<<ll<<" "<<l_nrun<<" "<<ll_nrun<<endl;  
@@ -638,10 +663,16 @@ void method1_pass1(bool skip_pass = false){
 				case_run = case_lm = case_nonrun = case_dlc = 0;
 				sum_length_huff = sum_length_huff_nonrun = sum_length_huff_uniq = sum_length_huff_uniq_nonrun =  0;
 			
-				
+				simplitig_it+=1;
 			}
 		}
+		store_as_binarystring(positions_local_table, b_it_local_table, "bb_local_table");
+		store_as_sdsl(positions_local_table, b_it_local_table, "rrr_local_table");
 	}
+
+	void method1_pass2(){
+	}
+
 };
 	// void method1_pass2(){
 	// 	//try this way
