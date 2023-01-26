@@ -268,7 +268,7 @@ public:
 	int lm = 0;
 	int lc = 0;
 
-	COLESS(CMPH cmp, long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname){
+	COLESS(long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname){
 		dedup_bitmatrix_file.init(dedup_bitmatrix_fname);
 		spss_boundary_file.init(spss_boundary_fname);
 		dup_bitmatrix_file.init(dup_bitmatrix_fname);
