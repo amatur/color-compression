@@ -14,35 +14,37 @@ using namespace std;
 namespace BPHF{
     typedef boomphf::SingleHashFunctor<int>  hasher_t;
     typedef boomphf::mphf<  int, hasher_t  > boophf_t;
+
+    void construct_bphf_table( int *data, int nelem, boophf_t * bphf ){
+        int nthreads = 8;
+        double t_begin,t_end; struct timeval timet;
+        printf("Construct a BooPHF with  %lli elements  \n",nelem);
+        gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+        
+        // mphf takes as input a c++ range. A simple array of keys can be wrapped with boomphf::range
+        // but could be from a user defined iterator (enabling keys to be read from a file or from some complex non-contiguous structure)
+        auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
+        double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
+
+        //build the mphf
+        bphf = new boomphf::mphf<int,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
+        
+        gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
+        printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
+        //printf("boophf  bits/elem : %f\n",(float) (bphf->totalBitSize())/nelem);
+        
+    }
 }   
 using namespace BPHF; 
 
 int main(){
-    int nthreads = 8;
-    int nelem = 10;
-    int *data = (int * ) calloc(nelem,sizeof(int));
-	for (int i = 0; i < nelem; i++){
-       data[i] = i*100;
-	}
+    int* data = (int * ) calloc(nelem,sizeof(int));
+    for (int i = 0; i < nelem; i++){
+        data[i] = i*100;
+    }
+    boophf_t* bphf = NULL;
+    construct_bphf_table(data, nelem, bphf);
 
-
-    boophf_t * bphf = NULL;
-	double t_begin,t_end; struct timeval timet;
-	printf("Construct a BooPHF with  %lli elements  \n",nelem);
-	gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-	
-	// mphf takes as input a c++ range. A simple array of keys can be wrapped with boomphf::range
-	// but could be from a user defined iterator (enabling keys to be read from a file or from some complex non-contiguous structure)
-	auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
-	double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
-
-	//build the mphf
-	bphf = new boomphf::mphf<int,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
-	
-	gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
-	printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
-	//printf("boophf  bits/elem : %f\n",(float) (bphf->totalBitSize())/nelem);
-	
 	//query mphf like this
 	int  idx = bphf->lookup(data[0]);
 	printf(" example query  %d ----->  %d \n",data[0],idx);
