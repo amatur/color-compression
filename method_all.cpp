@@ -337,9 +337,9 @@ public:
 	}
 
 
-	bit_vector& store_as_sdsl(vector<int>& positions, uint64_t bv_size, string filename){
+	bit_vector& store_as_sdsl(vector<uint64_t>& positions, uint64_t bv_size, string filename){
 		bit_vector bv = bit_vector(bv_size, 0);
-		for (int p: positions){
+		for (uint64_t p: positions){
 			bv[p] = 1;
 		}
 		rrr_vector<256> rrr_bv(bv);
@@ -348,7 +348,7 @@ public:
 		return bv;
 	}
 
-	void store_as_binarystring(vector<int>& positions, uint64_t bv_size, string filename){
+	void store_as_binarystring(vector<uint64_t>& positions, uint64_t bv_size, string filename){
 		OutputFile binarystring_file(filename);
 		sort(positions.begin(), positions.end());
 		uint64_t bvi = 0;
@@ -551,7 +551,7 @@ public:
 			}
 		}
 	}
-};
+
 	// void method1_pass2(){
 	// 	//try this way
 	// 	write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
