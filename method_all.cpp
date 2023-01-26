@@ -231,7 +231,9 @@ class COLESS{
 public:
 	InputFile dedup_bitmatrix_file, spss_boundary_file, dup_bitmatrix_file, tmp_dir;
 	LogFile logfile_main;
-	long num_kmers, int M, int C;
+	long num_kmers;
+	int M;
+	int C;
 	CMPH cmp;
 	const int max_run = 16;
 	vector<uint64_t> positions;
@@ -408,9 +410,9 @@ public:
 		//per simplitig values
 		set<uint32_t> local_col_classes_uniq; //get the bool HuffCodeMap[M-1]
 		int use_local_hash = 0;
-		int use_local_hash_non_run = 0;
+		int use_local_hash_nonrun = 0;
 		int use_local_hash_huff = 0;
-		int use_local_hash_huff_non_run = 0;
+		int use_local_hash_huff_nonrun = 0;
 		uint64_t skip=0;
 		int case_run = 0;
 		int case_lm = 0;
@@ -476,8 +478,8 @@ public:
 				// }
 				skip=0;
 				
-				sum_length_huff += huff_code_map[curr_kmer_cc_id].length();
-				sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].length();
+				sum_length_huff += huff_code_map[curr_kmer_cc_id].size();
+				sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 
 				local_col_classes_uniq.insert(curr_kmer_cc_id);
 				// write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
@@ -489,8 +491,8 @@ public:
 				int ll = ceil(log2(l));
 
 				for(uint32_t uniq_col_class_id: local_col_classes_uniq){
-					sum_length_huff_uniq += huff_code_map[uniq_col_class_id].length();
-					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].length();
+					sum_length_huff_uniq += huff_code_map[uniq_col_class_id].size();
+					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
 				}
 
 				use_local_hash = ( (ll - lm ) * case_lm + lm * (1+l) < 0 ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
