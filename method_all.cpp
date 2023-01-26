@@ -586,7 +586,11 @@ void method1_pass1(bool skip_pass = false){
 			if(spss_boundary[(i+1)%num_kmers]=='1'){	// end k-mer of simplitig
 				// decide what to do
 				int l = local_col_classes_uniq.size(); //case_lm
-				int ll = ceil(log2(l));
+				int ll = ceil(log2(l)*1.0);
+				int l_nrun = local_col_classes_uniq.size(); //case_lm
+				int ll_nrun = ceil(log2(l)*1.0);
+
+
 				case_nonrun = case_dlc + case_lm;
 				for(uint32_t uniq_col_class_id: local_col_classes_uniq){
 					sum_length_huff_uniq += huff_code_map[uniq_col_class_id].size();
@@ -594,16 +598,17 @@ void method1_pass1(bool skip_pass = false){
 				}
 
 				use_local_hash = ( (ll - lm ) * case_lm + lm * (1+l) < 0 ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
-				use_local_hash_nonrun = ( (ll - lm ) * case_nonrun + lm * (1+l) < 0 ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
+				use_local_hash_nonrun = ( (ll_nrun - lm ) * case_nonrun + lm * (1+l_nrun) < 0 ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
 				use_local_hash_huff = ( (ll*case_lm - sum_length_huff + lm + sum_length_huff_uniq) < 0);
-				use_local_hash_huff_nonrun = ( ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun < 0 );
+				use_local_hash_huff_nonrun = ( ll_nrun*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun < 0 );
 
 				//logfile_main.fs<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
-				logfile_main.fs<<ll*case_lm<<" "<<lm*case_lm<<" "<<sum_length_huff<<" "<<ll*case_lm<<" "<<lm*case_nonrun<<" "<<sum_length_huff_nonrun<<" "<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
+				logfile_main.fs<<ll*case_lm<<" "<<lm*case_lm<<" "<<sum_length_huff<<" "<<ll_nrun*case_lm<<" "<<lm*case_nonrun<<" "<<sum_length_huff_nonrun<<" "<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<"s"<<case_run<<" c"<<case_dlc<<"m"<<case_lm<<" "num_kmer_in_simplitig<<endl;
 				
 				//re-init for new simplitig
 				//vector<uint32_t>().swap(local_col_classes_uniq);//
 				local_col_classes_uniq.clear();
+				local_col_classes_uniq_nonrun.clear();
 				num_kmer_in_simplitig = 0;
 
 				
