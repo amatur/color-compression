@@ -21,7 +21,7 @@ namespace CMPH{
         cmph_io_vector_adapter_destroy(source);   
 	}
 
-    unsigned int lookup(string str, cmph* hash_cmph){	
+    unsigned int lookup(string str, cmph_t* hash_cmph){	
 		const char *key = str.c_str(); 
 		//Find key
 		unsigned int id = cmph_search(hash_cmph, key, (cmph_uint32)strlen(key));
