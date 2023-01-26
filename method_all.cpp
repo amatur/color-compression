@@ -315,7 +315,6 @@ public:
 		cmph_destroy(hash_cmph);
 	}
 
-
 	int hammingDistance (uint64_t x, uint64_t y) {
 		uint64_t res = x ^ y;
 		return __builtin_popcountll (res) ;
@@ -464,7 +463,7 @@ public:
 			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 			printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
 
-		}
+		
 
 		//
 		InputFile infile_freq("frqeuency_sorted");
@@ -485,7 +484,7 @@ public:
 		delete root;
 	}
 
-	void method1_pass1(bool skip_pass = false){
+void method1_pass1(bool skip_pass = false){
 		dup_bitmatrix_file.rewind();
 		
 
@@ -611,7 +610,6 @@ public:
 		}
 	}
 };
-
 	// void method1_pass2(){
 	// 	//try this way
 	// 	write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
