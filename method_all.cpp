@@ -420,7 +420,7 @@ public:
 			getline (dup_bitmatrix_file.fs,bv_line);
 			cmp_keys.fs<<cmp_ptr->lookup(bv_line)<<endl;
 		}
-		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d" " | rev > frqeuency_sorted");
+		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
 		//
 		InputFile infile_freq("frqeuency_sorted");
 		string line;
