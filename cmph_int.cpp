@@ -34,7 +34,7 @@ int main(){
 	// mphf takes as input a c++ range. A simple array of keys can be wrapped with boomphf::range
 	// but could be from a user defined iterator (enabling keys to be read from a file or from some complex non-contiguous structure)
 	auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
-	double gammaFactor = 2.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
+	double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
 
 	//build the mphf
 	bphf = new boomphf::mphf<int,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
