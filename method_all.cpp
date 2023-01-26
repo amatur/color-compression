@@ -260,7 +260,7 @@ public:
 	long num_kmers;
 	int M;
 	int C;
-	CMPH cmp;
+	CMPH* cmp_ptr;
 	const int max_run = 16;
 	vector<uint64_t> positions;
 	HuffCodeMap huff_code_map;
@@ -275,7 +275,6 @@ public:
 		this->num_kmers = num_kmers;
 		this->M = M;
 		this->C = C;
-		this->cmp = cmp;
 		this->lm = ceil(log2(M));
 		this->lc = ceil(log2(C));
 		logfile_main.init("log_coless");
@@ -413,13 +412,13 @@ public:
 		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 		double elapsed = t_end - t_begin;
 		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
-		this->cmp = cmp;
+		this->cmp_ptr = &cmp;
 
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
 		for (uint64_t i=0; i < num_kmers; i+=1){
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line);
-			cmp_keys.fs<<cmp.lookup(bv_line)<<endl;
+			cmp_keys.fs<<cmp_ptr->lookup(bv_line)<<endl;
 		}
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d" " | rev > frqeuency_sorted");
 		//
