@@ -231,7 +231,7 @@ namespace CMPH{
         cmph_config_set_algo(config, CMPH_BMZ);
         hash = cmph_new(config);
         cmph_config_destroy(config);
-		return hash;
+		fclose(keys_fd);
     }
 
     unsigned int lookup(cmph_t *hash, string key_str){ //Find key
@@ -244,7 +244,7 @@ namespace CMPH{
     //   //Destroy hash
     //   cmph_destroy(hash);
     //   cmph_io_nlfile_adapter_destroy(source);   
-    //   fclose(keys_fd);
+    //   
     // }
 };
 using namespace Huffman;
