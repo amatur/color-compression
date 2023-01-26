@@ -269,13 +269,13 @@ public:
 	}
 
 	void write_number_at_loc(vector<uint64_t> & positions, uint64_t num, int block_size, uint64_t& b_it ){
-		write_number_at_loc_advanced_by_block_sz(positions, num, b_it_ptr+block_size);
+		write_number_at_loc_advanced_by_block_sz(positions, num, b_it+block_size);
 		b_it += block_size; //successfully written and place on next bit; if size is 2, (0,1) written, now val is 2.
 	}
 
 	void write_binary_string_at_loc(vector<uint64_t> & positions, string binarystring, uint64_t& b_it){
 		for (size_t i = 0; i< binarystring.length(); i++) {
-			if (ch=='1'){
+			if (binarystring[i]=='1'){
 				positions.push_back(b_it+i);
 			}
 		}
@@ -353,13 +353,13 @@ public:
 		uint64_t higher_lbyte = array_hi[x];
 		uint64_t lower_lbyte = array_lo[x]; 
 
- 		write_number_at_loc(positions, array_hi[x], min(64, num_colors), b_it ); //array_hi[x] higher uint64_t
+ 		write_number_at_loc(positions, array_hi[x], min(64, C), b_it ); //array_hi[x] higher uint64_t
 		if(num_colors > 64){
- 			write_number_at_loc(positions, array_lo[x], num_colors-64, b_it ); //array_lo[x] lower uint64_t
+ 			write_number_at_loc(positions, array_lo[x], C-64, b_it ); //array_lo[x] lower uint64_t
 		}
 
 		store_as_binarystring(positions, size, "bb_map" );
-		cout << "expected_MB_bv_mapping="<<(num_colors*M)/8.0/1024.0/1024.0 << endl;
+		cout << "expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		cout << "rrr_MB_bv_mapping="<<size_in_bytes(store_as_sdsl(positions, size, "rrr_bv_mapping.sdsl" ))/1024.0/1024.0 << endl;
 	}
 
