@@ -43,7 +43,6 @@ using namespace sdsl;
 	// 	}
 	// 	return b_it; // at the end b_it equals size of vector
 	// }
-
 class OutputFile{
 	public:
 		string filename;
@@ -214,15 +213,12 @@ namespace Huffman{
 using namespace Huffman;
 
 
-class CMPH{
-    public:
-      cmph_t *hash;
-      cmph_io_adapter_t *source;
-      FILE * keys_fd; 
+namespace CMPH{
+    void create_cmph_table(string key_filename, cmph_t * hash){
+		cmph_t *hash;
+		cmph_io_adapter_t *source;
+		FILE * keys_fd; 
 
-	// CMPH(){
-	// }
-    CMPH(string key_filename){
         keys_fd = fopen(key_filename.c_str(), "r"); //Open file with newline separated list of keys
         hash = NULL;
         if (keys_fd == NULL) 
@@ -233,23 +229,24 @@ class CMPH{
         // Source of keys
         source = cmph_io_nlfile_adapter(keys_fd);
         cmph_config_t *config = cmph_config_new(source);
-        cmph_config_set_algo(config, CMPH_BDZ);
+        cmph_config_set_algo(config, CMPH_BMZ);
         hash = cmph_new(config);
         cmph_config_destroy(config);
+		return hash;
     }
 
-    unsigned int lookup(string key_str){ //Find key
+    unsigned int lookup(cmph_t *hash, string key_str){ //Find key
        const char *key = key_str.c_str();
        unsigned int id = cmph_search(hash, key, (cmph_uint32)strlen(key));
        return id;
     }
 
-    ~CMPH(){
-      //Destroy hash
-      cmph_destroy(hash);
-      cmph_io_nlfile_adapter_destroy(source);   
-      fclose(keys_fd);
-    }
+    // ~CMPH(){
+    //   //Destroy hash
+    //   cmph_destroy(hash);
+    //   cmph_io_nlfile_adapter_destroy(source);   
+    //   fclose(keys_fd);
+    // }
 };
 
 
@@ -260,7 +257,7 @@ public:
 	long num_kmers;
 	int M;
 	int C;
-	CMPH* cmp_ptr;
+	cmph_t* cmp_hash_ptr;
 	const int max_run = 16;
 	vector<uint64_t> positions;
 	HuffCodeMap huff_code_map;
@@ -281,6 +278,11 @@ public:
 	}
 
 
+	unsigned int lookup(string key_str){ //Find key
+       const char *key = key_str.c_str();
+       unsigned int id = cmph_search(cmp_hash_ptr, key, (cmph_uint32)strlen(key));
+       return id;
+    }
 
 	int hammingDistance (uint64_t x, uint64_t y) {
 		uint64_t res = x ^ y;
@@ -405,7 +407,8 @@ public:
 		double t_begin,t_end; struct timeval timet;
 		printf("Construct a MPHF with  %lli elements  \n",M);
 		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-		CMPH cmp(dedup_bitmatrix_file.filename);
+		create_cmph_table(dedup_bitmatrix_file.filename, cmp_hash_ptr);
+		 
 		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 		double elapsed = t_end - t_begin;
 		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
@@ -417,7 +420,7 @@ public:
 			for (uint64_t i=0; i < num_kmers; i+=1){
 				string bv_line;
 				getline (dup_bitmatrix_file.fs,bv_line);
-				cmp_keys.fs<<cmp_ptr->lookup(bv_line)<<endl;
+				cmp_keys.fs<< lookup(bv_line)<<endl;
 			}
 			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 			printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
