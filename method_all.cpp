@@ -340,7 +340,7 @@ public:
 
 	void store_global_color_class_table(){
 		vector<int> positions;
-		int b_it = 0;
+		uint64_t b_it = 0;
 
 		uint64_t* array_hi = new uint64_t[M];	// maintaing upto C/2 bits
 		uint64_t* array_lo = new uint64_t[M];	// maintaing upto C/2 bits
@@ -376,7 +376,7 @@ public:
 		// // table of size M 
 		// }
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
-		for (u_int64_t i=0; i < num_kmers; i+=1){
+		for (uint64_t i=0; i < num_kmers; i+=1){
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line);
 			cmp_keys.fs<<cmp.lookup(bv_line)<<endl;
@@ -408,7 +408,7 @@ public:
 		vector<uint64_t> positions; // positions for main vector
 
 		vector<char> spss_boundary; 
-		for (u_int64_t i=0; i < num_kmers; i+=1){ //load spss_boundary vector in memory from disk
+		for (uint64_t i=0; i < num_kmers; i+=1){ //load spss_boundary vector in memory from disk
 			string spss_line;
 			getline (spss_boundary_file.fs,spss_line); 
 			spss_boundary.push_back(spss_line[0]); //this kmer starts a simplitig
@@ -752,8 +752,8 @@ int main (int argc, char* argv[]){
 	printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
 		
 	COLESS coless(cmp,  num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
-	coless.method1_pass0();
-	coless.method1_pass1();
+	// coless.method1_pass0();
+	// coless.method1_pass1();
 
 	return EXIT_SUCCESS;
 }
