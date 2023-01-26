@@ -617,9 +617,10 @@ void method1_pass1(bool skip_pass = false){
 
 
 				all_ls.fs << l <<" "<<ll<<" "<<l_nrun<<" "<<ll_nrun<<endl;  
+				all_ls.fs << "P "<<ll*case_lm<<" "<<lm*case_lm<<" "<<sum_length_huff<<" "<<lm + sum_length_huff_uniq<<" "<<lm * (1+l)<<endl;
 				use_local_hash = ( (ll - lm ) * case_lm + lm * (1+l) < 0 ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
 				use_local_hash_nonrun = ( (ll_nrun - lm ) * case_nonrun + lm * (1+l_nrun) < 0 ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
-				use_local_hash_huff = ( (ll*case_lm - sum_length_huff + lm + sum_length_huff_uniq) < 0);
+				use_local_hash_huff =  (ll*case_lm - sum_length_huff + lm + sum_length_huff_uniq) < 0;
 				use_local_hash_huff_nonrun = ( ll_nrun*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun < 0 );
 
 				//logfile_main.fs<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
