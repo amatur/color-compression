@@ -38,7 +38,9 @@ namespace BPHF{
 using namespace BPHF; 
 
 int main(){
+    int nelem = 10;
     int* data = (int * ) calloc(nelem,sizeof(int));
+
     for (int i = 0; i < nelem; i++){
         data[i] = i*100;
     }
