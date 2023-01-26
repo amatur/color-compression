@@ -1,7 +1,12 @@
 #include <cmph.h>
+#include<stdli.h>
+#include<fstream>
+#include<iostream>
+#include <stdio.h>
+  #include <string.h>
   #include <string.h>
   // Create minimal perfect hash function from in-memory vector
-
+using namespace std;
 
 namespace CMPH{
 	void create_table(string filename ){
@@ -74,14 +79,12 @@ using namespace CMPH;
       unsigned int i = 0;
       while (i < nkeys) {
           char *key = vv[i];
-          unsigned int id = cmph_search(hash, key, (cmph_uint32)strlen(key));
+          unsigned int id = cmph_search(hash_cmph_new, key, (cmph_uint32)strlen(key));
           fprintf(stderr, "key:%s -- hash:%u\n", key, id);
           i++;
       }
   
       //Destroy hash
-      cmph_destroy(hash);
-      cmph_io_vector_adapter_destroy(source);   
-      fclose(mphf_fd);
+      cmph_destroy(hash_cmph_new); 
       return 0;
   }
