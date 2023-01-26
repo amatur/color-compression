@@ -338,7 +338,8 @@ public:
 
 
 	bit_vector& store_as_sdsl(vector<uint64_t>& positions, uint64_t bv_size, string filename){
-		bit_vector bv = bit_vector(bv_size, 0);
+		//bit_vector bv = bit_vector(bv_size, 0);
+		bit_vector bv(bv_size, 0);
 		for (uint64_t p: positions){
 			bv[p] = 1;
 		}
