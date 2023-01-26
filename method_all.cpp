@@ -502,6 +502,8 @@ void method1_pass1(bool skip_pass = false){
 
 		//per simplitig values
 		set<uint32_t> local_col_classes_uniq; //get the bool HuffCodeMap[M-1]
+		set<uint32_t> local_col_classes_uniq_nonrun; //get the bool HuffCodeMap[M-1]
+
 		int use_local_hash = 0;
 		int use_local_hash_nonrun = 0;
 		int use_local_hash_huff = 0;
@@ -543,28 +545,29 @@ void method1_pass1(bool skip_pass = false){
 				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
 				int hd_lo = hammingDistance(prev_bv_lo, curr_bv_lo);
 				int hd= hd_hi+hd_lo;
-				if(hd==0){
+				if(hd==0){	//CAT=RUN
 					skip+=1;	
 					case_run+=1;	
-				}else{
+				}else{ //CAT=NRUN
 					if(skip!=0){ 	//not skipped, write lm
 						write_number_at_loc(positions, CATEGORY_RUN, 2, b_it);
 						write_number_at_loc(positions, skip, 1+floor(log2(skip)), b_it);
 					}
 					skip=0;
 
-
 					sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
-					if(hd*lc < lm){
+					local_col_classes_uniq_nonrun.insert(curr_kmer_cc_id);
+					if(hd*lc < lm){ //CAT=LC
 						case_dlc += 1;
 						cout<<"hd: "<<hd<<endl;
-					}else{
+					}else{ //CAT=LM
 						case_lm += 1;
 						sum_length_huff += huff_code_map[curr_kmer_cc_id].size();
+						local_col_classes_uniq.insert(curr_kmer_cc_id);
 					}
 					
 				}
-			}else{	//start of simplitig, so logm_case
+			}else{	//start of simplitig, so CAT=LM
 				case_lm+=1;
 				// if(skip!=0){ 	//not skipped, write lm
 				// 	write_number_at_loc(positions, skip, 1+floor(log2(skip)), b_it);
@@ -575,6 +578,8 @@ void method1_pass1(bool skip_pass = false){
 				sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 
 				local_col_classes_uniq.insert(curr_kmer_cc_id);
+				local_col_classes_uniq_nonrun.insert(curr_kmer_cc_id);
+
 				// write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 			}
 
