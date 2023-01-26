@@ -40,7 +40,7 @@ int main(){
 	bphf = new boomphf::mphf<int,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
 	
 	gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
-	printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin;);
+	printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
 	//printf("boophf  bits/elem : %f\n",(float) (bphf->totalBitSize())/nelem);
 	
 	//query mphf like this
