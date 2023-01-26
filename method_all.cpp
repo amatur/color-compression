@@ -452,8 +452,8 @@ public:
 		delete root;
 	}
 
-	void method1_pass1(bool skip = false){
-		if(skip) return;
+	void method1_pass1(bool skip_pass = false){
+		if(skip_pass) return;
 
 		store_global_color_class_table();
 		// bit vector values
