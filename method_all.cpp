@@ -357,7 +357,7 @@ public:
 			array_lo[idx]=0;
 			if(C > 64){
 				string ss=bv_line.substr(64,(C-64));
-				array_lo[idx]=std::stoull(ss, nullptr, 2);;
+				array_lo[idx]=std::stoull(ss, nullptr, 2);
 				write_number_at_loc(positions, array_lo[idx], C-64, b_it ); //array_lo[x] lower uint64_t
 			}
 		}
@@ -378,7 +378,7 @@ public:
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
 		for (u_int64_t i=0; i < num_kmers; i+=1){
 			string bv_line;
-			getline (dup_bitmatrix_fname.fs,bv_line);
+			getline (dup_bitmatrix_file.fs,bv_line);
 			cmp_keys.fs<<cmp.lookup(bv_line)<<endl;
 		}
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d" " | rev > frqeuency_sorted");
