@@ -233,9 +233,9 @@ class CMPH{
         // Source of keys
         source = cmph_io_nlfile_adapter(keys_fd);
         cmph_config_t *config = cmph_config_new(source);
-        cmph_config_set_algo(config, CMPH_BMZ);
+        cmph_config_set_algo(config, CMPH_CHD);
         hash = cmph_new(config);
-        cmph_config_destroy(config);
+        // cmph_config_destroy(config);
     }
 
     unsigned int lookup(string key_str){ //Find key
