@@ -378,7 +378,7 @@ public:
 		for(int x=0; x<M; x++){
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
-			unsigned int idx = cmp_ptr->lookup(bv_line);		// returns an if in range (0 to M-1)
+			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1)
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ;
 
 			array_lo[idx]=0;
@@ -412,7 +412,6 @@ public:
 		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 		double elapsed = t_end - t_begin;
 		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
-		this->cmp_ptr = &cmp;
 
 		//if(!skip){
 			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
@@ -502,7 +501,7 @@ public:
 			//per kmer task
 			num_kmer_in_simplitig+=1;  //start of simplitig id: num_kmer_in_simplitig
 			
-			unsigned int curr_kmer_cc_id = cmp_ptr->lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
 				
 			if(spss_boundary[i]=='0'){ // non-start
 				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
