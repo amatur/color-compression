@@ -597,7 +597,7 @@ void method1_pass1(bool skip_pass = false){
 				int l = local_col_classes_uniq.size(); //case_lm
 
 				int ll = ceil(log2(l)*1.0);
-				int l_nrun = local_col_classes_uniq.size(); //case_lm
+				int l_nrun = local_col_classes_uniq_nonrun.size(); //case_lm
 				int ll_nrun = ceil(log2(l)*1.0);
 
 
@@ -607,8 +607,13 @@ void method1_pass1(bool skip_pass = false){
 
 				for(uint32_t uniq_col_class_id: local_col_classes_uniq){
 					sum_length_huff_uniq += huff_code_map[uniq_col_class_id].size();
+				}
+
+				for(uint32_t uniq_col_class_id: local_col_classes_uniq_nonrun){
 					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
 				}
+
+				
 
 
 				all_ls.fs << l <<" "<<ll<<" "<<l_nrun<<" "<<ll_nrun<<endl;  
