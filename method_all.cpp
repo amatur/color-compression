@@ -26,7 +26,7 @@ using namespace sdsl;
 cmph_t *hash_cmph = NULL;
 
 void create_table(string filename ){
-    FILE * keys_fd = fopen(filename, "r");
+    FILE * keys_fd = fopen(filename.c_str(), "r");
   	
   	if (keys_fd == NULL) 
   	{
