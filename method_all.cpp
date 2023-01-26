@@ -84,7 +84,7 @@ class OutputFile{
 	}
 	OutputFile(string filename){
 		this->filename = filename;
-		fs.open (filename,  std::fstream::out );
+		fs.open (filename.c_str(),  std::fstream::out );
 	}
 	void init(const std::string filename){
 		this->filename=filename;
