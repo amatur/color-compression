@@ -28,6 +28,21 @@ using namespace sdsl;
 //position uint64_t
 
 
+	// uint64_t write_block(int block_sz, uint8_t category, int value, vector<int>& positions){
+	// 	uint64_t b_it = 0;
+	// 	write_number_at_loc(positions, num, block_size, b_it);
+
+	// 	//write category
+	// 	if(category==0){ //either log M or log U
+	// 		write_number_at_loc(positions, category, 1, b_it);
+	// 	}else if(category==1){ //log C 
+	// 		write_number_at_loc(positions, category, 2, b_it);
+	// 	}if(category==2){ // RUN of 1
+	// 		write_number_at_loc(positions, category, 2, b_it);
+			
+	// 	}
+	// 	return b_it; // at the end b_it equals size of vector
+	// }
 
 class OutputFile{
 	public:
@@ -266,6 +281,34 @@ public:
 		logfile_main.init("log_coless");
 	}
 
+
+
+	int hammingDistance (uint64_t x, uint64_t y) {
+		uint64_t res = x ^ y;
+		return __builtin_popcountll (res) ;
+	}
+
+	float get_average(vector<uint64_t> v){
+		if(v.size()==0){
+			return 0;
+		}
+		uint64_t summ = 0;
+		for (uint64_t e:  v){
+			summ+=e;
+		}
+		return summ/1.0/v.size();
+	}
+
+	float get_average(vector<int> v){
+		if(v.size()==0){
+			return 0;
+		}
+		uint64_t summ = 0;
+		for (uint64_t e:  v){
+			summ+=e;
+		}
+		return summ/1.0/v.size();
+	}
 	void write_number_at_loc_advanced_by_block_sz(vector<uint64_t> & positions, uint64_t num, uint64_t loc_advanced_by_block_sz){ //requires loc_advanced_by_block_sz += block_size; 
 		int64_t j=0;
 		while(num!=0)
@@ -293,21 +336,6 @@ public:
 		b_it += binarystring.length();
 	}
 
-	// uint64_t write_block(int block_sz, uint8_t category, int value, vector<int>& positions){
-	// 	uint64_t b_it = 0;
-	// 	write_number_at_loc(positions, num, block_size, b_it);
-
-	// 	//write category
-	// 	if(category==0){ //either log M or log U
-	// 		write_number_at_loc(positions, category, 1, b_it);
-	// 	}else if(category==1){ //log C 
-	// 		write_number_at_loc(positions, category, 2, b_it);
-	// 	}if(category==2){ // RUN of 1
-	// 		write_number_at_loc(positions, category, 2, b_it);
-			
-	// 	}
-	// 	return b_it; // at the end b_it equals size of vector
-	// }
 
 	bit_vector& store_as_sdsl(vector<int>& positions, uint64_t bv_size, string filename){
 		bit_vector bv = bit_vector(bv_size, 0);
@@ -339,7 +367,7 @@ public:
 	}
 
 	void store_global_color_class_table(){
-		vector<int> positions;
+		vector<uint64_t> positions;  //wasteful
 		uint64_t b_it = 0;
 
 		uint64_t* array_hi = new uint64_t[M];	// maintaing upto C/2 bits
@@ -523,7 +551,7 @@ public:
 			}
 		}
 	}
-
+};
 	// void method1_pass2(){
 	// 	//try this way
 	// 	write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
@@ -630,32 +658,6 @@ public:
 	// 	store_to_file(rb, "rrrbv_1.sdsl");
 	// }
 
-int hammingDistance (uint64_t x, uint64_t y) {
-	uint64_t res = x ^ y;
-	return __builtin_popcountll (res) ;
-}
-
-float get_average(vector<uint64_t> v){
-	if(v.size()==0){
-		return 0;
-	}
-	uint64_t summ = 0;
-	for (uint64_t e:  v){
-		summ+=e;
-	}
-	return summ/1.0/v.size();
-}
-
-float get_average(vector<int> v){
-	if(v.size()==0){
-		return 0;
-	}
-	uint64_t summ = 0;
-	for (uint64_t e:  v){
-		summ+=e;
-	}
-	return summ/1.0/v.size();
-}
 
 // namespace BitManip
 // {
