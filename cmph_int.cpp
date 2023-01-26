@@ -11,6 +11,11 @@
 using namespace std;
 
     
+namespace BPHF{
+    typedef boomphf::SingleHashFunctor<u_int64_t>  hasher_t;
+    typedef boomphf::mphf<  u_int64_t, hasher_t  > boophf_t;
+}   
+using namespace BPHF; 
 
 int main(){
     int nthreads = 8;
