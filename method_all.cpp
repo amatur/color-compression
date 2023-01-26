@@ -228,14 +228,16 @@ namespace CMPH{
         // Source of keys
         source = cmph_io_nlfile_adapter(keys_fd);
         cmph_config_t *config = cmph_config_new(source);
-        cmph_config_set_algo(config, CMPH_BMZ);
+        cmph_config_set_algo(config, CMPH_BDZ);
         hash = cmph_new(config);
-        cmph_config_destroy(config);
-		fclose(keys_fd);
+        //cmph_config_destroy(config);
+		//fclose(keys_fd);
+		//cmph_io_nlfile_adapter_destroy(source);   
     }
 
     unsigned int lookup(cmph_t *hash, string key_str){ //Find key
        const char *key = key_str.c_str();
+	   cout<<key<<endl;
        unsigned int id = cmph_search(hash, key, (cmph_uint32)strlen(key));
        return id;
     }
