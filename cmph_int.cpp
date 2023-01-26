@@ -1,11 +1,12 @@
+#include "BooPHF.h"
 #include <cmph.h>
 #include<stdlib.h>
 #include<fstream>
 #include<iostream>
 #include <stdio.h>
-  #include <string.h>
-  #include <string.h>
-  #include "BooPHF.h"
+#include <string.h>
+#include <string.h>
+
   // Create minimal perfect hash function from in-memory vector
 using namespace std;
 
