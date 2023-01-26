@@ -44,17 +44,18 @@ namespace CMPH{
 		cmph_io_nlfile_adapter_destroy(source);   
 		fclose(keys_fd);
 	}
-}
 
-unsigned int lookup(string str){	
-	const char *key = str.c_str(); 
-  	//Find key
-  	unsigned int id = cmph_search(hash_cmph, key, (cmph_uint32)strlen(key));
-  	// fprintf(stderr, "Id:%u\n", id);
-  	//Destroy hash
-  	//cmph_destroy(hash);
-  	return id;
+	unsigned int lookup(string str){	
+		const char *key = str.c_str(); 
+		//Find key
+		unsigned int id = cmph_search(hash_cmph, key, (cmph_uint32)strlen(key));
+		// fprintf(stderr, "Id:%u\n", id);
+		//Destroy hash
+		//cmph_destroy(hash);
+		return id;
+	}
 }
+using namespace CMPH;
 
 //sort -T=~/s/tmp/ export TMPDIR=/tmp
 //position uint64_t
@@ -245,7 +246,6 @@ namespace Huffman{
 
 using namespace Huffman;
 
-using namespace CMPH;
 // class CMPH{
 //     public:
 //       cmph_t *hash;
