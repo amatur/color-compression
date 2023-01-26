@@ -18,7 +18,7 @@
 #include <climits> // for u_int32_t_BIT
 #include <iterator>
 #include <algorithm>
-#include <fstream>
+#include <iostream>
 #include<sstream>
 using namespace std;
 using namespace sdsl;
@@ -27,9 +27,62 @@ using namespace sdsl;
 //sort -T=~/s/tmp/ export TMPDIR=/tmp
 //position uint64_t
 
+
+
+class OutputFile{
+	public:
+		string filename;
+		std::ofstream fs;
+
+	OutputFile(string filename){
+		this->filename = filename;
+		fs.open (filename,  std::fstream::out );
+	}
+	void write(string towrite){
+		fs << towrite; // <<endl;
+	}
+	~OutputFile(){
+		fs.close();
+	}
+};
+class LogFile : public OutputFile	//derived class
+{
+	public:
+		void log(string param_name, string param_value, string delim=":")
+		{
+			fs << param_name << delim << param_value << endl;
+		}
+};
+
+
+class InputFile{
+	public:
+	string filename;
+	std::fstream fs;
+	InputFile(const std::string filename){
+		this->filename=filename;
+		this->fs.open(this->filename, fstream::in);
+	}
+	InputFile(){
+	}
+	void init(const std::string filename){
+		this->filename=filename;
+		this->fs.open(this->filename, fstream::in);
+	}
+	void rewind(){
+		this->fs.close();
+		this->fs.open(this->filename, fstream::in);
+	}
+
+	~InputFile(){
+		fs.close();
+	}
+};
+
+
+
 typedef std::vector<bool> HuffCode;
 typedef std::map<u_int32_t, HuffCode> HuffCodeMap;
-
 
 namespace Huffman{
 	/// @brief source rosetta code
@@ -138,56 +191,6 @@ namespace Huffman{
 }
 
 using namespace Huffman;
-
-class Log : public OutputFile	//derived class
-{
-	public:
-		void log(string param_name, string param_value, string delim=":")
-		{
-			fs << param_name << delim << param_value << endl;
-		}
-};
-
-class OutputFile{
-	public:
-		string filename;
-		std::ofstream fs;
-
-	OutputFile(string filename){
-		this->filename = filename;
-		fs.open (filename,  std::fstream::out );
-	}
-	void write(string towrite){
-		fs << towrite; // <<endl;
-	}
-	~OutputFile(){
-		fs.close();
-	}
-};
-
-class InputFile{
-	public:
-	string filename;
-	std::fstream fs;
-	InputFile(const std::string filename){
-		this->filename=filename;
-		this->fs.open(this->filename, fstream::in);
-	}
-	InputFile(){
-	}
-	void init(const std::string filename){
-		this->filename=filename;
-		this->fs.open(this->filename, fstream::in);
-	}
-	void rewind(){
-		this->fs.close();
-		this->fs.open(this->filename, fstream::in);
-	}
-
-	~InputFile(){
-		fs.close();
-	}
-};
 
 
 class CMPH{
