@@ -411,7 +411,7 @@ public:
 		int use_local_hash_non_run = 0;
 		int use_local_hash_huff = 0;
 		int use_local_hash_huff_non_run = 0;
-		uint64_t skip=0
+		uint64_t skip=0;
 		int case_run = 0;
 		int case_lm = 0;
 		int case_nonrun = 0;
