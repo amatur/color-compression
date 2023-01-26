@@ -414,13 +414,22 @@ public:
 		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
 		this->cmp_ptr = &cmp;
 
+
+		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
 		for (uint64_t i=0; i < num_kmers; i+=1){
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line);
 			cmp_keys.fs<<cmp_ptr->lookup(bv_line)<<endl;
 		}
+		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+		printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
+
+		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
+		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+		printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
+
 		//
 		InputFile infile_freq("frqeuency_sorted");
 		string line;
