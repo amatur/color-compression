@@ -599,7 +599,7 @@ void method1_pass1(bool skip_pass = false){
 				use_local_hash_huff_nonrun = ( ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun < 0 );
 
 				//logfile_main.fs<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
-				logfile_main.fs<<lm*case_lm<<" "<<sum_length_huff<<" "<<lm*case_nonrun<<" "<<sum_length_huff_nonrun<<" "<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
+				logfile_main.fs<<ll*case_lm<<" "<<lm*case_lm<<" "<<sum_length_huff<<" "<ll*case_lm<<" "<<lm*case_nonrun<<" "<<sum_length_huff_nonrun<<" "<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
 				
 				//re-init for new simplitig
 				//vector<uint32_t>().swap(local_col_classes_uniq);//
