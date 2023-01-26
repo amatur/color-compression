@@ -25,7 +25,7 @@ using namespace sdsl;
 
 cmph_t *hash_cmph = NULL;
 
-void create_table(string filename, unsigned int nkeys ){
+void create_table(string filename ){
     FILE * keys_fd = fopen(filename, "r");
   	
   	if (keys_fd == NULL) 
@@ -439,7 +439,7 @@ public:
 			double t_begin,t_end; struct timeval timet;
 			printf("Construct a MPHF with  %lli elements  \n",M);
 			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-			CMPH cmp(dedup_bitmatrix_file.filename);
+			create_table(dedup_bitmatrix_file.filename);
 			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 			double elapsed = t_end - t_begin;
 			printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
