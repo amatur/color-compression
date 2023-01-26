@@ -23,33 +23,34 @@
 using namespace std;
 using namespace sdsl;
 
-cmph_t *hash_cmph = NULL;
-
-void create_table(string filename ){
-    FILE * keys_fd = fopen(filename.c_str(), "r");
-  	
-  	if (keys_fd == NULL) 
-  	{
-  	  fprintf(stderr, "File not found\n");
-  	  exit(1);
-  	}	
-  	// Source of keys
-  	cmph_io_adapter_t *source = cmph_io_nlfile_adapter(keys_fd);
-  
-  	cmph_config_t *config = cmph_config_new(source);
-  	cmph_config_set_algo(config, CMPH_BDZ);
-  	hash_cmph = cmph_new(config);
-  	cmph_config_destroy(config);
+namespace CMPH{
+	cmph_t *hash_cmph = NULL;
+	void create_table(string filename ){
+		FILE * keys_fd = fopen(filename.c_str(), "r");
+		
+		if (keys_fd == NULL) 
+		{
+		fprintf(stderr, "File not found\n");
+		exit(1);
+		}	
+		// Source of keys
+		cmph_io_adapter_t *source = cmph_io_nlfile_adapter(keys_fd);
 	
-	cmph_io_nlfile_adapter_destroy(source);   
-  	fclose(keys_fd);
+		cmph_config_t *config = cmph_config_new(source);
+		cmph_config_set_algo(config, CMPH_FCH);
+		hash_cmph = cmph_new(config);
+		cmph_config_destroy(config);
+		
+		cmph_io_nlfile_adapter_destroy(source);   
+		fclose(keys_fd);
+	}
 }
 
 unsigned int lookup(string str){	
 	const char *key = str.c_str(); 
   	//Find key
   	unsigned int id = cmph_search(hash_cmph, key, (cmph_uint32)strlen(key));
-  	fprintf(stderr, "Id:%u\n", id);
+  	// fprintf(stderr, "Id:%u\n", id);
   	//Destroy hash
   	//cmph_destroy(hash);
   	return id;
@@ -244,7 +245,7 @@ namespace Huffman{
 
 using namespace Huffman;
 
-
+using namespace CMPH;
 // class CMPH{
 //     public:
 //       cmph_t *hash;
@@ -309,8 +310,6 @@ public:
 		this->lc = ceil(log2(C));
 		logfile_main.init("log_coless");
 	}
-
-
 
 	int hammingDistance (uint64_t x, uint64_t y) {
 		uint64_t res = x ^ y;
@@ -407,7 +406,6 @@ public:
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
 			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1)
-
 
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ;
 			write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
