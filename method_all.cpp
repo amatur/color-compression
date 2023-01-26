@@ -551,6 +551,7 @@ public:
 			}
 		}
 	}
+};
 
 	// void method1_pass2(){
 	// 	//try this way
