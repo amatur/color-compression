@@ -33,10 +33,16 @@ class OutputFile{
 	public:
 		string filename;
 		std::ofstream fs;
+	OutputFile(){
 
+	}
 	OutputFile(string filename){
 		this->filename = filename;
 		fs.open (filename,  std::fstream::out );
+	}
+	void init(const std::string filename){
+		this->filename=filename;
+		this->fs.open(this->filename, fstream::out);
 	}
 	void write(string towrite){
 		fs << towrite; // <<endl;
@@ -353,11 +359,8 @@ public:
 		cout << "Expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		dedup_bitmatrix_file.fs.close();
 
-		uint64_t higher_lbyte = array_hi[x];
-		uint64_t lower_lbyte = array_lo[x]; 
-
  		write_number_at_loc(positions, array_hi[x], min(64, C), b_it ); //array_hi[x] higher uint64_t
-		if(num_colors > 64){
+		if(C > 64){
  			write_number_at_loc(positions, array_lo[x], C-64, b_it ); //array_lo[x] lower uint64_t
 		}
 
