@@ -220,8 +220,8 @@ class CMPH{
       cmph_io_adapter_t *source;
       FILE * keys_fd; 
 
-	CMPH(){
-	}
+	// CMPH(){
+	// }
     CMPH(string key_filename){
         keys_fd = fopen(key_filename.c_str(), "r"); //Open file with newline separated list of keys
         hash = NULL;
@@ -404,18 +404,16 @@ public:
 		// // table of size M 
 		// }
 
+		double t_begin,t_end; struct timeval timet;
+		printf("Construct a MPHF with  %lli elements  \n",M);
+		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+		CMPH cmp(dedup_bitmatrix_file.filename);
+		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+		double elapsed = t_end - t_begin;
+		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
+		this->cmp_ptr = &cmp;
+
 		if(!skip){
-
-			double t_begin,t_end; struct timeval timet;
-			printf("Construct a MPHF with  %lli elements  \n",M);
-			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-			CMPH cmp(dedup_bitmatrix_file.filename);
-			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-			double elapsed = t_end - t_begin;
-			printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
-			this->cmp_ptr = &cmp;
-
-
 			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
 			OutputFile cmp_keys("cmp_keys");  // get frequency count
 			for (uint64_t i=0; i < num_kmers; i+=1){
@@ -425,13 +423,12 @@ public:
 			}
 			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 			printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
-
-			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-			system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
-			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-			printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
-
 		}
+		
+		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
+		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+		printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);	
 
 		//
 		InputFile infile_freq("frqeuency_sorted");
@@ -773,7 +770,7 @@ int main (int argc, char* argv[]){
 
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	
-	coless.method1_pass0(true);
+	coless.method1_pass0();
 	coless.method1_pass1();
 
 	return EXIT_SUCCESS;
