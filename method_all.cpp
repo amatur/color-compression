@@ -408,6 +408,9 @@ public:
 		//per simplitig values
 		set<uint32_t> local_col_classes_uniq; //get the bool HuffCodeMap[M-1]
 		int use_local_hash = 0;
+		int use_local_hash_non_run = 0;
+		int use_local_hash_huff = 0;
+		int use_local_hash_huff_non_run = 0;
 		uint64_t skip=0
 		int case_run = 0;
 		int case_lm = 0;
@@ -498,7 +501,8 @@ public:
 				logfile_main.fs<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
 				
 				//re-init for new simplitig
-				vector<uint32_t>().swap(local_col_classes_uniq);//local_col_classes_uniq.clear();
+				//vector<uint32_t>().swap(local_col_classes_uniq);//
+				local_col_classes_uniq.clear();
 				num_kmer_in_simplitig = 0;
 
 				
@@ -744,7 +748,7 @@ int main (int argc, char* argv[]){
 	
 
 	
-	COLESS coless(cmp,  num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname, tmp_dir);
+	COLESS coless(cmp,  num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	coless.method1_pass0();
 	coless.method1_pass1();
 
