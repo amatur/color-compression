@@ -32,6 +32,7 @@ typedef std::map<u_int32_t, HuffCode> HuffCodeMap;
 
 
 namespace Huffman{
+	/// @brief source rosetta code
 	class INode
 	{
 		public:
@@ -239,14 +240,13 @@ public:
 	int lm = 0;
 	int lc = 0;
 
-	COLESS(CMPH &cmp, long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname, string tmp_dir){
+	COLESS(CMPH &cmp, long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname){
 		dedup_bitmatrix_file.init(dedup_bitmatrix_fname);
 		spss_boundary_file.init(spss_boundary_fname);
 		dup_bitmatrix_file.init(dup_bitmatrix_fname);
 		this->num_kmers = num_kmers;
 		this->M = M;
 		this->C = C;
-		this->tmp_dir = tmp_dir;
 		this->cmp = cmp;
 		this->lm = ceil(log2(M));
 		this->lc = ceil(log2(C));
