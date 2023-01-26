@@ -12,8 +12,8 @@ using namespace std;
 
     
 namespace BPHF{
-    typedef boomphf::SingleHashFunctor<u_int64_t>  hasher_t;
-    typedef boomphf::mphf<  u_int64_t, hasher_t  > boophf_t;
+    typedef boomphf::SingleHashFunctor<int>  hasher_t;
+    typedef boomphf::mphf<  int, hasher_t  > boophf_t;
 }   
 using namespace BPHF; 
 
