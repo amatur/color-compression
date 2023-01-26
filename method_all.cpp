@@ -365,9 +365,9 @@ public:
 		dedup_bitmatrix_file.fs.close();
 
  		
-		store_as_binarystring(positions, size, "bb_map" );
+		store_as_binarystring(positions, b_it, "bb_map" );
 		cout << "expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
-		cout << "rrr_MB_bv_mapping="<<size_in_bytes(store_as_sdsl(positions, size, "rrr_bv_mapping.sdsl" ))/1024.0/1024.0 << endl;
+		cout << "rrr_MB_bv_mapping="<<size_in_bytes(store_as_sdsl(positions, b_it, "rrr_bv_mapping.sdsl" ))/1024.0/1024.0 << endl;
 	}
 
 
@@ -378,7 +378,7 @@ public:
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
 		for (u_int64_t i=0; i < num_kmers; i+=1){
 			string bv_line;
-			getline (dup_bitmatrix_fs,bv_line);
+			getline (dup_bitmatrix_fname.fs,bv_line);
 			cmp_keys.fs<<cmp.lookup(bv_line)<<endl;
 		}
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d" " | rev > frqeuency_sorted");
