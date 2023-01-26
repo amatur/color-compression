@@ -389,7 +389,7 @@ public:
 		dedup_bitmatrix_file.fs.close();
 
 		//	write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
-				write_number_at_loc(positions, array_lo[idx], C-64, b_it ); //array_lo[x] lower uint64_t
+		//		write_number_at_loc(positions, array_lo[idx], C-64, b_it ); //array_lo[x] lower uint64_t
 		//
 		store_as_binarystring(positions, b_it, "bb_map" );
 		cout << "expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
