@@ -23,7 +23,7 @@
 using namespace std;
 using namespace sdsl;
 
-cmph_t *hash = NULL;
+cmph_t *hash_cmph = NULL;
 
 void create_table(string filename, unsigned int nkeys ){
     FILE * keys_fd = fopen(filename, "r");
@@ -38,7 +38,7 @@ void create_table(string filename, unsigned int nkeys ){
   
   	cmph_config_t *config = cmph_config_new(source);
   	cmph_config_set_algo(config, CMPH_BDZ);
-  	hash = cmph_new(config);
+  	hash_cmph = cmph_new(config);
   	cmph_config_destroy(config);
 	
 	cmph_io_nlfile_adapter_destroy(source);   
@@ -48,7 +48,7 @@ void create_table(string filename, unsigned int nkeys ){
 unsigned int lookup(string str){	
 	const char *key = str.c_str(); 
   	//Find key
-  	unsigned int id = cmph_search(hash, key, (cmph_uint32)strlen(key));
+  	unsigned int id = cmph_search(hash_cmph, key, (cmph_uint32)strlen(key));
   	fprintf(stderr, "Id:%u\n", id);
   	//Destroy hash
   	//cmph_destroy(hash);
@@ -245,43 +245,43 @@ namespace Huffman{
 using namespace Huffman;
 
 
-class CMPH{
-    public:
-      cmph_t *hash;
-      cmph_io_adapter_t *source;
-      FILE * keys_fd; 
+// class CMPH{
+//     public:
+//       cmph_t *hash;
+//       cmph_io_adapter_t *source;
+//       FILE * keys_fd; 
 
-	// CMPH(){
-	// }
-    CMPH(string key_filename){
-        keys_fd = fopen(key_filename.c_str(), "r"); //Open file with newline separated list of keys
-        hash = NULL;
-        if (keys_fd == NULL) 
-        {
-          fprintf(stderr, ("File "+key_filename+" not found\n").c_str());
-          exit(1);
-        }	
-        // Source of keys
-        source = cmph_io_nlfile_adapter(keys_fd);
-        cmph_config_t *config = cmph_config_new(source);
-        cmph_config_set_algo(config, CMPH_FCH);
-        hash = cmph_new(config);
-        // cmph_config_destroy(config);
-    }
+// 	// CMPH(){
+// 	// }
+//     CMPH(string key_filename){
+//         keys_fd = fopen(key_filename.c_str(), "r"); //Open file with newline separated list of keys
+//         hash = NULL;
+//         if (keys_fd == NULL) 
+//         {
+//           fprintf(stderr, ("File "+key_filename+" not found\n").c_str());
+//           exit(1);
+//         }	
+//         // Source of keys
+//         source = cmph_io_nlfile_adapter(keys_fd);
+//         cmph_config_t *config = cmph_config_new(source);
+//         cmph_config_set_algo(config, CMPH_FCH);
+//         hash = cmph_new(config);
+//         // cmph_config_destroy(config);
+//     }
 
-    unsigned int lookup(string key_str){ //Find key
-       const char *key = key_str.c_str();
-       unsigned int id = cmph_search(hash, key, (cmph_uint32)strlen(key));
-       return id;
-    }
+//     unsigned int lookup(string key_str){ //Find key
+//        const char *key = key_str.c_str();
+//        unsigned int id = cmph_search(hash, key, (cmph_uint32)strlen(key));
+//        return id;
+//     }
 
-    // ~CMPH(){
-    //   //Destroy hash
-    //   cmph_destroy(hash);
-    //   cmph_io_nlfile_adapter_destroy(source);   
-    //   fclose(keys_fd);
-    // }
-};
+//     // ~CMPH(){
+//     //   //Destroy hash
+//     //   cmph_destroy(hash);
+//     //   cmph_io_nlfile_adapter_destroy(source);   
+//     //   fclose(keys_fd);
+//     // }
+// };
 
 
 class COLESS{
