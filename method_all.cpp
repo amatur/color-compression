@@ -602,6 +602,9 @@ void method1_pass1(bool skip_pass = false){
 
 
 				case_nonrun = case_dlc + case_lm;
+				assert(sum_length_huff_uniq==0);
+				assert(sum_length_huff_uniq_nonrun==0);
+
 				for(uint32_t uniq_col_class_id: local_col_classes_uniq){
 					sum_length_huff_uniq += huff_code_map[uniq_col_class_id].size();
 					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
@@ -628,7 +631,8 @@ void method1_pass1(bool skip_pass = false){
 				skip=0;
 				case_run = case_lm = case_nonrun = case_dlc = 0;
 				sum_length_huff = sum_length_huff_nonrun = sum_length_huff_uniq = sum_length_huff_uniq_nonrun =  0;
-
+			
+				
 			}
 		}
 	}
