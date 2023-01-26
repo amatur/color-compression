@@ -838,7 +838,7 @@ int main (int argc, char* argv[]){
 
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	
-	coless.method1_pass0(true);
+	coless.method1_pass0();
 	coless.method1_pass1();
 
 	return EXIT_SUCCESS;
