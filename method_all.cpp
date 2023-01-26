@@ -23,6 +23,37 @@
 using namespace std;
 using namespace sdsl;
 
+cmph_t *hash = NULL;
+
+void create_table(string filename, unsigned int nkeys ){
+    FILE * keys_fd = fopen(filename, "r");
+  	
+  	if (keys_fd == NULL) 
+  	{
+  	  fprintf(stderr, "File not found\n");
+  	  exit(1);
+  	}	
+  	// Source of keys
+  	cmph_io_adapter_t *source = cmph_io_nlfile_adapter(keys_fd);
+  
+  	cmph_config_t *config = cmph_config_new(source);
+  	cmph_config_set_algo(config, CMPH_BDZ);
+  	hash = cmph_new(config);
+  	cmph_config_destroy(config);
+	
+	cmph_io_nlfile_adapter_destroy(source);   
+  	fclose(keys_fd);
+}
+
+void lookup(string str){	
+	const char *key = str.c_str(); 
+  	//Find key
+  	unsigned int id = cmph_search(hash, key, (cmph_uint32)strlen(key));
+  	fprintf(stderr, "Id:%u\n", id);
+  	//Destroy hash
+  	//cmph_destroy(hash);
+  	return 0;
+}
 
 //sort -T=~/s/tmp/ export TMPDIR=/tmp
 //position uint64_t
@@ -233,7 +264,7 @@ class CMPH{
         // Source of keys
         source = cmph_io_nlfile_adapter(keys_fd);
         cmph_config_t *config = cmph_config_new(source);
-        cmph_config_set_algo(config, CMPH_CHD);
+        cmph_config_set_algo(config, CMPH_FCH);
         hash = cmph_new(config);
         // cmph_config_destroy(config);
     }
@@ -260,7 +291,6 @@ public:
 	long num_kmers;
 	int M;
 	int C;
-	CMPH* cmp_ptr;
 	const int max_run = 16;
 	vector<uint64_t> positions;
 	HuffCodeMap huff_code_map;
@@ -376,7 +406,7 @@ public:
 		for(int x=0; x<M; x++){
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
-			unsigned int idx = cmp_ptr->lookup(bv_line);		// returns an if in range (0 to M-1)
+			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1)
 
 
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ;
@@ -413,7 +443,7 @@ public:
 			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 			double elapsed = t_end - t_begin;
 			printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
-			this->cmp_ptr = &cmp;
+	
 
 
 			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
@@ -421,7 +451,7 @@ public:
 			for (uint64_t i=0; i < num_kmers; i+=1){
 				string bv_line;
 				getline (dup_bitmatrix_file.fs,bv_line);
-				cmp_keys.fs<<cmp_ptr->lookup(bv_line)<<endl;
+				cmp_keys.fs<<lookup(bv_line)<<endl;
 			}
 			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 			printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
@@ -504,7 +534,7 @@ public:
 			//per kmer task
 			num_kmer_in_simplitig+=1;  //start of simplitig id: num_kmer_in_simplitig
 			
-			unsigned int curr_kmer_cc_id = cmp_ptr->lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
 				
 			if(spss_boundary[i]=='0'){ // non-start
 				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
