@@ -46,7 +46,7 @@ int main(){
 	//query mphf like this
 	int  idx = bphf->lookup(data[0]);
 	printf(" example query  %d ----->  %d \n",data[0],idx);
-    printf(" example query  %d ----->  %d \n",data[1],bphf->lookup(data[1]););
+    printf(" example query  %d ----->  %d \n",data[1],bphf->lookup(data[1]));
     return 0;
 }
 
