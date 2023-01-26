@@ -459,13 +459,13 @@ public:
 					skip=0;
 
 
-					sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].length();
+					sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 					if(hd*lc < lm){
 						case_dlc += 1;
 						cout<<"hd: "<<hd<<endl;
 					}else{
 						case_lm += 1;
-						sum_length_huff += huff_code_map[curr_kmer_cc_id].length();
+						sum_length_huff += huff_code_map[curr_kmer_cc_id].size();
 					}
 					
 				}
