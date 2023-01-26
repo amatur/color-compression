@@ -431,7 +431,7 @@ public:
 	}
 
 
-	void method1_pass0(bool skip = false){ //load_huffman_table();//int M -> variable string   //writehuffman[in
+	void method1_pass0(bool skip_pass = false){ //load_huffman_table();//int M -> variable string   //writehuffman[in
 		// void get_freq_count(){ // scan through all the color vectors to get freq count, global and local
 		// // table of size M 
 		// }
@@ -446,7 +446,7 @@ public:
 			double elapsed = t_end - t_begin;
 			printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
 	
-			if(!skip){
+			if(!skip_pass){
 				gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
 				OutputFile cmp_keys("cmp_keys");  // get frequency count
 				for (uint64_t i=0; i < num_kmers; i+=1){
@@ -593,7 +593,8 @@ void method1_pass1(bool skip_pass = false){
 				use_local_hash_huff = ( (ll*case_lm - sum_length_huff + lm + sum_length_huff_uniq) < 0);
 				use_local_hash_huff_nonrun = ( ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun < 0 );
 
-				logfile_main.fs<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
+				//logfile_main.fs<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
+				logfile_main.fs<<sum_length_huff<<" "<<sum_length_huff_uniq<<" "<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
 				
 				//re-init for new simplitig
 				//vector<uint32_t>().swap(local_col_classes_uniq);//
@@ -805,7 +806,7 @@ int main (int argc, char* argv[]){
 
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	
-	coless.method1_pass0();
+	coless.method1_pass0(true);
 	coless.method1_pass1();
 
 	return EXIT_SUCCESS;
