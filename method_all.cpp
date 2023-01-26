@@ -43,6 +43,7 @@ using namespace sdsl;
 	// 	}
 	// 	return b_it; // at the end b_it equals size of vector
 	// }
+
 class OutputFile{
 	public:
 		string filename;
@@ -210,14 +211,18 @@ namespace Huffman{
 	}
 }
 
+using namespace Huffman;
 
 
+class CMPH{
+    public:
+      cmph_t *hash;
+      cmph_io_adapter_t *source;
+      FILE * keys_fd; 
 
-namespace CMPH{
-    void create_cmph_table(string key_filename, cmph_t * hash){
-		cmph_io_adapter_t *source;
-		FILE * keys_fd; 
-
+	// CMPH(){
+	// }
+    CMPH(string key_filename){
         keys_fd = fopen(key_filename.c_str(), "r"); //Open file with newline separated list of keys
         hash = NULL;
         if (keys_fd == NULL) 
@@ -228,16 +233,13 @@ namespace CMPH{
         // Source of keys
         source = cmph_io_nlfile_adapter(keys_fd);
         cmph_config_t *config = cmph_config_new(source);
-        cmph_config_set_algo(config, CMPH_BDZ);
+        cmph_config_set_algo(config, CMPH_BMZ);
         hash = cmph_new(config);
-        //cmph_config_destroy(config);
-		//fclose(keys_fd);
-		//cmph_io_nlfile_adapter_destroy(source);   
+        cmph_config_destroy(config);
     }
 
-    unsigned int lookup(cmph_t *hash, string key_str){ //Find key
+    unsigned int lookup(string key_str){ //Find key
        const char *key = key_str.c_str();
-	   cout<<key<<endl;
        unsigned int id = cmph_search(hash, key, (cmph_uint32)strlen(key));
        return id;
     }
@@ -246,11 +248,10 @@ namespace CMPH{
     //   //Destroy hash
     //   cmph_destroy(hash);
     //   cmph_io_nlfile_adapter_destroy(source);   
-    //   
+    //   fclose(keys_fd);
     // }
 };
-using namespace Huffman;
-using namespace CMPH;
+
 
 class COLESS{
 public:
@@ -259,7 +260,7 @@ public:
 	long num_kmers;
 	int M;
 	int C;
-	cmph_t* cmp_hash_ptr;
+	CMPH* cmp_ptr;
 	const int max_run = 16;
 	vector<uint64_t> positions;
 	HuffCodeMap huff_code_map;
@@ -280,11 +281,6 @@ public:
 	}
 
 
-	unsigned int lookup(string key_str){ //Find key
-       const char *key = key_str.c_str();
-       unsigned int id = cmph_search(cmp_hash_ptr, key, (cmph_uint32)strlen(key));
-       return id;
-    }
 
 	int hammingDistance (uint64_t x, uint64_t y) {
 		uint64_t res = x ^ y;
@@ -380,21 +376,23 @@ public:
 		for(int x=0; x<M; x++){
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
-			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1)
+			unsigned int idx = cmp_ptr->lookup(bv_line);		// returns an if in range (0 to M-1)
+
+
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ;
+			write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
 
 			array_lo[idx]=0;
 			if(C > 64){
 				string ss=bv_line.substr(64,(C-64));
 				array_lo[idx]=std::stoull(ss, nullptr, 2);
+				write_number_at_loc(positions, array_lo[idx], C-64, b_it ); //array_lo[x] lower uint64_t
 			}
 		}
 		cout << "Expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		dedup_bitmatrix_file.fs.close();
 
-		//	write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
-		//		write_number_at_loc(positions, array_lo[idx], C-64, b_it ); //array_lo[x] lower uint64_t
-		//
+ 		
 		store_as_binarystring(positions, b_it, "bb_map" );
 		cout << "expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		cout << "rrr_MB_bv_mapping="<<size_in_bytes(store_as_sdsl(positions, b_it, "rrr_bv_mapping.sdsl" ))/1024.0/1024.0 << endl;
@@ -406,31 +404,34 @@ public:
 		// // table of size M 
 		// }
 
-		double t_begin,t_end; struct timeval timet;
-		printf("Construct a MPHF with  %lli elements  \n",M);
-		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-		create_cmph_table(dedup_bitmatrix_file.filename, cmp_hash_ptr);
-		 
-		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-		double elapsed = t_end - t_begin;
-		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
+		if(!skip){
 
-		//if(!skip){
+			double t_begin,t_end; struct timeval timet;
+			printf("Construct a MPHF with  %lli elements  \n",M);
+			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+			CMPH cmp(dedup_bitmatrix_file.filename);
+			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+			double elapsed = t_end - t_begin;
+			printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
+			this->cmp_ptr = &cmp;
+
+
 			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
 			OutputFile cmp_keys("cmp_keys");  // get frequency count
 			for (uint64_t i=0; i < num_kmers; i+=1){
 				string bv_line;
 				getline (dup_bitmatrix_file.fs,bv_line);
-				cmp_keys.fs<< lookup(bv_line)<<endl;
+				cmp_keys.fs<<cmp_ptr->lookup(bv_line)<<endl;
 			}
 			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 			printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
-		//}
-		
-		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
-		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-		printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);	
+
+			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+			system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
+			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+			printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
+
+		}
 
 		//
 		InputFile infile_freq("frqeuency_sorted");
@@ -503,7 +504,7 @@ public:
 			//per kmer task
 			num_kmer_in_simplitig+=1;  //start of simplitig id: num_kmer_in_simplitig
 			
-			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+			unsigned int curr_kmer_cc_id = cmp_ptr->lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
 				
 			if(spss_boundary[i]=='0'){ // non-start
 				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
@@ -772,7 +773,7 @@ int main (int argc, char* argv[]){
 
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	
-	coless.method1_pass0(true);
+	coless.method1_pass0();
 	coless.method1_pass1();
 
 	return EXIT_SUCCESS;
