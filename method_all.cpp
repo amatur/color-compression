@@ -45,14 +45,14 @@ void create_table(string filename, unsigned int nkeys ){
   	fclose(keys_fd);
 }
 
-void lookup(string str){	
+unsigned int lookup(string str){	
 	const char *key = str.c_str(); 
   	//Find key
   	unsigned int id = cmph_search(hash, key, (cmph_uint32)strlen(key));
   	fprintf(stderr, "Id:%u\n", id);
   	//Destroy hash
   	//cmph_destroy(hash);
-  	return 0;
+  	return id;
 }
 
 //sort -T=~/s/tmp/ export TMPDIR=/tmp
