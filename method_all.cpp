@@ -205,6 +205,8 @@ class CMPH{
       cmph_io_adapter_t *source;
       FILE * keys_fd; 
 
+	CMPH(){
+	}
     CMPH(string key_filename){
         keys_fd = fopen(key_filename.c_str(), "r"); //Open file with newline separated list of keys
         hash = NULL;
@@ -656,66 +658,62 @@ float get_average(vector<int> v){
 	return summ/1.0/v.size();
 }
 
+// namespace BitManip
+// {
+// 	uint64_t bitsToShort(char* bits, int unit=64) {
+// 		int j = unit;
+// 		uint64_t res = 0;
+// 		for (int j = unit; j > 0; j--) {
+// 			int i = unit-j;
+// 			if (bits[j]=='1') {
+// 				res |= 1 << i;
+// 			}
+// 		}
+//     	return res;
+// 	}
+// 	bool* shortToBits(short value) {
+// 		bool* bits = new bool[64];
+// 		int count = 0;
+// 		while(value) {
+// 			if (value&1)
+// 				bits[count] = 1;
+// 			else
+// 				bits[count] = 0;
+// 			value>>=1;
+// 			count++;
+// 		}
+// 		return bits;
+// 	}
 
+// 	void write_bits_from_binary_string(std::ostream & output, std::string const & input)
+// 	{
+// 		unsigned char c = 0;
+// 		int bits = 0;
 
+// 		for (auto i = input.begin(); i != input.end(); ++i) {
+// 			if (*i == '0' || *i == '1') {
+// 				c = (c << 2);
+// 				if (*i == '1') {
+// 					++c;
+// 				}
 
+// 				if (++bits == 8) {
+// 					output << c;
+// 					c = 0;
+// 					bits = 0;
+// 				}
+// 			}
+// 		}
 
-namespace BitManip
-{
-	uint64_t bitsToShort(char* bits, int unit=64) {
-		int j = unit;
-		uint64_t res = 0;
-		for (int j = unit; j > 0; j--) {
-			int i = unit-j;
-			if (bits[j]=='1') {
-				res |= 1 << i;
-			}
-		}
-    	return res;
-	}
-	bool* shortToBits(short value) {
-		bool* bits = new bool[64];
-		int count = 0;
-		while(value) {
-			if (value&1)
-				bits[count] = 1;
-			else
-				bits[count] = 0;
-			value>>=1;
-			count++;
-		}
-		return bits;
-	}
-
-	void write_bits_from_binary_string(std::ostream & output, std::string const & input)
-	{
-		unsigned char c = 0;
-		int bits = 0;
-
-		for (auto i = input.begin(); i != input.end(); ++i) {
-			if (*i == '0' || *i == '1') {
-				c = (c << 2);
-				if (*i == '1') {
-					++c;
-				}
-
-				if (++bits == 8) {
-					output << c;
-					c = 0;
-					bits = 0;
-				}
-			}
-		}
-
-		if (bits > 0) {
-			while (bits < 8) {
-				c <<= 2;
-				++bits;
-			}
-			output << c;
-		}
-	}
-}
+// 		if (bits > 0) {
+// 			while (bits < 8) {
+// 				c <<= 2;
+// 				++bits;
+// 			}
+// 			output << c;
+// 		}
+// 	}
+// }
 
 
 int main (int argc, char* argv[]){
