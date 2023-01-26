@@ -399,36 +399,39 @@ public:
 	}
 
 
-	void method1_pass0(){ //load_huffman_table();//int M -> variable string   //writehuffman[in
+	void method1_pass0(bool skip = false){ //load_huffman_table();//int M -> variable string   //writehuffman[in
 		// void get_freq_count(){ // scan through all the color vectors to get freq count, global and local
 		// // table of size M 
 		// }
 
+		if(!skip){
 
-		double t_begin,t_end; struct timeval timet;
-		printf("Construct a MPHF with  %lli elements  \n",M);
-		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-		CMPH cmp(dedup_bitmatrix_file.filename);
-		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-		double elapsed = t_end - t_begin;
-		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
-		this->cmp_ptr = &cmp;
+			double t_begin,t_end; struct timeval timet;
+			printf("Construct a MPHF with  %lli elements  \n",M);
+			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+			CMPH cmp(dedup_bitmatrix_file.filename);
+			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+			double elapsed = t_end - t_begin;
+			printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
+			this->cmp_ptr = &cmp;
 
 
-		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-		OutputFile cmp_keys("cmp_keys");  // get frequency count
-		for (uint64_t i=0; i < num_kmers; i+=1){
-			string bv_line;
-			getline (dup_bitmatrix_file.fs,bv_line);
-			cmp_keys.fs<<cmp_ptr->lookup(bv_line)<<endl;
+			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+			OutputFile cmp_keys("cmp_keys");  // get frequency count
+			for (uint64_t i=0; i < num_kmers; i+=1){
+				string bv_line;
+				getline (dup_bitmatrix_file.fs,bv_line);
+				cmp_keys.fs<<cmp_ptr->lookup(bv_line)<<endl;
+			}
+			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+			printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
+
+			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+			system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
+			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+			printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
+
 		}
-		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-		printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
-
-		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
-		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-		printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
 
 		//
 		InputFile infile_freq("frqeuency_sorted");
@@ -449,7 +452,9 @@ public:
 		delete root;
 	}
 
-	void method1_pass1(){
+	void method1_pass1(bool skip = false){
+		if(skip) return;
+
 		store_global_color_class_table();
 		// bit vector values
 		uint64_t b_it=0;
@@ -767,8 +772,9 @@ int main (int argc, char* argv[]){
     }
 
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
-	coless.method1_pass0();
-	// coless.method1_pass1();
+	
+	coless.method1_pass0(true);
+	coless.method1_pass1();
 
 	return EXIT_SUCCESS;
 }
