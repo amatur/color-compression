@@ -15,7 +15,7 @@ namespace BPHF{
     typedef boomphf::SingleHashFunctor<int>  hasher_t;
     typedef boomphf::mphf<  int, hasher_t  > boophf_t;
 
-    void construct_bphf_table( int *data, int nelem, boophf_t * bphf ){
+    void construct_bphf_table( int *& data, int nelem, boophf_t * &bphf ){
         int nthreads = 8;
         double t_begin,t_end; struct timeval timet;
         printf("Construct a BooPHF with  %lli elements  \n",nelem);
