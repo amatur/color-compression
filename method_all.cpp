@@ -378,19 +378,19 @@ public:
 			getline(dedup_bitmatrix_file.fs, bv_line);
 			unsigned int idx = cmp_ptr->lookup(bv_line);		// returns an if in range (0 to M-1)
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ;
-			write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
 
 			array_lo[idx]=0;
 			if(C > 64){
 				string ss=bv_line.substr(64,(C-64));
 				array_lo[idx]=std::stoull(ss, nullptr, 2);
-				write_number_at_loc(positions, array_lo[idx], C-64, b_it ); //array_lo[x] lower uint64_t
 			}
 		}
 		cout << "Expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		dedup_bitmatrix_file.fs.close();
 
- 		
+		//	write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
+				write_number_at_loc(positions, array_lo[idx], C-64, b_it ); //array_lo[x] lower uint64_t
+		//
 		store_as_binarystring(positions, b_it, "bb_map" );
 		cout << "expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		cout << "rrr_MB_bv_mapping="<<size_in_bytes(store_as_sdsl(positions, b_it, "rrr_bv_mapping.sdsl" ))/1024.0/1024.0 << endl;
@@ -411,7 +411,7 @@ public:
 		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
 		this->cmp_ptr = &cmp;
 
-		if(!skip){
+		//if(!skip){
 			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
 			OutputFile cmp_keys("cmp_keys");  // get frequency count
 			for (uint64_t i=0; i < num_kmers; i+=1){
@@ -421,7 +421,7 @@ public:
 			}
 			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 			printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
-		}
+		//}
 		
 		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
