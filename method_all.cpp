@@ -215,7 +215,6 @@ namespace Huffman{
 
 namespace CMPH{
     void create_cmph_table(string key_filename, cmph_t * hash){
-		cmph_t *hash;
 		cmph_io_adapter_t *source;
 		FILE * keys_fd; 
 
