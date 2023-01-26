@@ -525,6 +525,9 @@ void method1_pass1(bool skip_pass = false){
 		uint64_t prev_bv_hi = 0;
 		uint64_t prev_bv_lo = 0;
 
+
+		InputFile cmp_keys("cmp_keys");
+
 		//pass 1: collect if local or not 
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
@@ -539,7 +542,11 @@ void method1_pass1(bool skip_pass = false){
 			//per kmer task
 			num_kmer_in_simplitig+=1;  //start of simplitig id: num_kmer_in_simplitig
 			
-			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+			//unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+			string curr_kmer_cc_id_str;
+			getline(cmp_keys.fs, curr_kmer_cc_id_str);
+			unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10); 
+			
 				
 			if(spss_boundary[i]=='0'){ // non-start
 				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
