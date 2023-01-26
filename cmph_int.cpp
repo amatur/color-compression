@@ -39,7 +39,7 @@ using namespace CMPH;
       // Creating a filled vector
       
       char **vv ;
-      vv = new char**;
+      vv = new char*;
       vv[0]="1";
       vv[1]="10";
       vv[2]="20";
