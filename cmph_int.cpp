@@ -21,7 +21,7 @@ int main(){
     int nthreads = 8;
     int nelem = 10;
     int *data = (int * ) calloc(nelem,sizeof(int));
-	for (u_int64_t i = 0; i < nelem; i++){
+	for (int i = 0; i < nelem; i++){
        data[i] = i*100;
 	}
 
@@ -45,7 +45,7 @@ int main(){
 	
 	//query mphf like this
 	int  idx = bphf->lookup(data[0]);
-	printf(" example query  %lli ----->  %llu \n",data[0],idx);
+	printf(" example query  %d ----->  %d \n",data[0],idx);
     return 0;
 }
 
