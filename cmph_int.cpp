@@ -1,4 +1,4 @@
-#include "BooPHF.h"
+// #include "BooPHF.h"
 #include <cmph.h>
 #include<stdlib.h>
 #include<fstream>
@@ -7,7 +7,7 @@
 #include <string.h>
 #include <string.h>
 
-// using namespace std;
+using namespace std;
 // namespace BPHF{
 //     typedef boomphf::SingleHashFunctor<int>  hasher_t;
 //     typedef boomphf::mphf<  int, hasher_t  > boophf_t;
