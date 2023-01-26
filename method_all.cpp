@@ -126,7 +126,7 @@ namespace Huffman{
 		bool operator()(const INode* lhs, const INode* rhs) const { return lhs->f > rhs->f; }
 	};
 
-	INode* BuildTree(u_int32_t* frequencies)
+	INode* BuildTree(u_int32_t* frequencies, u_int32_t UniqueSymbols)
 	{
 		std::priority_queue<INode*, std::vector<INode*>, NodeCmp> trees;
 	
@@ -349,23 +349,22 @@ public:
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
 			unsigned int idx = cmp.lookup(bv_line);		// returns an if in range (0 to M-1)
+
+
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ;
+			write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
+
 			array_lo[idx]=0;
 			if(C > 64){
 				string ss=bv_line.substr(64,(C-64));
 				array_lo[idx]=std::stoull(ss, nullptr, 2);;
+				write_number_at_loc(positions, array_lo[idx], C-64, b_it ); //array_lo[x] lower uint64_t
 			}
 		}
-		
-		int32_t pos_in_bv=0;
 		cout << "Expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		dedup_bitmatrix_file.fs.close();
 
- 		write_number_at_loc(positions, array_hi[x], min(64, C), b_it ); //array_hi[x] higher uint64_t
-		if(C > 64){
- 			write_number_at_loc(positions, array_lo[x], C-64, b_it ); //array_lo[x] lower uint64_t
-		}
-
+ 		
 		store_as_binarystring(positions, size, "bb_map" );
 		cout << "expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		cout << "rrr_MB_bv_mapping="<<size_in_bytes(store_as_sdsl(positions, size, "rrr_bv_mapping.sdsl" ))/1024.0/1024.0 << endl;
@@ -396,7 +395,7 @@ public:
 			ss >> a; 
 			frequencies[i++]= a;
 		}		
-		INode* root = BuildTree(frequencies);
+		INode* root = BuildTree(frequencies, M);
         GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
 		delete frequencies;
 		delete root;
@@ -751,9 +750,7 @@ int main (int argc, char* argv[]){
 	gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 	double elapsed = t_end - t_begin;
 	printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
-	
-
-	
+		
 	COLESS coless(cmp,  num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	coless.method1_pass0();
 	coless.method1_pass1();
