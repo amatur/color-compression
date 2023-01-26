@@ -268,7 +268,7 @@ public:
 	int lm = 0;
 	int lc = 0;
 
-	COLESS(CMPH &cmp, long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname){
+	COLESS(CMPH cmp, long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname){
 		dedup_bitmatrix_file.init(dedup_bitmatrix_fname);
 		spss_boundary_file.init(spss_boundary_fname);
 		dup_bitmatrix_file.init(dup_bitmatrix_fname);
@@ -404,6 +404,17 @@ public:
 		// void get_freq_count(){ // scan through all the color vectors to get freq count, global and local
 		// // table of size M 
 		// }
+
+
+		double t_begin,t_end; struct timeval timet;
+		printf("Construct a MPHF with  %lli elements  \n",M);
+		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+		CMPH cmp(dedup_bitmatrix_fname);
+		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
+		double elapsed = t_end - t_begin;
+		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
+		this->cmp = cmp;
+
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
 		for (uint64_t i=0; i < num_kmers; i+=1){
 			string bv_line;
@@ -747,15 +758,7 @@ int main (int argc, char* argv[]){
 		// }
     }
 
-	double t_begin,t_end; struct timeval timet;
-	printf("Construct a MPHF with  %lli elements  \n",M);
-	gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-	CMPH cmp(dedup_bitmatrix_fname);
-	gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-	double elapsed = t_end - t_begin;
-	printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
-		
-	COLESS coless(cmp,  num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
+	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	// coless.method1_pass0();
 	// coless.method1_pass1();
 
