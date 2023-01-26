@@ -210,7 +210,7 @@ namespace Huffman{
 	}
 }
 
-using namespace Huffman;
+
 
 
 namespace CMPH{
@@ -248,7 +248,8 @@ namespace CMPH{
     //   fclose(keys_fd);
     // }
 };
-
+using namespace Huffman;
+using namespace CMPH;
 
 class COLESS{
 public:
