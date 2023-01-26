@@ -1,5 +1,5 @@
 #include <cmph.h>
-#include<stdli.h>
+#include<stdlib.h>
 #include<fstream>
 #include<iostream>
 #include <stdio.h>
