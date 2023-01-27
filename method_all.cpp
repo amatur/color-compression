@@ -153,7 +153,7 @@ namespace CMPH{
 	}
 
 	void mphf_destroy(){
-		cmph_destroy(hash);
+		cmph_destroy(hash_cmph);
 	}
 }
 using namespace CMPH;
