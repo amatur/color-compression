@@ -365,11 +365,18 @@ public:
 		uint64_t end = block_sz + b_it - 1;
 // 		assert(block_sz==block_sz2);
         uint64_t i = 0;
-		for (uint64_t j = end; j >= b_it; j=j-1) {
+        uint64_t j = end;
+
+		while(true){
 			if (str[j]=='1') {
 				res |= 1 << i;
 			}
 			i+=1;
+            if(j!=b_it){
+                j--;
+            }else{
+                break;
+            }
 		}
 		b_it += block_sz;
     	return res;
