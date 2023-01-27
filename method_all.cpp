@@ -45,9 +45,9 @@ public:
 		}
     }
 
-    const void *get(int key) {
-            return htmap[key];
-    }
+    // const void *get(int key) {
+    //         return htmap[key];
+    // }
 
 	bool exists(int key){
 		return htmap.count(key) > 0;
@@ -799,7 +799,6 @@ public:
 					}
 					skip=0;
 
-					local_col_classes_uniq_nonrun.insert(curr_kmer_cc_id);
 					if(hd*lc < lm_or_ll){ //CATEGORY=LC
 						//case_dlc += 1;
 						write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
