@@ -447,16 +447,16 @@ public:
 		}
 		return summ/1.0/v.size();
 	}
-	void write_number_at_loc_advanced_by_block_sz(vector<uint64_t> & positions, uint64_t num, uint64_t loc_advanced_by_block_sz, int block_sz){ //requires loc_advanced_by_block_sz += block_size; 
-		int64_t j=0;
+	void write_number_at_loc_advanced_by_block_sz(vector<uint64_t> & positions, uint64_t num, uint64_t loc_advanced_by_block_sz, uint64_t block_sz){ //requires loc_advanced_by_block_sz += block_size; 
+		uint64_t j=0;
 		uint64_t begin = loc_advanced_by_block_sz;
 
 		while(num!=0)
 		{
 			if(num%2 == 1){
-				positions.push_back(loc_advanced_by_block_sz-1+j); //b[loc_advanced_by_block_sz-1+j] = num%2;
+				positions.push_back(loc_advanced_by_block_sz-1-j); //b[loc_advanced_by_block_sz-1+j] = num%2;
 			}
-			j--;
+			j++;
 			num /= 2;
 			
 		}
@@ -475,8 +475,8 @@ public:
 		b_it+=1;
 	}
 	
-	void write_number_at_loc(vector<uint64_t> & positions, uint64_t num, int block_size, uint64_t& b_it ){
-		write_number_at_loc_advanced_by_block_sz(positions, num, b_it+ (uint64_t)block_size, block_size);
+	void write_number_at_loc(vector<uint64_t> & positions, uint64_t num, uint64_t block_size, uint64_t& b_it ){
+		write_number_at_loc_advanced_by_block_sz(positions, num, b_it+block_size, block_size);
 		b_it += block_size; //successfully written and place on next bit; if size is 2, (0,1) written, now val is 2.
 	}
 
@@ -558,7 +558,8 @@ public:
 			getline(dedup_bitmatrix_file.fs, bv_line);
 			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1)
 
-			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ;
+			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ; 
+			cout<<array_hi[idx]<<endl;
 			write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
 
 			array_lo[idx]=0;
@@ -580,6 +581,8 @@ public:
 
 		cout << "expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		cout << "rrr_MB_bv_mapping="<<size_in_bytes(store_as_sdsl(positions, b_it, "rrr_bv_mapping.sdsl" ))/1024.0/1024.0 << endl;
+		delete array_hi;
+		delete array_lo;
 	}
 
 
@@ -969,8 +972,8 @@ int main (int argc, char* argv[]){
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	
 	coless.method1_pass0();
-	coless.method1_pass1();
-	coless.method1_pass2();
+	// coless.method1_pass1();
+	// coless.method1_pass2();
 
 	//COLESS_Decompress cdec(num_kmers, M, C);
 
