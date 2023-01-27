@@ -815,10 +815,10 @@ public:
 						int q = floor(skip/max_run);
 						int rem = skip % max_run;
 						assert(skip == q*max_run + rem); //skip = q*max_run + rem
-						write_number_at_loc(positions, CATEGORY_RUN, 2, b_it);
-						write_unary_zero_at_loc(positions, q, b_it);
-						write_one(positions, b_it);
-						write_number_at_loc(positions, rem, lmaxrun, b_it);
+						// write_number_at_loc(positions, CATEGORY_RUN, 2, b_it);
+						// write_unary_zero_at_loc(positions, q, b_it);
+						// write_one(positions, b_it);
+						// write_number_at_loc(positions, rem, lmaxrun, b_it);
 					}
 					skip=0;
 
@@ -827,18 +827,20 @@ public:
 						write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
 						for (int i_bit=0; i_bit < lc; i_bit+=1){
 							if ((( prev_bv_hi >>  i_bit) & 1) != (( curr_bv_hi >>  i_bit) & 1)){ 
-								write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+								//write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
 							}
 						}
 						for (int i_bit=0; i_bit < lc; i_bit+=1){
 							if ((( prev_bv_lo >>  i_bit) & 1) != (( curr_bv_lo >>  i_bit) & 1)){
-								write_number_at_loc(positions, i_bit, lc, b_it);	//i_bit is the different bit loc
+								//write_number_at_loc(positions, i_bit, lc, b_it);	//i_bit is the different bit loc
 							}
 						}
 					}else{ //CATEGORY=LM
 						//case_lm += 1;
 						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-						write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
+						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+
+						//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
 						//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 					}	
 				}
@@ -851,7 +853,9 @@ public:
 				//case_nonrun +=1;
 				
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-				write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
+				//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
+				write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+
 
 				skip=0;
 			}
