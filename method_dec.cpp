@@ -343,9 +343,7 @@ using namespace Huffman;
 
 
 class COLESS_Decompress{
-
-	rrr_vector<256> rrr_map;
-	rrr_vector<256> rrr_main;
+public:
 	
 	uint64_t convert_binary_string_to_uint(string& str, int start, int end, int block_sz2){ //convert_binary_string_to_uint
 		uint64_t res = 0;
@@ -364,7 +362,7 @@ class COLESS_Decompress{
 	uint64_t read_uint(string& str, uint64_t& b_it, int block_sz){ //convert_binary_string_to_uint
 		uint64_t res = 0;
 		//int block_sz = end - start + 1;
-		uint64_t end = block_sz + start - 1;
+		uint64_t end = block_sz + b_it - 1;
 // 		assert(block_sz==block_sz2);
         int i = 0;
 		for (int j = end; j >= start; j--) {
@@ -382,8 +380,11 @@ class COLESS_Decompress{
 		int lc = ceil(log2(C));
 
 		if(1==0){
-			rrr_map = rrr_vector<256>();
-			rrr_main =  rrr_vector<256>();
+
+    	    rrr_vector<256> rrr_map;
+	        rrr_vector<256> rrr_main;
+			// rrr_vector rrr_map = rrr_vector<256>();
+			// rrr_main =  rrr_vector<256>();
 			load_from_file(rrr_map, "rrr_map");
 			load_from_file(rrr_map, "rrr_main");
 			std::ofstream out("str_bv_mapping.txt");
@@ -397,7 +398,7 @@ class COLESS_Decompress{
 		InputFile file_bb_map("bb_map");
 		string str_map;
 		getline(file_bb_map.fs, str_map);
-		file_bb_map.close();
+		file_bb_map.fs.close();
 		
 
 		uint64_t b_it =  0;
