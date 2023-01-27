@@ -176,8 +176,9 @@ namespace BPHF{
 		InputFile infile(filename);
 		uint64_t* data = (uint64_t * ) calloc(nelem,sizeof(uint64_t));
 		string bv_line;
+		int i = 0;
 		while (getline(infile.fs,bv_line )){
-			data[i] = std::stoull(bv_line, nullptr, 2) ;
+			data[i++] = std::stoull(bv_line, nullptr, 2) ;
 		}
 		int nthreads = 8;
         double t_begin,t_end; struct timeval timet;
