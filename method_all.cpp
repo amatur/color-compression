@@ -410,8 +410,10 @@ public:
 		}
 		return summ/1.0/v.size();
 	}
-	void write_number_at_loc_advanced_by_block_sz(vector<uint64_t> & positions, uint64_t num, uint64_t loc_advanced_by_block_sz){ //requires loc_advanced_by_block_sz += block_size; 
+	void write_number_at_loc_advanced_by_block_sz(vector<uint64_t> & positions, uint64_t num, uint64_t loc_advanced_by_block_sz, int block_sz){ //requires loc_advanced_by_block_sz += block_size; 
 		int64_t j=0;
+		uint64_t begin = loc_advanced_by_block_sz;
+
 		while(num!=0)
 		{
 			if(num%2 == 1){
@@ -421,7 +423,10 @@ public:
 			num /= 2;
 			
 		}
-		debug1.fs<<-j<<endl;
+
+		debug1.fs<<-j<<" "<<block_sz<<endl;
+		assert (-j<=block_sz, "Expect expected");
+
 	}
 
 	void write_one(vector<uint64_t> & positions, uint64_t& b_it ){
@@ -434,7 +439,7 @@ public:
 	}
 	
 	void write_number_at_loc(vector<uint64_t> & positions, uint64_t num, int block_size, uint64_t& b_it ){
-		write_number_at_loc_advanced_by_block_sz(positions, num, b_it+ (uint64_t)block_size);
+		write_number_at_loc_advanced_by_block_sz(positions, num, b_it+ (uint64_t)block_size, block_size);
 		b_it += block_size; //successfully written and place on next bit; if size is 2, (0,1) written, now val is 2.
 	}
 
