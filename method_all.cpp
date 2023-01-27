@@ -122,7 +122,7 @@ public:
 
 namespace CMPH{
 	cmph_t *hash_cmph = NULL;
-	void create_table(string filename ){
+	void create_table(string filename, int nelem ){
 		FILE * keys_fd = fopen(filename.c_str(), "r");
 		
 		if (keys_fd == NULL) 
