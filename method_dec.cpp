@@ -373,7 +373,7 @@ class COLESS_Decompress{
 			}
 			i+=1;
 		}
-		b_it += block_sz
+		b_it += block_sz;
     	return res;
 	}
 
