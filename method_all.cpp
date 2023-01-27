@@ -425,7 +425,7 @@ public:
 		}
 
 		debug1.fs<<-j<<" "<<block_sz<<endl;
-		assert (-j<=block_sz,);
+		assert (-j<=block_sz);
 
 	}
 
