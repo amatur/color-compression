@@ -1004,13 +1004,13 @@ int main (int argc, char* argv[]){
 		// }
     }
 
-	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
+	// COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	
-	coless.method1_pass0();
-	coless.method1_pass1();
-	coless.method1_pass2();
+	// coless.method1_pass0();
+	// coless.method1_pass1();
+	// coless.method1_pass2();
 
-	//COLESS_Decompress cdec(num_kmers, M, C);
+	COLESS_Decompress cdec(num_kmers, M, C);
 
 
 	return EXIT_SUCCESS;
