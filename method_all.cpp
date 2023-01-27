@@ -345,6 +345,7 @@ public:
 	InputFile dedup_bitmatrix_file, spss_boundary_file, dup_bitmatrix_file, tmp_dir;
 	LogFile logfile_main;
 	LogFile debug1;
+	LogFile debug2;
 	long num_kmers;
 	int M;
 	int C;
@@ -369,6 +370,8 @@ public:
 		this->lc = ceil(log2(C));
 		logfile_main.init("log_coless");
 		debug1.init("debug1");
+		debug2.init("debug2");
+
 	}
 
 
@@ -445,9 +448,9 @@ public:
 		for (size_t i = 0; i< binarystring.length(); i++) {
 			if (binarystring[i]=='1'){
 				positions.push_back(b_it+i);
+				b_it += 1;
 			}
 		}
-		b_it += binarystring.length();
 	}
 
 	void write_binary_vector_at_loc(vector<uint64_t> & positions, vector<bool> binary_vector, uint64_t& b_it){
@@ -456,7 +459,6 @@ public:
 				positions.push_back(b_it+i);
 			}
 		}
-		b_it += binary_vector.size();
 	}
 
 	bit_vector store_as_sdsl(vector<uint64_t>& positions, uint64_t bv_size, string filename){
@@ -467,7 +469,7 @@ public:
 			bv[p] = 1;
 		}
 		if(filename=="rrr_main"){
-			cout<<bv;
+			debug2.fs<<bv;
 		}
 		rrr_vector<256> rrr_bv(bv);
 		//cout << "rrr_MB_bv_mapping="<<size_in_bytes(rrr_bv_mapping)/1024.0/1024.0 << endl;
