@@ -27,7 +27,7 @@ using namespace sdsl;
 #include <unordered_map>
 
 class Hashtable {
-    std::unordered_map<int, int> htmap; // m_to_l
+    std::unordered_map<uint64_t, uint64_t> htmap; // m_to_l
 	uint64_t curr_id = 0;
 
 public:
@@ -35,7 +35,7 @@ public:
 		curr_id = 0;
 	}
 
-    uint64_t put_and_getid(int key) {
+    uint64_t put_and_getid(uint64_t key) {
 		if(htmap.count(key) > 0){ // present
 			return htmap[key];
 		}  else {	// absent
