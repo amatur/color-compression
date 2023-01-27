@@ -410,7 +410,7 @@ public:
 
 		uint64_t b_it =  0;
 		for(int i = 0; i < M; i++){
-			uint64_t colclass = read_uint(str_map, b_it, lm);
+			uint64_t colclass = read_uint(str_map, b_it, C);
 			cout<<colclass<<endl;
 		}
 
