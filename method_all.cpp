@@ -454,7 +454,7 @@ public:
 				positions.push_back(b_it+i);
 			}
 		}
-		b_it += binarystring.length();
+		b_it += binary_vector.length();
 	}
 
 	bit_vector store_as_sdsl(vector<uint64_t>& positions, uint64_t bv_size, string filename){
@@ -569,7 +569,7 @@ public:
 	}
 
 	void method1_pass1(bool skip_pass = false){ //decide whether to use local hash table, can skip
-		vecor<uint64_t> positions_local_table;
+		vector<uint64_t> positions_local_table;
 		uint64_t b_it_local_table = 0;
 		
 		dup_bitmatrix_file.rewind();
@@ -747,7 +747,7 @@ public:
 	}
 
 	void method1_pass2(){
-		vecor<uint64_t> positions;
+		vector<uint64_t> positions;
 		uint64_t b_it = 0;
 		dup_bitmatrix_file.rewind();
 
@@ -802,7 +802,7 @@ public:
 						write_number_at_loc(positions, rem, lmaxrun, b_it);
 					}
 					skip=0;
-					sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
+
 					local_col_classes_uniq_nonrun.insert(curr_kmer_cc_id);
 					if(hd*lc < lm_or_ll){ //CATEGORY=LC
 						//case_dlc += 1;
