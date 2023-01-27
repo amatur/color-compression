@@ -28,14 +28,14 @@ using namespace sdsl;
 
 class Hashtable {
     std::unordered_map<int, int> htmap; // m_to_l
-	int curr_id = 0;
+	uint64_t curr_id = 0;
 
 public:
 	Hashtable(){
 		curr_id = 0;
 	}
 
-    int put_and_getid(int key) {
+    uint64_t put_and_getid(int key) {
 		if(htmap.count(key) > 0){ // present
 			return htmap[key];
 		}  else {	// absent
@@ -434,7 +434,7 @@ public:
 	}
 	
 	void write_number_at_loc(vector<uint64_t> & positions, uint64_t num, int block_size, uint64_t& b_it ){
-		write_number_at_loc_advanced_by_block_sz(positions, num, b_it+block_size);
+		write_number_at_loc_advanced_by_block_sz(positions, num, b_it+ (uint64_t)block_size);
 		b_it += block_size; //successfully written and place on next bit; if size is 2, (0,1) written, now val is 2.
 	}
 
