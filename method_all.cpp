@@ -593,7 +593,7 @@ public:
 		uint64_t b_it_local_table = 0;
 		
 		dup_bitmatrix_file.rewind();
-		//store_global_color_class_table();
+		store_global_color_class_table();
 		// bit vector values
 		uint64_t b_it=0;
 		vector<uint64_t> positions; // positions for main vector
@@ -637,6 +637,7 @@ public:
 		int simplitig_it = 0;
 		//pass 1: collect if local or not 
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
+			
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
@@ -785,6 +786,7 @@ public:
 		int lm_or_ll = ll;
 		Hashtable local_ht;
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
+			if(i==10) exit(1);
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
@@ -907,7 +909,7 @@ int main (int argc, char* argv[]){
 
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	
-	//coless.method1_pass0();
+	coless.method1_pass0();
 	coless.method1_pass1();
 	coless.method1_pass2();
 
