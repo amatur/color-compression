@@ -582,6 +582,7 @@ public:
 			getline (spss_boundary_file.fs,spss_line); 
 			spss_boundary.push_back(spss_line[0]); //this kmer starts a simplitig
 		}
+		per_simplitig_l = new int[spss_boundary.size()];
 
 		//per simplitig values
 		set<uint32_t> local_col_classes_uniq; //get the bool HuffCodeMap[M-1]
