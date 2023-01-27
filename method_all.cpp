@@ -746,7 +746,7 @@ public:
 		store_as_sdsl(positions_local_table, b_it_local_table, "rrr_local_table");
 	}
 
-	void method1_pass2(int l){
+	void method1_pass2(){
 		vecor<uint64_t> positions;
 		uint64_t b_it = 0;
 		dup_bitmatrix_file.rewind();
@@ -755,6 +755,7 @@ public:
 		uint64_t curr_bv_lo = 0;
 		uint64_t prev_bv_hi = 0;
 		uint64_t prev_bv_lo = 0;
+		uint64_t skip = 0;
 
 		InputFile cmp_keys("cmp_keys");
 		int simplitig_it = 0;
@@ -788,14 +789,13 @@ public:
 				
 				if(hd==0){	//CATEGORY=RUN
 					skip+=1;	
-					case_run+=1;	
+					//case_run+=1;	
 				}else{ //CATEGORY=NOT_RUN
-					case_nonrun += 1;
+					//case_nonrun += 1;
 					if(skip!=0){ 	//not skipped, write lm
 						int q = floor(skip/max_run);
 						int rem = skip % max_run;
-						assert(skip == q*max_run + rem);
-						//skip = q*max_run + rem
+						assert(skip == q*max_run + rem); //skip = q*max_run + rem
 						write_number_at_loc(positions, CATEGORY_RUN, 2, b_it);
 						write_unary_zero_at_loc(positions, q, b_it);
 						write_one(positions, b_it);
@@ -805,7 +805,7 @@ public:
 					sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 					local_col_classes_uniq_nonrun.insert(curr_kmer_cc_id);
 					if(hd*lc < lm_or_ll){ //CATEGORY=LC
-						case_dlc += 1;
+						//case_dlc += 1;
 						write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
 						for (int i_bit=0; i_bit < lc; i_bit+=1){
 							if ((( prev_bv_hi >>  i_bit) & 1) != (( curr_bv_hi >>  i_bit) & 1)){ 
@@ -818,7 +818,7 @@ public:
 							}
 						}
 					}else{ //CATEGORY=LM
-						case_lm += 1;
+						//case_lm += 1;
 						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 						write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
 						//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
@@ -829,8 +829,8 @@ public:
 				ll = ceil(log2(l));
 				lm_or_ll = ll;
 
-				case_lm+=1;
-				case_nonrun +=1;
+				//case_lm+=1;
+				//case_nonrun +=1;
 				
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 				write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
