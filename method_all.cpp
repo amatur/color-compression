@@ -599,7 +599,7 @@ public:
 		double elapsed = t_end - t_begin;
 		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
 
-		if(!skip_pass){
+		//if(!skip_pass){
 			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
 			OutputFile cmp_keys("cmp_keys");  // get frequency count
 			for (uint64_t i=0; i < num_kmers; i+=1){
@@ -609,7 +609,7 @@ public:
 			}
 			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 			printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
-		}
+		//}
 
 		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
@@ -972,7 +972,7 @@ int main (int argc, char* argv[]){
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	
 	coless.method1_pass0();
-	// coless.method1_pass1();
+	coless.method1_pass1();
 	// coless.method1_pass2();
 
 	//COLESS_Decompress cdec(num_kmers, M, C);
