@@ -156,20 +156,21 @@ namespace CMPH{
 
 
 namespace BPHF{
-	 boophf_t * bphf; 
+
     typedef boomphf::SingleHashFunctor<uint64_t>  hasher_t;
     typedef boomphf::mphf<  uint64_t, hasher_t  > boophf_t;
-    void construct_bphf_table( int *& data, int nelem, boophf_t * &bphf ){
-        int nthreads = 8;
-        double t_begin,t_end; struct timeval timet;
-        printf("Construct a BooPHF with  %lli elements  \n",nelem);
-        gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-        auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
-        double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
-        bphf = new boomphf::mphf<int,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
-        gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
-        printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
-    }
+		 boophf_t * bphf; 
+    // void construct_bphf_table( int *& data, int nelem, boophf_t * &bphf ){
+    //     int nthreads = 8;
+    //     double t_begin,t_end; struct timeval timet;
+    //     printf("Construct a BooPHF with  %lli elements  \n",nelem);
+    //     gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+    //     auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
+    //     double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
+    //     bphf = new boomphf::mphf<int,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
+    //     gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
+    //     printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
+    // }
 
 	void create_table(string filename, int nelem ){
 		InputFile infile(filename);
@@ -182,7 +183,7 @@ namespace BPHF{
         double t_begin,t_end; struct timeval timet;
         printf("Construct a BooPHF with  %lli elements  \n",nelem);
         gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-        auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
+        auto data_iterator = boomphf::range(static_cast<const uint64_t*>(data), static_cast<const uint64_t*>(data+nelem));
         double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
         bphf = new boomphf::mphf<uint64_t,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
         gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
