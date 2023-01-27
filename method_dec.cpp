@@ -364,8 +364,8 @@ public:
 		//int block_sz = end - start + 1;
 		uint64_t end = block_sz + b_it - 1;
 // 		assert(block_sz==block_sz2);
-        int i = 0;
-		for (int j = end; j >= b_it; j--) {
+        uint64_t i = 0;
+		for (uint64_t j = end; j >= b_it; j=j-1) {
 			if (str[j]=='1') {
 				res |= 1 << i;
 			}
