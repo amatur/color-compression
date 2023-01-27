@@ -821,20 +821,20 @@ public:
 				}else{ //CATEGORY=NOT_RUN
 					//case_nonrun += 1;
 					if(skip!=0){ 	//not skipped, run break, write lm
-						write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-						write_unary_one_at_loc(positions, (uint64_t) skip, b_it);
+						// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+						// write_unary_one_at_loc(positions, (uint64_t) skip, b_it);
 
 						int q = floor(skip/max_run);
 						int rem = skip % max_run;
 						assert(skip == q*max_run + rem); //skip = q*max_run + rem
-						// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-						// write_unary_zero_at_loc(positions, (uint64_t) q, b_it);
-						// write_one(positions, b_it);
-						// write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
+						write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+						write_unary_zero_at_loc(positions, (uint64_t) q, b_it);
+						write_one(positions, b_it);
+						write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
 					}
 					skip=0;
 
-					if(hd*lc < lm){ //CATEGORY=LC
+					if(hd*lc < huff_code_map[curr_kmer_cc_id].size()){ //CATEGORY=LC
 						//case_dlc += 1;
 						//write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
 						for (int i_bit=0; i_bit < lc; i_bit+=1){
@@ -868,7 +868,7 @@ public:
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 				//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
 				//write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
-						assert(curr_kmer_cc_id<544 && curr_kmer_cc_id>0);
+						assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 				write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 
 
