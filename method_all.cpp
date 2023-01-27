@@ -786,7 +786,7 @@ public:
 		int lm_or_ll = ll;
 		Hashtable local_ht;
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
-			if(i==10) exit(1);
+			
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
@@ -873,7 +873,7 @@ public:
 		for(uint64_t tt: positions){
 			positions_out.fs<<tt<<endl;
 		}
-		cout<<"b_it_size"<<b_it<<endl;
+		cout<<"b_it_size: "<<b_it<<endl;
 		store_as_sdsl(positions, b_it, "rrr_main");
 		store_as_binarystring(positions, b_it, "bb_main");
 	}
