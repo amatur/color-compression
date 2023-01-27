@@ -414,7 +414,7 @@ public:
 			num /= 2;
 			
 		}
-		debug1<<-j<<endl;
+		debug1.fs<<-j<<endl;
 	}
 
 	void write_one(vector<uint64_t> & positions, uint64_t& b_it ){
