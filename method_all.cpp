@@ -457,14 +457,19 @@ public:
 	}
 
 	bit_vector store_as_sdsl(vector<uint64_t>& positions, uint64_t bv_size, string filename){
+		
 		//bit_vector bv = bit_vector(bv_size, 0);
 		bit_vector bv(bv_size, 0);
 		for (uint64_t p: positions){
 			bv[p] = 1;
 		}
+		if(filename=="rrr_main"){
+			cout<<bv;
+		}
 		rrr_vector<256> rrr_bv(bv);
 		//cout << "rrr_MB_bv_mapping="<<size_in_bytes(rrr_bv_mapping)/1024.0/1024.0 << endl;
 		store_to_file(rrr_bv, filename);	//"rrr_bv_mapping.sdsl"
+
 		return bv;
 	}
 
@@ -744,6 +749,7 @@ public:
 		}
 		store_as_binarystring(positions_local_table, b_it_local_table, "bb_local_table");
 		store_as_sdsl(positions_local_table, b_it_local_table, "rrr_local_table");
+		
 	}
 
 	void method1_pass2(){
@@ -846,8 +852,9 @@ public:
 		for(uint64_t tt: positions){
 			positions_out.fs<<tt<<endl;
 		}
-		store_as_binarystring(positions, b_it, "bb_main");
+		
 		store_as_sdsl(positions, b_it, "rrr_main");
+		store_as_binarystring(positions, b_it, "bb_main");
 	}
 };
 
