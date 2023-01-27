@@ -26,112 +26,6 @@ using namespace sdsl;
 
 #include <unordered_map>
 
-class Hashtable {
-    std::unordered_map<uint64_t, uint64_t> htmap; // m_to_l
-	uint64_t curr_id = 0;
-
-public:
-	Hashtable(){
-		curr_id = 0;
-	}
-
-    uint64_t put_and_getid(uint64_t key) {
-		if(htmap.count(key) > 0){ // present
-			return htmap[key];
-		}  else {	// absent
-			htmap[key] = curr_id;
-			curr_id+=1;
-			return curr_id-1; 
-		}
-    }
-
-    // const void *get(int key) {
-    //         return htmap[key];
-    // }
-
-	bool exists(int key){
-		return htmap.count(key) > 0;
-	}
-
-	void clear(){
-		htmap.clear();
-		curr_id = 0;
-	}
-
-};
-
-namespace CMPH{
-	cmph_t *hash_cmph = NULL;
-	void create_table(string filename ){
-		FILE * keys_fd = fopen(filename.c_str(), "r");
-		
-		if (keys_fd == NULL) 
-		{
-		fprintf(stderr, "File not found\n");
-		exit(1);
-		}	
-		// Source of keys
-		cmph_io_adapter_t *source = cmph_io_nlfile_adapter(keys_fd);
-	
-		cmph_config_t *config = cmph_config_new(source);
-		cmph_config_set_algo(config, CMPH_FCH);
-		hash_cmph = cmph_new(config);
-		cmph_config_destroy(config);
-		
-		cmph_io_nlfile_adapter_destroy(source);   
-		fclose(keys_fd);
-	}
-
-	unsigned int lookup(string str){	
-		const char *key = str.c_str(); 
-		//Find key
-		unsigned int id = cmph_search(hash_cmph, key, (cmph_uint32)strlen(key));
-		// fprintf(stderr, "Id:%u\n", id);
-		//Destroy hash
-		//cmph_destroy(hash);
-		return id;
-	}
-}
-using namespace CMPH;
-
-
-namespace BPHF{
-    typedef boomphf::SingleHashFunctor<int>  hasher_t;
-    typedef boomphf::mphf<  int, hasher_t  > boophf_t;
-    void construct_bphf_table( int *& data, int nelem, boophf_t * &bphf ){
-        int nthreads = 8;
-        double t_begin,t_end; struct timeval timet;
-        printf("Construct a BooPHF with  %lli elements  \n",nelem);
-        gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-        auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
-        double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
-        bphf = new boomphf::mphf<int,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
-        gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
-        printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
-    }
-}   
-using namespace BPHF; 
-
-//sort -T=~/s/tmp/ export TMPDIR=/tmp
-//position uint64_t
-
-
-	// uint64_t write_block(int block_sz, uint8_t category, int value, vector<int>& positions){
-	// 	uint64_t b_it = 0;
-	// 	write_number_at_loc(positions, num, block_size, b_it);
-
-	// 	//write category
-	// 	if(category==0){ //either log M or log U
-	// 		write_number_at_loc(positions, category, 1, b_it);
-	// 	}else if(category==1){ //log C 
-	// 		write_number_at_loc(positions, category, 2, b_it);
-	// 	}if(category==2){ // RUN of 1
-	// 		write_number_at_loc(positions, category, 2, b_it);
-			
-	// 	}
-	// 	return b_it; // at the end b_it equals size of vector
-	// }
-
 class OutputFile{
 	public:
 		string filename;
@@ -191,6 +85,135 @@ class InputFile{
 };
 
 
+
+class Hashtable {
+    std::unordered_map<uint64_t, uint64_t> htmap; // m_to_l
+	uint64_t curr_id = 0;
+
+public:
+	Hashtable(){
+		curr_id = 0;
+	}
+
+    uint64_t put_and_getid(uint64_t key) {
+		if(htmap.count(key) > 0){ // present
+			return htmap[key];
+		}  else {	// absent
+			htmap[key] = curr_id;
+			curr_id+=1;
+			return curr_id-1; 
+		}
+    }
+
+    // const void *get(int key) {
+    //         return htmap[key];
+    // }
+
+	bool exists(int key){
+		return htmap.count(key) > 0;
+	}
+
+	void clear(){
+		htmap.clear();
+		curr_id = 0;
+	}
+
+};
+
+namespace CMPH{
+	cmph_t *hash_cmph = NULL;
+	void create_table(string filename ){
+		FILE * keys_fd = fopen(filename.c_str(), "r");
+		
+		if (keys_fd == NULL) 
+		{
+		fprintf(stderr, "File not found\n");
+		exit(1);
+		}	
+		// Source of keys
+		cmph_io_adapter_t *source = cmph_io_nlfile_adapter(keys_fd);
+	
+		cmph_config_t *config = cmph_config_new(source);
+		cmph_config_set_algo(config, CMPH_CHM);
+		hash_cmph = cmph_new(config);
+		cmph_config_destroy(config);
+		
+		cmph_io_nlfile_adapter_destroy(source);   
+		fclose(keys_fd);
+	}
+
+	unsigned int lookup(string str){	
+		const char *key = str.c_str(); 
+		//Find key
+		unsigned int id = cmph_search(hash_cmph, key, (cmph_uint32)strlen(key));
+		// fprintf(stderr, "Id:%u\n", id);
+		//Destroy hash
+		//cmph_destroy(hash);
+		return id;
+	}
+}
+//using namespace CMPH;
+
+
+namespace BPHF{
+	 boophf_t * bphf; 
+    typedef boomphf::SingleHashFunctor<uint64_t>  hasher_t;
+    typedef boomphf::mphf<  uint64_t, hasher_t  > boophf_t;
+    void construct_bphf_table( int *& data, int nelem, boophf_t * &bphf ){
+        int nthreads = 8;
+        double t_begin,t_end; struct timeval timet;
+        printf("Construct a BooPHF with  %lli elements  \n",nelem);
+        gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+        auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
+        double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
+        bphf = new boomphf::mphf<int,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
+        gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
+        printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
+    }
+
+	void create_table(string filename, int nelem ){
+		InputFile infile(filename);
+		uint64_t* data = (uint64_t * ) calloc(nelem,sizeof(uint64_t));
+		string bv_line;
+		while (getline(infile.fs,bv_line )){
+			data[i] = std::stoull(bv_line, nullptr, 2) ;
+		}
+		int nthreads = 8;
+        double t_begin,t_end; struct timeval timet;
+        printf("Construct a BooPHF with  %lli elements  \n",nelem);
+        gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+        auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
+        double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
+        bphf = new boomphf::mphf<uint64_t,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
+        gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
+        printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
+	}
+
+	unsigned int lookup(string str){	
+		return bphf->lookup(std::stoull(str, nullptr, 2));
+	}
+}   
+using namespace BPHF; 
+
+//sort -T=~/s/tmp/ export TMPDIR=/tmp
+//position uint64_t
+
+
+	// uint64_t write_block(int block_sz, uint8_t category, int value, vector<int>& positions){
+	// 	uint64_t b_it = 0;
+	// 	write_number_at_loc(positions, num, block_size, b_it);
+
+	// 	//write category
+	// 	if(category==0){ //either log M or log U
+	// 		write_number_at_loc(positions, category, 1, b_it);
+	// 	}else if(category==1){ //log C 
+	// 		write_number_at_loc(positions, category, 2, b_it);
+	// 	}if(category==2){ // RUN of 1
+	// 		write_number_at_loc(positions, category, 2, b_it);
+			
+	// 	}
+	// 	return b_it; // at the end b_it equals size of vector
+	// }
 
 typedef std::vector<bool> HuffCode;
 typedef std::map<u_int32_t, HuffCode> HuffCodeMap;
@@ -342,81 +365,8 @@ using namespace Huffman;
 // };
 
 
-class COLESS_Decompress{
-
-	rrr_vector<256> rrr_map;
-	rrr_vector<256> rrr_main;
-	
-	uint64_t convert_binary_string_to_uint(string& str, int start, int end, int block_sz2){ //convert_binary_string_to_uint
-		uint64_t res = 0;
-		int block_sz = end - start + 1;
-// 		assert(block_sz==block_sz2);
-        int i =0;
-		for (int64_t j = end; j >= start; j--) {
-			if (str[j]=='1') {
-				res |= 1 << i;
-			}
-			i+=1;
-		}
-    	return res;
-	}
-
-	uint64_t read_uint(string& str, uint64_t& b_it, int block_sz){ //convert_binary_string_to_uint
-		uint64_t res = 0;
-		//int block_sz = end - start + 1;
-		uint64_t end = block_sz + start - 1;
-// 		assert(block_sz==block_sz2);
-        int i = 0;
-		for (int j = end; j >= start; j--) {
-			if (str[j]=='1') {
-				res |= 1 << i;
-			}
-			i+=1;
-		}
-		b_it += block_sz
-    	return res;
-	}
-
-	COLESS_Decompress(long num_kmers, int M, int C,  string sdsl_file=""){
-		int lm = ceil(log2(M));
-		int lc = ceil(log2(C));
-
-		if(1==0){
-			rrr_map = rrr_vector<256>();
-			rrr_main =  rrr_vector<256>();
-			load_from_file(rrr_map, "rrr_map");
-			load_from_file(rrr_map, "rrr_main");
-			std::ofstream out("str_bv_mapping.txt");
-			out << rrr_bv;
-			out.close();
-			stringstream ss_rrr_map;
-			ss_rrr_map << rrr_map;
-			string str_map = ss_rrr_map.str();
-		}
-
-		InputFile file_bb_map("bb_map");
-		string str_map;
-		getline(file_bb_map.fs, str_map);
-		file_bb_map.close();
-		
-
-		uint64_t b_it =  0;
-		for(int i = 0; i < M; i++){
-			uint64_t colclass = read_uint(str_map, b_it, lm);
-			cout<<colclass<<endl;
-		}
 
 
-
-		
-		//stringstream ss_cc_map;
-		
-		// rrr_vector<256> cc_map = rrr_vector<256>();
-		// load_from_file(cc_map, index_file);
-		// cout<<cc_map<<endl;
-		// ss_cc_map<<cc_map;
-	}
-};
 
 
 class COLESS{
@@ -616,6 +566,8 @@ public:
 
  		
 		store_as_binarystring(positions, b_it, "bb_map" );
+		store_as_sdsl(positions, b_it, "rrr_map" );
+
 		cout << "expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		cout << "rrr_MB_bv_mapping="<<size_in_bytes(store_as_sdsl(positions, b_it, "rrr_bv_mapping.sdsl" ))/1024.0/1024.0 << endl;
 	}
@@ -629,7 +581,7 @@ public:
 		double t_begin,t_end; struct timeval timet;
 		printf("Construct a MPHF with  %lli elements  \n",M);
 		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-		create_table(dedup_bitmatrix_file.filename);
+		create_table(dedup_bitmatrix_file.filename, M );
 		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
 		double elapsed = t_end - t_begin;
 		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
@@ -904,10 +856,10 @@ public:
 						int q = floor(skip/max_run);
 						int rem = skip % max_run;
 						assert(skip == q*max_run + rem); //skip = q*max_run + rem
-						write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-						write_unary_zero_at_loc(positions, (uint64_t) q, b_it);
-						write_one(positions, b_it);
-						write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
+						// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+						// write_unary_zero_at_loc(positions, (uint64_t) q, b_it);
+						// write_one(positions, b_it);
+						// write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
 					}
 					skip=0;
 
