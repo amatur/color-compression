@@ -429,7 +429,7 @@ public:
 	}
 
 	void write_unary_one_at_loc(vector<uint64_t> & positions, uint64_t unary_num, uint64_t& b_it ){
-		for(int i = 0; i<unary_num; i++ ){
+		for(uint64_t i = 0; i<unary_num; i++ ){
 			positions.push_back(b_it);
 			b_it+=1;
 		}
@@ -759,9 +759,9 @@ public:
 
 		InputFile cmp_keys("cmp_keys");
 		int simplitig_it = 0;
-		int l;
-		int ll;
-		int lm_or_ll;
+		int l = per_simplitig_l[0];
+		int ll = ceil(log2(l));
+		int lm_or_ll = ll;
 		Hashtable local_ht;
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
@@ -839,6 +839,12 @@ public:
 				skip=0;
 				simplitig_it+=1;
 			}
+
+		}
+
+		OutputFile positions_out("positions_out");
+		for(uint64_t tt: positions){
+			positions_out.fs<<tt<<endl;
 		}
 		store_as_binarystring(positions, b_it, "bb_main");
 		store_as_sdsl(positions, b_it, "rrr_main");
