@@ -352,7 +352,9 @@ public:
 	const int max_run = 16;
 	vector<uint64_t> positions;
 	HuffCodeMap huff_code_map;
-	enum category { CATEGORY_RUN=3, CATEGORY_COLCLASS=0, CATEGORY_COLVEC=2 };
+	uint64_t CATEGORY_RUN=3;
+	uint64_t CATEGORY_COLCLASS=0;
+	uint64_t CATEGORY_COLVEC=2;
 	int lm = 0;
 	int lc = 0;
 
@@ -448,9 +450,10 @@ public:
 		for (size_t i = 0; i< binarystring.length(); i++) {
 			if (binarystring[i]=='1'){
 				positions.push_back(b_it+i);
-				b_it += 1;
+				
 			}
 		}
+		b_it += binarystring.length();
 	}
 
 	void write_binary_vector_at_loc(vector<uint64_t> & positions, vector<bool> binary_vector, uint64_t& b_it){
@@ -459,6 +462,7 @@ public:
 				positions.push_back(b_it+i);
 			}
 		}
+		b_it += binary_vector.length();
 	}
 
 	bit_vector store_as_sdsl(vector<uint64_t>& positions, uint64_t bv_size, string filename){
@@ -503,6 +507,7 @@ public:
 		uint64_t* array_hi = new uint64_t[M];	// maintaing upto C/2 bits
 		uint64_t* array_lo = new uint64_t[M];	// maintaing upto C/2 bits
 
+		LogFile log_num_color_in_class("log_num_color_in_class"); 
 		for(int x=0; x<M; x++){
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
@@ -517,6 +522,9 @@ public:
 				array_lo[idx]=std::stoull(ss, nullptr, 2);
 				write_number_at_loc(positions, array_lo[idx], C-64, b_it ); //array_lo[x] lower uint64_t
 			}
+
+			int num_ones_in_color = __builtin_popcountll(array_hi[idx]) + __builtin_popcountll(array_lo[idx]) ;
+			log_num_color_in_class.fs << num_ones_in_color <<endl;
 		}
 		cout << "Expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		dedup_bitmatrix_file.fs.close();
@@ -800,7 +808,7 @@ public:
 					//case_run+=1;	
 				}else{ //CATEGORY=NOT_RUN
 					//case_nonrun += 1;
-					if(skip!=0){ 	//not skipped, write lm
+					if(skip!=0){ 	//not skipped, run break, write lm
 						int q = floor(skip/max_run);
 						int rem = skip % max_run;
 						assert(skip == q*max_run + rem); //skip = q*max_run + rem
