@@ -21,7 +21,10 @@
 			"ios": "cpp",
 			"system_error": "cpp",
 			"fstream": "cpp",
-			"iostream": "cpp"
+			"iostream": "cpp",
+			"__locale": "cpp",
+			"__string": "cpp",
+			"string_view": "cpp"
 		}
 	}
 }

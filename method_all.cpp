@@ -462,7 +462,7 @@ public:
 				positions.push_back(b_it+i);
 			}
 		}
-		b_it += binary_vector.length();
+		b_it += binary_vector.size();
 	}
 
 	bit_vector store_as_sdsl(vector<uint64_t>& positions, uint64_t bv_size, string filename){
