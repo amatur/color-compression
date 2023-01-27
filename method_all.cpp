@@ -354,9 +354,9 @@ public:
 	const int max_run = 16;
 	vector<uint64_t> positions;
 	HuffCodeMap huff_code_map;
-	uint64_t CATEGORY_RUN=3;
+	uint64_t CATEGORY_RUN=(uint64_t) 3;
 	uint64_t CATEGORY_COLCLASS=(uint64_t) 0;
-	uint64_t CATEGORY_COLVEC=2;
+	uint64_t CATEGORY_COLVEC=(uint64_t) 2;
 	int lm = 0;
 	int lc = 0;
 
@@ -869,6 +869,9 @@ public:
 				skip=0;
 				simplitig_it+=1;
 			}
+
+			prev_bv_hi=curr_bv_hi;
+			prev_bv_lo=curr_bv_lo;
 
 		}
 
