@@ -27,7 +27,7 @@ using namespace sdsl;
 #include <unordered_map>
 
 class Hashtable {
-    std::unordered_map<const void *, int> htmap; // m_to_l
+    std::unordered_map<int, int> htmap; // m_to_l
 	int curr_id = 0;
 
 public:
@@ -35,7 +35,7 @@ public:
 		curr_id = 0;
 	}
 
-    int put_and_getid(const void *key) {
+    int put_and_getid(int key) {
 		if(htmap.count(key) > 0){ // present
 			return htmap[key];
 		}  else {	// absent
@@ -43,7 +43,6 @@ public:
 			curr_id+=1;
 			return curr_id-1; 
 		}
-
     }
 
     const void *get(int key) {
@@ -449,12 +448,12 @@ public:
 	}
 
 	void write_binary_vector_at_loc(vector<uint64_t> & positions, vector<bool> binary_vector, uint64_t& b_it){
-		for (size_t i = 0; i< binary_vector.length(); i++) {
+		for (size_t i = 0; i< binary_vector.size(); i++) {
 			if (binary_vector[i]== 1){
 				positions.push_back(b_it+i);
 			}
 		}
-		b_it += binary_vector.length();
+		b_it += binary_vector.size();
 	}
 
 	bit_vector store_as_sdsl(vector<uint64_t>& positions, uint64_t bv_size, string filename){
@@ -773,9 +772,6 @@ public:
 				curr_bv_lo = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
 			} 
 
-			//per kmer task
-			num_kmer_in_simplitig+=1;  //start of simplitig id: num_kmer_in_simplitig
-			
 			//unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
 			string curr_kmer_cc_id_str;
 			getline(cmp_keys.fs, curr_kmer_cc_id_str);
@@ -840,7 +836,6 @@ public:
 
 			if(spss_boundary[(i+1)%num_kmers]=='1'){	// end k-mer of simplitig
 				local_ht.clear();
-				num_kmer_in_simplitig = 0;
 				skip=0;
 				simplitig_it+=1;
 			}
