@@ -161,6 +161,8 @@ class LogFile : public OutputFile	//derived class
 		{
 			fs << param_name << delim << param_value << endl;
 		}
+
+
 };
 
 
@@ -507,7 +509,8 @@ public:
 		uint64_t* array_hi = new uint64_t[M];	// maintaing upto C/2 bits
 		uint64_t* array_lo = new uint64_t[M];	// maintaing upto C/2 bits
 
-		LogFile log_num_color_in_class("log_num_color_in_class"); 
+		LogFile log_num_color_in_class;
+		log_num_color_in_class.init("log_num_color_in_class"); 
 		for(int x=0; x<M; x++){
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
