@@ -834,7 +834,7 @@ public:
 					}
 					skip=0;
 
-					if(hd*lc + 1 < huff_code_map[curr_kmer_cc_id].size()){ //CATEGORY=LC
+					if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size()){ //CATEGORY=LC
 						//case_dlc += 1;
 						//write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
 						for (int i_bit=0; i_bit < lc; i_bit+=1){
