@@ -593,7 +593,7 @@ public:
 		uint64_t b_it_local_table = 0;
 		
 		dup_bitmatrix_file.rewind();
-		store_global_color_class_table();
+		//store_global_color_class_table();
 		// bit vector values
 		uint64_t b_it=0;
 		vector<uint64_t> positions; // positions for main vector
@@ -708,7 +708,7 @@ public:
 
 				int ll = ceil(log2(l)*1.0);
 				int l_nrun = local_col_classes_uniq_nonrun.size(); //case_lm
-				int ll_nrun = ceil(log2(l)*1.0);
+				int ll_nrun = ceil(log2(l_nrun)*1.0);
 
 
 				case_nonrun = case_dlc + case_lm;
@@ -726,12 +726,11 @@ public:
 				
 				write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //num, bsize
 				write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
-				// for (int ii = 0; ii<l; ii++){
-				// 	//write huffman
-				// 	write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
-				// }
+			
+
+
 				for(uint32_t uniq_col_class_id: local_col_classes_uniq){
-					write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
+					//write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
 				}
 
 				
@@ -822,9 +821,9 @@ public:
 					}
 					skip=0;
 
-					if(hd*lc < lm_or_ll){ //CATEGORY=LC
+					if(hd*lc < lm){ //CATEGORY=LC
 						//case_dlc += 1;
-						write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
+						//write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
 						for (int i_bit=0; i_bit < lc; i_bit+=1){
 							if ((( prev_bv_hi >>  i_bit) & 1) != (( curr_bv_hi >>  i_bit) & 1)){ 
 								//write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
@@ -837,7 +836,7 @@ public:
 						}
 					}else{ //CATEGORY=LM
 						//case_lm += 1;
-						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
+						//write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 
 						//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
@@ -852,7 +851,7 @@ public:
 				//case_lm+=1;
 				//case_nonrun +=1;
 				
-				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
+				//write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 				//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
 				write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 
@@ -872,7 +871,7 @@ public:
 		for(uint64_t tt: positions){
 			positions_out.fs<<tt<<endl;
 		}
-		
+		cout<<"b_it_size"<<b_it<<endl;
 		store_as_sdsl(positions, b_it, "rrr_main");
 		store_as_binarystring(positions, b_it, "bb_main");
 	}
@@ -908,7 +907,7 @@ int main (int argc, char* argv[]){
 
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
 	
-	coless.method1_pass0();
+	//coless.method1_pass0();
 	coless.method1_pass1();
 	coless.method1_pass2();
 
