@@ -388,7 +388,7 @@ public:
 			load_from_file(rrr_map, "rrr_map");
 			load_from_file(rrr_map, "rrr_main");
 			std::ofstream out("str_bv_mapping.txt");
-			out << rrr_bv;
+			out << rrr_map;
 			out.close();
 			stringstream ss_rrr_map;
 			ss_rrr_map << rrr_map;
