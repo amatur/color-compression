@@ -355,7 +355,7 @@ public:
 	vector<uint64_t> positions;
 	HuffCodeMap huff_code_map;
 	uint64_t CATEGORY_RUN=3;
-	uint64_t CATEGORY_COLCLASS=0;
+	uint64_t CATEGORY_COLCLASS=(uint64_t) 0;
 	uint64_t CATEGORY_COLVEC=2;
 	int lm = 0;
 	int lc = 0;
@@ -840,6 +840,7 @@ public:
 						//case_lm += 1;
 						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+						assert(curr_kmer_cc_id<544 && curr_kmer_cc_id>0);
 
 						//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
 						//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
@@ -856,6 +857,8 @@ public:
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 				//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
 				write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+						assert(curr_kmer_cc_id<544 && curr_kmer_cc_id>0);
+
 
 
 				skip=0;
