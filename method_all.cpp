@@ -344,6 +344,7 @@ class COLESS{
 public:
 	InputFile dedup_bitmatrix_file, spss_boundary_file, dup_bitmatrix_file, tmp_dir;
 	LogFile logfile_main;
+	LogFile debug1;
 	long num_kmers;
 	int M;
 	int C;
@@ -367,6 +368,7 @@ public:
 		this->lm = ceil(log2(M));
 		this->lc = ceil(log2(C));
 		logfile_main.init("log_coless");
+		debug1.init("debug1");
 	}
 
 
@@ -412,6 +414,7 @@ public:
 			num /= 2;
 			
 		}
+		debug1<<-j<<endl;
 	}
 
 	void write_one(vector<uint64_t> & positions, uint64_t& b_it ){
