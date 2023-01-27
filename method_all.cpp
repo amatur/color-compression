@@ -824,10 +824,10 @@ public:
 						int q = floor(skip/max_run);
 						int rem = skip % max_run;
 						assert(skip == q*max_run + rem); //skip = q*max_run + rem
-						write_number_at_loc(positions, CATEGORY_RUN, 2, b_it);
+						write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
 						write_unary_zero_at_loc(positions, (uint64_t) q, b_it);
 						write_one(positions, b_it);
-						write_number_at_loc(positions, (uint64_t) rem, lmaxrun, b_it);
+						write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
 					}
 					skip=0;
 
@@ -847,10 +847,10 @@ public:
 					}else{ //CATEGORY=LM
 						//case_lm += 1;
 						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-						//write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 						assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 
-						write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
+						//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
 						//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 					}	
 				}
@@ -863,8 +863,8 @@ public:
 				//case_nonrun +=1;
 				
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-				write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
-				//write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+				//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
+				write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 						assert(curr_kmer_cc_id<544 && curr_kmer_cc_id>0);
 
 
