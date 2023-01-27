@@ -556,7 +556,8 @@ public:
 		for(int x=0; x<M; x++){
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
-			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1)
+			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1) 
+			assert(idx < M);
 
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ; 
 			cout<<array_hi[idx]<<endl;
