@@ -762,12 +762,13 @@ public:
 			
 				simplitig_it+=1;
 			}
+			prev_bv_hi = curr_bv_hi;
+			prev_bv_lo = curr_bv_lo;
 		}
 		store_as_binarystring(positions_local_table, b_it_local_table, "bb_local_table");
 		store_as_sdsl(positions_local_table, b_it_local_table, "rrr_local_table");
 		
-		prev_bv_hi = curr_bv_hi;
-		prev_bv_lo = curr_bv_lo;
+		
 	}
 
 	void method1_pass2(){
