@@ -409,7 +409,7 @@ public:
 
 
 	~COLESS(){
-		cmph_destroy(hash_cmph);
+		//cmph_destroy(hash_cmph);
 	}
 
 	int hammingDistance (uint64_t x, uint64_t y) {
