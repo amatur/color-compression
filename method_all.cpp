@@ -151,8 +151,12 @@ namespace CMPH{
 		//cmph_destroy(hash);
 		return id;
 	}
+
+	void mphf_destroy(){
+		cmph_destroy(hash);
+	}
 }
-//using namespace CMPH;
+using namespace CMPH;
 
 
 namespace BPHF{
@@ -194,8 +198,12 @@ namespace BPHF{
 	unsigned int lookup(string str){	
 		return bphf->lookup(std::stoull(str, nullptr, 2));
 	}
+
+	void mphf_destroy(){
+		delete bphf;
+	}
 }   
-using namespace BPHF; 
+//using namespace BPHF; 
 
 //sort -T=~/s/tmp/ export TMPDIR=/tmp
 //position uint64_t
@@ -410,7 +418,7 @@ public:
 
 
 	~COLESS(){
-		//cmph_destroy(hash_cmph);
+		mphf_destroy();
 	}
 
 	int hammingDistance (uint64_t x, uint64_t y) {
