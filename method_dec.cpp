@@ -329,6 +329,7 @@ public:
                     differ_run.clear();
                 }         
                 uint64_t col_class = read_uint(str_map, b_it, lm);
+                cout<<col_class<<" "<<"col_class"<<endl;
                 last_col_vector = global_table[col_class];
                 dec_ess_color.fs << last_col_vector << endl;
             }
