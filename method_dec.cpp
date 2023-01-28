@@ -27,6 +27,10 @@ using namespace sdsl;
 uint64_t written_kmer = 0;
 #include <unordered_map>
 
+void dbg(){
+
+}
+
 namespace TimeMeasure
 {
 	double t_begin,t_end; struct timeval timet;
@@ -399,7 +403,8 @@ public:
         while (b_it < str_map.length())
         {
             if(written_kmer>=22483){
-                cout<<written_kmer<<endl;
+                dbg();
+
             }
             char c = read_one_bit(str_map, b_it);
             if (c == '0')
