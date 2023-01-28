@@ -864,8 +864,8 @@ public:
 				}else{ //CATEGORY=NOT_RUN
 					//case_nonrun += 1;
 					if(skip!=0){ 	//not skipped, run break, write lm
-						write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-						write_unary_one_at_loc(positions, (uint64_t) skip, b_it);
+						// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+						// write_unary_one_at_loc(positions, (uint64_t) skip, b_it);
 
 						int q = floor(skip/max_run);
 						int rem = skip % max_run;
