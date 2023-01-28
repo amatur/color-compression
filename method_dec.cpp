@@ -1,4 +1,4 @@
-//hello
+//version: jan 27, 2023, 10:40
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -188,7 +188,6 @@ using namespace Huffman;
 
 class COLESS_Decompress{
 public:
-	
 	uint64_t convert_binary_string_to_uint(string& str, int start, int end, int block_sz2){ //convert_binary_string_to_uint
 		uint64_t res = 0;
 		int block_sz = end - start + 1;
@@ -258,6 +257,8 @@ public:
 			cout<<colclass<<endl;
 		}
 
+        //decompress bb_main
+        //decompress local hash table : bug is in local hash table
 
 
 		
