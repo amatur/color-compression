@@ -900,30 +900,30 @@ public:
 					if(skip!=0){ 	//not skipped, run break, write lm
 						//paul method
 						{
-							// int q, rem;
-							// q = floor(skip/max_run);
-							// rem = skip % max_run;
-							// assert(skip == q*max_run + rem); //skip = q*max_run + rem
-							// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-							// write_unary_one_at_loc(positions, (uint64_t) q, b_it);
-							// write_zero(positions, b_it);
-							// write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
+							int q, rem;
+							q = floor(skip/max_run);
+							rem = skip % max_run;
+							assert(skip == q*max_run + rem); //skip = q*max_run + rem
+							write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+							write_unary_one_at_loc(positions, (uint64_t) q, b_it);
+							write_zero(positions, b_it);
+							write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
 						}
 						
 						//my method
 						{
-							write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-							write_unary_one_at_loc(positions, (uint64_t) ceil(log2(skip)), b_it);
-							write_zero(positions, b_it);
-							write_number_at_loc(positions, (uint64_t) skip, (uint64_t) ceil(log2(skip)), b_it);
+							// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+							// write_unary_one_at_loc(positions, (uint64_t) ceil(log2(skip)), b_it);
+							// write_zero(positions, b_it);
+							// write_number_at_loc(positions, (uint64_t) skip, (uint64_t) ceil(log2(skip)), b_it);
 						}
 
 					}
 					skip=0;
 					
 
-					//if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size()){ //CATEGORY=LC
-					if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
+					if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
+					//if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
 						cases_smc.fs<<"d"<<endl;
 
 						//case_dlc += 1;
@@ -948,11 +948,11 @@ public:
 
 						//case_lm += 1;
 						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+						//write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 						assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 
 						//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
-						//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
+						write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 					}	
 				}
 			}else{	//start of simplitig, so CAT=LM
@@ -967,10 +967,10 @@ public:
 				
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 				//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
-				write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+				//write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 
 				assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
-				//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
+				write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 			}
 
 			if(spss_boundary[(i+1)%num_kmers]=='1'){	// end k-mer of simplitig
