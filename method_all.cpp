@@ -912,13 +912,13 @@ public:
 					if(hd*(lc + 1) < lm){ //CATEGORY=LC
 
 						//case_dlc += 1;
-						for (int i_bit=0; i_bit < lc; i_bit+=1){
+						for (int i_bit=0; i_bit < CATEGORY_RUN; i_bit+=1){
 							if ((( prev_bv_hi >>  i_bit) & 1) != (( curr_bv_hi >>  i_bit) & 1)){ 
 								write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
 								write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
 							}
 						}
-						for (int i_bit=0; i_bit < lc; i_bit+=1){
+						for (int i_bit=0; i_bit < C; i_bit+=1){
 							if ((( prev_bv_lo >>  i_bit) & 1) != (( curr_bv_lo >>  i_bit) & 1)){
 								write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
 								write_number_at_loc(positions, i_bit, lc, b_it);	//i_bit is the different bit loc
