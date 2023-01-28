@@ -237,10 +237,12 @@ public:
     int lm, lc;
     OutputFile dec_ess_color;
 
-    COLESS_Decompress(long num_kmers, int M, int C)
+    COLESS_Decompress(long num_kmers, int M, int C, int max_run)
     {
         this->C = C;
         this->M = M;
+        this->max_run = max_run;
+        this->lmaxrun = ceil(log2(max_run));
         lm = ceil(log2(M));
         lc = ceil(log2(C));
         global_table = new string[M];
@@ -424,10 +426,11 @@ int main (int argc, char* argv[]){
 	vector<string> args(argv + 1, argv + argc);
     string dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname; //string tmp_dir;
     int M, C;
+    int max_run;
 	long num_kmers=0;
     for (auto i = args.begin(); i != args.end(); ++i) {
         if (*i == "-h" || *i == "--help") {
-            cout << "Syntax: tool -i <DE-DUP-bitmatrix> -d <dup-bitmatrix> -c <num-colors> -m <M> -k <num-kmers> -s <spss-bound> -t <tmp-dir>" << endl;
+            cout << "Syntax: tool -i <DE-DUP-bitmatrix> -d <dup-bitmatrix> -c <num-colors> -m <M> -k <num-kmers> -s <spss-bound> -x <max-run>" << endl;
             return 0;
         } else if (*i == "-i") {
             dedup_bitmatrix_fname = *++i;
@@ -441,6 +444,8 @@ int main (int argc, char* argv[]){
             num_kmers = std::stol(*++i);
         }else if (*i == "-s") {
             spss_boundary_fname = *++i;
+		}else if (*i == "-x") {
+            max_run = std::stoi(*++i);
 		}
 		// else if (*i == "-t") {
         //     tmp_dir  = *++i;
