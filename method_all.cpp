@@ -898,22 +898,26 @@ public:
 				}else{ //CATEGORY=NOT_RUN
 					//case_nonrun += 1;
 					if(skip!=0){ 	//not skipped, run break, write lm
-						// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-						// write_unary_one_at_loc(positions, (uint64_t) skip, b_it);
-						int q, rem;
-						q = floor(skip/max_run);
-						rem = skip % max_run;
-						assert(skip == q*max_run + rem); //skip = q*max_run + rem
 						//paul method
-						write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-						write_unary_one_at_loc(positions, (uint64_t) q, b_it);
-						write_zero(positions, b_it);
-
-
+						{
+							int q, rem;
+							q = floor(skip/max_run);
+							rem = skip % max_run;
+							assert(skip == q*max_run + rem); //skip = q*max_run + rem
+							write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+							write_unary_one_at_loc(positions, (uint64_t) q, b_it);
+							write_zero(positions, b_it);
+							write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
+						}
 						
-						write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
 						//my method
-						//100001
+						{
+							write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+							write_unary_one_at_loc(positions, (uint64_t) ceil(log2(skip)), b_it);
+							write_zero(positions, b_it);
+							write_number_at_loc(positions, (uint64_t) skip, (uint64_t) ceil(log2(skip), b_it);
+						}
+
 					}
 					skip=0;
 					

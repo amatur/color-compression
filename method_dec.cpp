@@ -422,15 +422,29 @@ public:
                 { // run
                     flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
 
-                    int q = read_number_encoded_in_unary_one(str_map, b_it);
-                    assert(read_one_bit(str_map, b_it) == '0');
-                    int rem = read_uint(str_map, b_it, lmaxrun);
-                    int skip = q * max_run + rem;
-                    while (skip)
-                    {
-                        dec_ess_color.fs << last_col_vector << endl;
-                        written_kmer+=1;
-                        skip--;
+                    {//paul method
+                        int q = read_number_encoded_in_unary_one(str_map, b_it);
+                        assert(read_one_bit(str_map, b_it) == '0');
+                        int rem = read_uint(str_map, b_it, lmaxrun);
+                        int skip = q * max_run + rem;
+                        while (skip)
+                        {
+                            dec_ess_color.fs << last_col_vector << endl;
+                            written_kmer+=1;
+                            skip--;
+                        }
+                    }
+                    {//my method
+                        int len_of_logskip = read_number_encoded_in_unary_one(str_map, b_it);
+                        assert(read_one_bit(str_map, b_it) == '0');
+                        int skip = read_uint(str_map, b_it, len_of_logskip);
+                    
+                        while (skip)
+                        {
+                            dec_ess_color.fs << last_col_vector << endl;
+                            written_kmer+=1;
+                            skip--;
+                        }
                     }
                 }
                 else
