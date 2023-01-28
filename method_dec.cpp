@@ -190,42 +190,52 @@ class COLESS_Decompress{
 public:
     int max_run = 16;
     int lmaxrun = 4;
-    char** global_class_table;
+    char** global_table;
+    OutputFile dec_ess_color("dec_ess_color");
+    string last_col_vector = "";
 
+    COLESS_Decompress(long num_kmers, int M, int C, string sdsl_file = "")
+    {
+        int lm = ceil(log2(M));
+        int lc = ceil(log2(C));
+        global_class_table = new char *[M];
+    }
 
-
-	uint64_t convert_binary_string_to_uint(string& str, int start, int end, int block_sz2){ //convert_binary_string_to_uint
-		uint64_t res = 0;
-		int block_sz = end - start + 1;
-// 		assert(block_sz==block_sz2);
-        int i =0;
-		for (int64_t j = end; j >= start; j--) {
-			if (str[j]=='1') {
-				res |= 1 << i;
-			}
-			i+=1;
-		}
-    	return res;
-	}
+    uint64_t convert_binary_string_to_uint(string &str, int start, int end, int block_sz2)
+    { // convert_binary_string_to_uint
+        uint64_t res = 0;
+        int block_sz = end - start + 1;
+        // 		assert(block_sz==block_sz2);
+        int i = 0;
+        for (int64_t j = end; j >= start; j--)
+        {
+            if (str[j] == '1')
+            {
+                res |= 1 << i;
+            }
+            i += 1;
+        }
+        return res;
+    }
 
     char read_one_bit(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
-    	return str[b_it++];
-	}
+        return str[b_it++];
+    }
 
     int read_number_encoded_in_unary_zero(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
-    	int length = 0;
+        int length = 0;
         while(str[b_it++]=='0'){
             length+=1;
         }
         return length;
-	}
+    }
     int read_number_encoded_in_unary_one(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
-    	int length = 0;
+        int length = 0;
         while(str[b_it++]=='1'){
             length+=1;
         }
         return length;
-	}
+    }
 
     
     string read_color_vector(string& str, uint64_t& b_it){
@@ -238,123 +248,122 @@ public:
         if(s[pos] == '1')   s[pos]='0';
         if(s[pos] == '0')   s[pos]='1';
     }
-	uint64_t read_uint(string& str, uint64_t& b_it, int block_sz){ //convert_binary_string_to_uint
-		uint64_t res = 0;
-		//int block_sz = end - start + 1;
-		uint64_t end = block_sz + b_it - 1;
+    uint64_t read_uint(string& str, uint64_t& b_it, int block_sz){ //convert_binary_string_to_uint
+        uint64_t res = 0;
+        //int block_sz = end - start + 1;
+        uint64_t end = block_sz + b_it - 1;
 // 		assert(block_sz==block_sz2);
         uint64_t i = 0;
         uint64_t j = end;
 
-		while(true){
-			if (str[j]=='1') {
-				res |= 1 << i;
-			}
-			i+=1;
+        while(true){
+            if (str[j]=='1') {
+                res |= 1 << i;
+            }
+            i+=1;
             if(j!=b_it){
                 j--;
             }else{
                 break;
             }
-		}
-		b_it += block_sz;
-    	return res;
-	}
+        }
+        b_it += block_sz;
+        return res;
+    }
 
-	COLESS_Decompress(long num_kmers, int M, int C,  string sdsl_file=""){
-		int lm = ceil(log2(M));
-		int lc = ceil(log2(C));
-        OutputFile dec_ess_color("dec_ess_color");
-        string last_col_vector = "";
+    void run()
+    {
+        if (1 == 0)
+        {
+            rrr_vector<256> rrr_map;
+            rrr_vector<256> rrr_main;
+            // rrr_vector rrr_map = rrr_vector<256>();
+            // rrr_main =  rrr_vector<256>();
+            load_from_file(rrr_map, "rrr_map");
+            load_from_file(rrr_map, "rrr_main");
+            std::ofstream out("str_bv_mapping.txt");
+            out << rrr_map;
+            out.close();
+            stringstream ss_rrr_map;
+            ss_rrr_map << rrr_map;
+            string str_map = ss_rrr_map.str();
+        }
 
-        global_class_table = new char*[M];
-		if(1==0){
+        InputFile file_bb_map("bb_map");
+        string str_map;
+        getline(file_bb_map.fs, str_map);
+        file_bb_map.fs.close();
 
-    	    rrr_vector<256> rrr_map;
-	        rrr_vector<256> rrr_main;
-			// rrr_vector rrr_map = rrr_vector<256>();
-			// rrr_main =  rrr_vector<256>();
-			load_from_file(rrr_map, "rrr_map");
-			load_from_file(rrr_map, "rrr_main");
-			std::ofstream out("str_bv_mapping.txt");
-			out << rrr_map;
-			out.close();
-			stringstream ss_rrr_map;
-			ss_rrr_map << rrr_map;
-			string str_map = ss_rrr_map.str();
-		}
-
-		InputFile file_bb_map("bb_map");
-		string str_map;
-		getline(file_bb_map.fs, str_map);
-		file_bb_map.fs.close();
-		
-
-		uint64_t b_it =  0;
-		for(int i = 0; i < M; i++){
-			string col_vector = read_color_vector(str_map, b_it);
-			cout<<col_vector<<endl;
-            global_class_table[i] = col_vector.c_str();
+        uint64_t b_it = 0;
+        for (int i = 0; i < M; i++)
+        {
+            string col_vector = read_color_vector(str_map, b_it);
+            cout << col_vector << endl;
+            global_class_table[i] = col_vector;
             last_col_vector = col_vector;
-		}
+        }
 
-        b_it =  0;
-        //decompress bb_main: only logm
-   
+        b_it = 0;
+        // decompress bb_main: only logm
+
         vector<int> differ_run;
-        while(b_it<str_map.length()){
+        while (b_it < str_map.length())
+        {
             char c = read_one_bit(str_map, b_it);
-            if (c=='0'){
-                if(differ_run.size()){
-                    for (int d: differ_run){
-                        for (int d: differ_run){
-                            flip_bit(last_col_vector, d);
-                            dec_ess_color.fs<<last_col_vector<<endl;
-                        }
+            if (c == '0')
+            {
+                if (differ_run.size())
+                {
+                    for (int d : differ_run)
+                    {
+                        flip_bit(last_col_vector, d);
+                        dec_ess_color.fs << last_col_vector << endl;
                     }
+                    differ_run.clear();
                 }
-                uint64_t col_class = read_uint(str_map, b_it, lm );
-                char* color_vector = global_table[col_class].c_str();
-                dec_ess_color.fs<<color_vector<<endl;
-               
+                uint64_t col_class = read_uint(str_map, b_it, lm);
+                char *color_vector = global_table[col_class].c_str();
+                dec_ess_color.fs << color_vector << endl;
             }
-            if(c=='1'){
+            if (c == '1')
+            {
                 char c2 = read_one_bit(str_map, b_it);
-                if(c2=='1'){ //run
-                    if(differ_run.size()!=0){
-                        for (int d: differ_run){
+                if (c2 == '1')
+                { // run
+                    if (differ_run.size() != 0)
+                    {
+                        for (int d : differ_run)
+                        {
                             flip_bit(last_col_vector, d);
-                            dec_ess_color.fs<<last_col_vector<<endl;
+                            dec_ess_color.fs << last_col_vector << endl;
                         }
+                        differ_run.clear();
                     }
                     int q = read_number_encoded_in_unary_one(str_map, b_it);
-                    assert(read_one_bit(str_map, b_it)=='0');
+                    assert(read_one_bit(str_map, b_it) == '0');
                     int rem = read_uint(str_map, b_it, lmaxrun);
-                    int skip = q*max_run + rem;
-                    while(skip){
-                        dec_ess_color.fs<<last_col_vector<<endl;
+                    int skip = q * max_run + rem;
+                    while (skip)
+                    {
+                        dec_ess_color.fs << last_col_vector << endl;
                         skip--;
                     }
-                }else{  //lc 10
+                }
+                else
+                { // lc 10
                     int differing_bit = read_uint(str_map, b_it, lc);
                     differ_run.push_back(differing_bit);
                 }
             }
         }
-        
-        
+    }
 
-        //decompress local hash table : bug is in local hash table
-
-
-		
-		//stringstream ss_cc_map;
-		
-		// rrr_vector<256> cc_map = rrr_vector<256>();
-		// load_from_file(cc_map, index_file);
-		// cout<<cc_map<<endl;
-		// ss_cc_map<<cc_map;
-	}
+    // decompress local hash table : bug is in local hash table
+    // stringstream ss_cc_map;
+    //  rrr_vector<256> cc_map = rrr_vector<256>();
+    //  load_from_file(cc_map, index_file);
+    //  cout<<cc_map<<endl;
+    //  ss_cc_map<<cc_map;
 };
 
 
@@ -386,6 +395,7 @@ int main (int argc, char* argv[]){
     }
 
 	COLESS_Decompress cdec(num_kmers, M, C);
+    cdec.run();
 	return EXIT_SUCCESS;
 }
 
