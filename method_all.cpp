@@ -30,6 +30,21 @@ using namespace sdsl;
 
 #include <unordered_map>
 
+namespace TimeMeasure
+{
+	double t_begin,t_end; struct timeval timet;
+	void time_start(){
+		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+	}
+	void time_end(string msg){
+		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
+		cout<<msg<<" time = ";
+		printf("%.2fs\n",t_end - t_begin);
+	}
+} using namespace TimeMeasure;
+
+
+
 class OutputFile{
 	public:
 		string filename;
@@ -189,14 +204,15 @@ namespace BPHF{
 			data[i++] = std::stoull(bv_line, nullptr, 2) ;
 		}
 		int nthreads = 8;
-        double t_begin,t_end; struct timeval timet;
+        //double t_begin,t_end; struct timeval timet;
         printf("Construct a BooPHF with  %lli elements  \n",nelem);
-        gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+        //gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
         auto data_iterator = boomphf::range(static_cast<const uint64_t*>(data), static_cast<const uint64_t*>(data+nelem));
         double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
         bphf = new boomphf::mphf<uint64_t,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
-        gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
-        printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
+        
+		//gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
+        //printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
 	}
 
 	unsigned int lookup(string str){	
@@ -385,14 +401,14 @@ using namespace Huffman;
 
 class COLESS{
 public:
-	InputFile dedup_bitmatrix_file, spss_boundary_file, dup_bitmatrix_file, tmp_dir;
+	InputFile dedup_bitmatrix_file, spss_boundary_file, dup_bitmatrix_file;
 	LogFile logfile_main;
 	LogFile debug1;
 	LogFile debug2;
 	long num_kmers;
 	int M;
 	int C;
-	const int max_run = 16;
+	int max_run = 16;
 	vector<uint64_t> positions;
 	HuffCodeMap huff_code_map;
 	uint64_t CATEGORY_RUN=(uint64_t) 3;
@@ -404,10 +420,11 @@ public:
 	int* per_simplitig_l;
 	vector<char> spss_boundary; 
 
-	COLESS(long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname){
+	COLESS(long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname, int max_run){
 		dedup_bitmatrix_file.init(dedup_bitmatrix_fname);
 		spss_boundary_file.init(spss_boundary_fname);
 		dup_bitmatrix_file.init(dup_bitmatrix_fname);
+		this->max_run = max_run;
 		this->num_kmers = num_kmers;
 		this->M = M;
 		this->C = C;
@@ -612,29 +629,27 @@ public:
 
 		double t_begin,t_end; struct timeval timet;
 		printf("Construct a MPHF with  %lli elements  \n",M);
-		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+
+		time_start();
 		create_table(dedup_bitmatrix_file.filename, M );
-		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-		double elapsed = t_end - t_begin;
-		printf("CMPH constructed perfect hash for %llu keys in %.2fs\n", M,elapsed);
+		time_end("CMPH constructed perfect hash for "+string(M)+"keys.");
+
 
 		//if(!skip_pass){
-			gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+			time_start();
 			OutputFile cmp_keys("cmp_keys");  // get frequency count
 			for (uint64_t i=0; i < num_kmers; i+=1){
 				string bv_line;
 				getline (dup_bitmatrix_file.fs,bv_line);
 				cmp_keys.fs<<lookup(bv_line)<<endl;
 			}
-			gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-			printf("CMPH lookup for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
+			time_end("CMPH lookup for "+string(num_kmers)+"keys.");
+
 		//}
 
-		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+		time_start();
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
-		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);
-		printf("Sorting and getting frequencies for %llu keys in %.2fs\n", num_kmers, M,t_end - t_begin);
-
+		time_end("Sorting and getting freq for "+string(num_kmers)+"keys.");
 		//
 		InputFile infile_freq("frqeuency_sorted");
 		string line;
@@ -648,10 +663,14 @@ public:
 			ss >> a; 
 			frequencies[i++]= a;
 		}		
+
+		time_start();
 		INode* root = BuildTree(frequencies, M);
         GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
 		delete frequencies;
 		delete root;
+		time_end("Build huffman tree.");
+
 	}
 
 	void method1_pass1(bool skip_pass = false){ //decide whether to use local hash table, can skip
@@ -995,10 +1014,11 @@ int main (int argc, char* argv[]){
     string dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname;
 	//string tmp_dir;
     int M, C;
+	int max_run = 16;
 	long num_kmers=0;
     for (auto i = args.begin(); i != args.end(); ++i) {
         if (*i == "-h" || *i == "--help") {
-            cout << "Syntax: tool -i <DE-DUP-bitmatrix> -d <dup-bitmatrix> -c <num-colors> -m <M> -k <num-kmers> -s <spss-bound> -t <tmp-dir>" << endl;
+            cout << "Syntax: tool -i <DE-DUP-bitmatrix> -d <dup-bitmatrix> -c <num-colors> -m <M> -k <num-kmers> -s <spss-bound> -x <max-run>" << endl;
             return 0;
         } else if (*i == "-i") {
             dedup_bitmatrix_fname = *++i;
@@ -1012,13 +1032,15 @@ int main (int argc, char* argv[]){
             num_kmers = std::stol(*++i);
         }else if (*i == "-s") {
             spss_boundary_fname = *++i;
+		}else if (*i == "-x") {
+            max_run = std::stoi(*++i);
 		}
 		// else if (*i == "-t") {
         //     tmp_dir  = *++i;
 		// }
     }
 
-	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname);
+	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname, max_run);
 	
 	coless.method1_pass0();
 	coless.method1_pass1();
