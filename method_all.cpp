@@ -864,16 +864,16 @@ public:
 				}else{ //CATEGORY=NOT_RUN
 					//case_nonrun += 1;
 					if(skip!=0){ 	//not skipped, run break, write lm
-						// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-						// write_unary_one_at_loc(positions, (uint64_t) skip, b_it);
+						write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+						write_unary_one_at_loc(positions, (uint64_t) skip, b_it);
 
 						int q = floor(skip/max_run);
 						int rem = skip % max_run;
 						assert(skip == q*max_run + rem); //skip = q*max_run + rem
-						// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-						// write_unary_zero_at_loc(positions, (uint64_t) q, b_it);
-						// write_one(positions, b_it);
-						// write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
+						write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+						write_unary_one_at_loc(positions, (uint64_t) q, b_it);
+						write_zero(positions, b_it);
+						write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
 					}
 					skip=0;
 
@@ -881,15 +881,16 @@ public:
 					if(hd*(lc + 1) < lm){ //CATEGORY=LC
 
 						//case_dlc += 1;
-						//write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
 						for (int i_bit=0; i_bit < lc; i_bit+=1){
 							if ((( prev_bv_hi >>  i_bit) & 1) != (( curr_bv_hi >>  i_bit) & 1)){ 
-								//write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+								write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
+								write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
 							}
 						}
 						for (int i_bit=0; i_bit < lc; i_bit+=1){
 							if ((( prev_bv_lo >>  i_bit) & 1) != (( curr_bv_lo >>  i_bit) & 1)){
-								//write_number_at_loc(positions, i_bit, lc, b_it);	//i_bit is the different bit loc
+								write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
+								write_number_at_loc(positions, i_bit, lc, b_it);	//i_bit is the different bit loc
 							}
 						}
 					}else{ //CATEGORY=LM
