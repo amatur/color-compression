@@ -1,4 +1,4 @@
-//version: jan 27, 2023, 10:40
+//version: jan 28, FIXED MINI!
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>
