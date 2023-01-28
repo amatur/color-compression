@@ -278,8 +278,7 @@ public:
 
     void run()
     {
-        string last_col_vector = "";
-
+       
         if (1 == 0)
         {
             rrr_vector<256> rrr_map;
@@ -306,14 +305,15 @@ public:
         {
             string col_vector = read_color_vector(str_map, b_it);
             //cout << col_vector << endl;
-            global_class_table[i] = col_vector;
-            last_col_vector = col_vector;
+            global_table[i] = col_vector;
         }
 
         b_it = 0;
         // decompress bb_main: only logm
 
         vector<int> differ_run;
+
+        string last_col_vector = "";
         while (b_it < str_map.length())
         {
             char c = read_one_bit(str_map, b_it);
@@ -327,10 +327,10 @@ public:
                         dec_ess_color.fs << last_col_vector << endl;
                     }
                     differ_run.clear();
-                }
+                }         
                 uint64_t col_class = read_uint(str_map, b_it, lm);
-                char *color_vector = global_table[col_class].c_str();
-                dec_ess_color.fs << color_vector << endl;
+                last_col_vector = global_table[col_class];
+                dec_ess_color.fs << last_col_vector << endl;
             }
             if (c == '1')
             {
