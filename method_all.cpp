@@ -548,6 +548,7 @@ public:
 		
 		//bit_vector bv = bit_vector(bv_size, 0);
 		bit_vector bv(bv_size, 0);
+		uint64_t lastp  =0;
 		for (uint64_t p: positions){
 			bv[p] = 1;
 		}
