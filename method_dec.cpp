@@ -191,14 +191,19 @@ public:
     int max_run = 16;
     int lmaxrun = 4;
     char** global_table;
+    int C;
+    int M;
+    int lm, lc;
     OutputFile dec_ess_color("dec_ess_color");
-    string last_col_vector = "";
 
     COLESS_Decompress(long num_kmers, int M, int C, string sdsl_file = "")
     {
-        int lm = ceil(log2(M));
-        int lc = ceil(log2(C));
-        global_class_table = new char *[M];
+        this->C = C;
+        this->M = M;
+        this->sdsl_file = sdsl_file;
+        lm = ceil(log2(M));
+        lc = ceil(log2(C));
+        global_table = new char *[M];
     }
 
     uint64_t convert_binary_string_to_uint(string &str, int start, int end, int block_sz2)
@@ -273,6 +278,8 @@ public:
 
     void run()
     {
+        string last_col_vector = "";
+
         if (1 == 0)
         {
             rrr_vector<256> rrr_map;
@@ -298,7 +305,7 @@ public:
         for (int i = 0; i < M; i++)
         {
             string col_vector = read_color_vector(str_map, b_it);
-            cout << col_vector << endl;
+            //cout << col_vector << endl;
             global_class_table[i] = col_vector;
             last_col_vector = col_vector;
         }
