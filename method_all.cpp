@@ -405,6 +405,7 @@ public:
 	LogFile logfile_main;
 	LogFile debug1;
 	LogFile debug2;
+	OutputFile all_ls;
 	long num_kmers;
 	int M;
 	int C;
@@ -433,6 +434,8 @@ public:
 		logfile_main.init("log_coless");
 		debug1.init("debug1");
 		debug2.init("debug2");
+
+		all_ls.init("all_ls");
 
 	}
 
@@ -709,13 +712,14 @@ public:
 		uint64_t prev_bv_hi = 0;
 		uint64_t prev_bv_lo = 0;
 
-		OutputFile all_ls("all_ls");
+		
 		InputFile cmp_keys("cmp_keys");
 
 
 		int simplitig_it = 0;
 		//pass 1: collect if local or not 
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
+			
 			
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
@@ -816,9 +820,9 @@ public:
 				
 
 
-
-				all_ls.fs << l <<" "<<ll<<" "<<l_nrun<<" "<<ll_nrun<<endl;  
-				all_ls.fs << "P "<<ll*case_lm<<" "<<lm*case_lm<<" "<<sum_length_huff<<" "<<lm + sum_length_huff_uniq<<" "<<lm * (1+l)<<endl;
+				//all_ls.fs << l <<" "<<ll<<endl;  
+				//all_ls.fs << l <<" "<<ll<<" "<<l_nrun<<" "<<ll_nrun<<endl;  
+				//all_ls.fs << "P "<<ll*case_lm<<" "<<lm*case_lm<<" "<<sum_length_huff<<" "<<lm + sum_length_huff_uniq<<" "<<lm * (1+l)<<endl;
 				use_local_hash = ( (ll - lm ) * case_lm + lm * (1+l)  ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
 				use_local_hash_nonrun = ( (ll_nrun - lm ) * case_nonrun + lm * (1+l_nrun) ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
 				use_local_hash_huff =  (ll*case_lm - sum_length_huff + lm + sum_length_huff_uniq) ;
@@ -869,7 +873,7 @@ public:
 		Hashtable local_ht;
 		int lmaxrun = ceil(log2(max_run));
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
-
+			all_ls<<l<<endl;
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
@@ -952,7 +956,12 @@ public:
 						//write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 						assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 
-						write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
+						uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
+						if(ll==0)
+						{
+							assert(localid==0);
+						}
+						write_number_at_loc(positions, localid, ll, b_it);
 						//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 					}	
 				}
@@ -968,7 +977,13 @@ public:
 				
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 
-				write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
+				uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
+				if(ll==0)
+				{
+					assert(localid==0);
+				}
+				write_number_at_loc(positions, localid, ll, b_it);
+				
 				//write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 				//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 				assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
