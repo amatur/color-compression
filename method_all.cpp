@@ -890,6 +890,9 @@ public:
 						write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
 						write_unary_one_at_loc(positions, (uint64_t) q, b_it);
 						write_zero(positions, b_it);
+
+
+						
 						write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
 						//my method
 						//100001
