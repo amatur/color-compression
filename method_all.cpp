@@ -709,10 +709,10 @@ public:
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
-			curr_bv_hi = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
-			curr_bv_lo = 0;
-			if(C > 63){
-				curr_bv_lo = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
+			curr_bv_lo = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
+			curr_bv_hi = 0;
+			if(C >= 64){
+				curr_bv_hi = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
 			} 
 
 			//per kmer task
@@ -865,10 +865,10 @@ public:
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
 
-			curr_bv_hi = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
-			curr_bv_lo = 0;
-			if(C > 63){
-				curr_bv_lo = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
+			curr_bv_lo = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
+			curr_bv_hi = 0;
+			if(C > 64-1){
+				curr_bv_hi = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
 			} 
 
 			//unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
@@ -915,18 +915,22 @@ public:
 					if(hd*(lc + 1) < lm){ //CATEGORY=LC
 
 						//case_dlc += 1;
-						for (int i_bit=0; i_bit < C; i_bit+=1){
-							if ((( prev_bv_hi >>  i_bit) & 1) != (( curr_bv_hi >>  i_bit) & 1)){ 
-								write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
-								write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+						
+							for (int i_bit=0; i_bit < 64 && i_bit < C; i_bit+=1){
+								if ((( prev_bv_lo >>  i_bit) & 1) != (( curr_bv_lo >>  i_bit) & 1)){ 
+									write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
+									write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+								}
 							}
-						}
-						for (int i_bit=0; i_bit < C; i_bit+=1){
-							if ((( prev_bv_lo >>  i_bit) & 1) != (( curr_bv_lo >>  i_bit) & 1)){
-								write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
-								write_number_at_loc(positions, i_bit, lc, b_it);	//i_bit is the different bit loc
+							for (int i_bit=64; i_bit < C; i_bit+=1){
+								int actual_i_bit = i_bit-64;
+								if ((( prev_bv_hi >>  actual_i_bit) & 1) != (( curr_bv_hi >>  actual_i_bit) & 1)){
+									write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
+									write_number_at_loc(positions, i_bit, lc, b_it);	//i_bit is the different bit loc
+								}
 							}
-						}
+						
+						
 					}else{ //CATEGORY=LM
 						//case_lm += 1;
 						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
