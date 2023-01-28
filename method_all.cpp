@@ -873,7 +873,9 @@ public:
 		Hashtable local_ht;
 		int lmaxrun = ceil(log2(max_run));
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
+			l=per_simplitig_l[simplitig_it];
 			all_ls.fs<<l<<endl;
+
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
