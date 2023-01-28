@@ -291,8 +291,11 @@ public:
     }
 
     void flip_bit(string& s, int pos){
-        if(s[C-pos-1] == '1')   s[C-pos-1]='0';
-        if(s[C-pos-1] == '0')   s[C-pos-1]='1';
+        if(s[C-pos-1] == '1')  {
+            s[C-pos-1]='0';
+        } else{
+            s[C-pos-1]='1';
+        }
     }
     uint64_t read_uint(string& str, uint64_t& b_it, int block_sz){ //convert_binary_string_to_uint
         uint64_t res = 0;
