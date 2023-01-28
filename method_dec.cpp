@@ -278,6 +278,7 @@ public:
 
     void run()
     {
+        OutputFile color_global("color_global");
        
         if (1 == 0)
         {
@@ -304,7 +305,7 @@ public:
         for (int i = 0; i < M; i++)
         {
             string col_vector = read_color_vector(str_map, b_it);
-            //cout << col_vector << endl;
+            color_global.fs << col_vector << endl;
             global_table[i] = col_vector;
         }
 
