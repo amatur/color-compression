@@ -843,7 +843,7 @@ public:
 		vector<uint64_t> positions;
 		uint64_t b_it = 0;
 		dup_bitmatrix_file.rewind();
-
+		OutputFile cases_smc("cases_smc");
 		uint64_t curr_bv_hi =  0;
 		uint64_t curr_bv_lo = 0;
 		uint64_t prev_bv_hi = 0;
@@ -885,6 +885,7 @@ public:
 				if(hd==0){	//CATEGORY=RUN
 					skip+=1;	
 					//case_run+=1;	
+					cases_smc.fs<<"r"<<endl;
 				}else{ //CATEGORY=NOT_RUN
 					//case_nonrun += 1;
 					if(skip!=0){ 	//not skipped, run break, write lm
@@ -913,6 +914,7 @@ public:
 
 					//if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size()){ //CATEGORY=LC
 					if(hd*(lc + 1) < lm){ //CATEGORY=LC
+						cases_smc.fs<<"d"<<endl;
 
 						//case_dlc += 1;
 						
@@ -932,6 +934,8 @@ public:
 						
 						
 					}else{ //CATEGORY=LM
+						cases_smc.fs<<"l"<<endl;
+
 						//case_lm += 1;
 						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
@@ -942,6 +946,8 @@ public:
 					}	
 				}
 			}else{	//start of simplitig, so CAT=LM
+				cases_smc.fs<<"l"<<endl;
+
 				l = per_simplitig_l[simplitig_it];
 				ll = ceil(log2(l));
 				lm_or_ll = ll;
