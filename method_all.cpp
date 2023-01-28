@@ -851,6 +851,7 @@ public:
 		int ll = ceil(log2(l));
 		int lm_or_ll = ll;
 		Hashtable local_ht;
+		int lmaxrun = ceil(log2(max_run));
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
 			
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
@@ -871,7 +872,7 @@ public:
 				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
 				int hd_lo = hammingDistance(prev_bv_lo, curr_bv_lo);
 				int hd= hd_hi+hd_lo;
-				int lmaxrun = ceil(log2(max_run));
+				
 				
 				if(hd==0){	//CATEGORY=RUN
 					skip+=1;	
