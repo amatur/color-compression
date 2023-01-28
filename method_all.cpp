@@ -895,7 +895,7 @@ public:
 					}else{ //CATEGORY=LM
 						//case_lm += 1;
 						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-						//write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 						assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 
 						//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
