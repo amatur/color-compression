@@ -341,6 +341,7 @@ public:
                 flip_bit(last_col_vector, d);
             }
             dec_ess_color.fs << last_col_vector << endl;
+            written_kmer+=1;
             differ_run.clear();
         }         
     }
@@ -394,6 +395,7 @@ public:
         getline(file_bb_main.fs, str_map);
         file_bb_main.fs.close();
 
+        uint64_t written_kmer = 0;
         while (b_it < str_map.length())
         {
             char c = read_one_bit(str_map, b_it);
@@ -403,6 +405,7 @@ public:
                 uint64_t col_class = read_uint(str_map, b_it, lm);
                 last_col_vector = global_table[col_class];
                 dec_ess_color.fs << last_col_vector << endl;
+                written_kmer+=1;
             }
             if (c == '1')
             {
@@ -418,6 +421,7 @@ public:
                     while (skip)
                     {
                         dec_ess_color.fs << last_col_vector << endl;
+                        written_kmer+=1;
                         skip--;
                     }
                 }
