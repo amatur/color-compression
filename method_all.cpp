@@ -471,8 +471,9 @@ public:
 			num /= 2;
 			
 		}
-		for(uint64_t q: qpositions){
-			positions.push_back(q);
+		while(!qpositions.empty()){
+			positions.push_back(qpositions.top());
+			qpositions.pop();
 		}
 
 		debug1.fs<<-j<<" "<<block_sz<<endl;
