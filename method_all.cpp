@@ -591,7 +591,7 @@ public:
 		log_num_color_in_class.init("log_num_color_in_class"); 
 		global_table = new string[M];
 		for(int x=0; x<M; x++){
-			if(b_it == 251955 || b_it == 251956 || b_it == 251954 ){
+			if(b_it > 251950 || b_it == 251956 || b_it == 251954 ){
 				cout<<"break"<<endl;
 			}
 			string bv_line;
