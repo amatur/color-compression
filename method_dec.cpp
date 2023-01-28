@@ -358,6 +358,11 @@ public:
         vector<int> differ_run;
 
         string last_col_vector = "";
+
+        InputFile file_bb_main("bb_main");
+        getline(file_bb_main.fs, str_map);
+        file_bb_main.fs.close();
+
         while (b_it < str_map.length())
         {
             char c = read_one_bit(str_map, b_it);
