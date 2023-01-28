@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <random>
 #include <vector>
-#include <queue>
+#include <stack>
 
 #include <deque>
 
@@ -460,7 +460,7 @@ public:
 	void write_number_at_loc_advanced_by_block_sz(vector<uint64_t> & positions, uint64_t num, uint64_t loc_advanced_by_block_sz, uint64_t block_sz){ //requires loc_advanced_by_block_sz += block_size; 
 		uint64_t j=0;
 		uint64_t begin = loc_advanced_by_block_sz;
-		queue<uint64_t> qpositions;
+		stack<uint64_t> qpositions;
 		while(num!=0)
 		{
 			if(num%2 == 1){
