@@ -913,7 +913,7 @@ public:
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
 				//write_number_at_loc(positions, local_ht.put_and_getid(curr_kmer_cc_id), ll, b_it);
 				write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
-				
+
 				assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 				//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 
@@ -975,7 +975,7 @@ int main (int argc, char* argv[]){
 	
 	coless.method1_pass0();
 	coless.method1_pass1();
-	// coless.method1_pass2();
+	coless.method1_pass2();
 
 	//COLESS_Decompress cdec(num_kmers, M, C);
 
