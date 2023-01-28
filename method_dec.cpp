@@ -24,6 +24,7 @@
 using namespace std;
 using namespace sdsl;
 
+uint64_t written_kmer = 0;
 #include <unordered_map>
 
 namespace TimeMeasure
@@ -395,9 +396,11 @@ public:
         getline(file_bb_main.fs, str_map);
         file_bb_main.fs.close();
 
-        uint64_t written_kmer = 0;
         while (b_it < str_map.length())
         {
+            if(written_kmer>=22483){
+                cout<<written_kmer<<endl;
+            }
             char c = read_one_bit(str_map, b_it);
             if (c == '0')
             {
