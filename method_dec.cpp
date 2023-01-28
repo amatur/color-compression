@@ -26,7 +26,18 @@ using namespace sdsl;
 
 #include <unordered_map>
 
-
+namespace TimeMeasure
+{
+	double t_begin,t_end; struct timeval timet;
+	void time_start(){
+		gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+	}
+	void time_end(string msg){
+		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
+		cout<<msg<<" time = ";
+		printf("%.2fs\n",t_end - t_begin);
+	}
+} using namespace TimeMeasure;
 
 namespace CMPH{
 	cmph_t *hash_cmph = NULL;
@@ -360,6 +371,8 @@ public:
         file_bb_map.fs.close();
 
         uint64_t b_it = 0;
+
+
         for (int i = 0; i < M; i++)
         {
             string col_vector = read_color_vector(str_map, b_it);
@@ -367,7 +380,11 @@ public:
             global_table[i] = col_vector;
         }
         color_global.fs.close();
+
+        time_start();
         create_table(color_global.filename, M);
+        time_end("CMPH table create for "+to_string(M)+" keys.");
+
 
         b_it = 0;
         vector<int> differ_run;
@@ -410,7 +427,9 @@ public:
                     differ_run.push_back(differing_bit);
                 }
             }
-        }
+        } 
+        flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
+
     }
 
     // decompress local hash table : bug is in local hash table

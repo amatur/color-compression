@@ -622,35 +622,27 @@ public:
 	}
 
 
-	void method1_pass0(bool skip_pass = false){ //load_huffman_table();//int M -> variable string   //writehuffman[in
-		// void get_freq_count(){ // scan through all the color vectors to get freq count, global and local
-		// // table of size M 
-		// }
-
-		double t_begin,t_end; struct timeval timet;
-		printf("Construct a MPHF with  %lli elements  \n",M);
-
+	void method1_pass0(){ //load_huffman_table();//int M -> variable string   //writehuffman[in
+				
 		time_start();
 		create_table(dedup_bitmatrix_file.filename, M );
-		time_end("CMPH constructed perfect hash for "+to_string(M)+"keys.");
+		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
 
-
-		//if(!skip_pass){
-			time_start();
-			OutputFile cmp_keys("cmp_keys");  // get frequency count
-			for (uint64_t i=0; i < num_kmers; i+=1){
-				string bv_line;
-				getline (dup_bitmatrix_file.fs,bv_line);
-				cmp_keys.fs<<lookup(bv_line)<<endl;
-			}
-			time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
-
-		//}
+		time_start();
+		OutputFile cmp_keys("cmp_keys");  // get frequency count
+		for (uint64_t i=0; i < num_kmers; i+=1){
+			string bv_line;
+			getline (dup_bitmatrix_file.fs,bv_line);
+			cmp_keys.fs<<lookup(bv_line)<<endl;
+		}
+		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
 
 		time_start();
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
-		time_end("Sorting and getting freq for "+to_string(num_kmers)+"keys.");
-		//
+		time_end("Sorting and getting freq for "+to_string(num_kmers)+" keys.");
+		
+
+		time_start();
 		InputFile infile_freq("frqeuency_sorted");
 		string line;
 		// Build frequency table
@@ -663,13 +655,15 @@ public:
 			ss >> a; 
 			frequencies[i++]= a;
 		}		
+		time_end("Read freq for "+to_string(M)+" values.");
+
 
 		time_start();
 		INode* root = BuildTree(frequencies, M);
         GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
 		delete frequencies;
 		delete root;
-		time_end("Build huffman tree.");
+		time_end("Build huffman tree on" +to_string(M)+" values.");
 
 	}
 
@@ -925,7 +919,7 @@ public:
 					
 
 					//if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size()){ //CATEGORY=LC
-					if(1==0){ //CATEGORY=LC
+					if(hd*(lc + 1) < lm){ //CATEGORY=LC
 						cases_smc.fs<<"d"<<endl;
 
 						//case_dlc += 1;
@@ -1043,8 +1037,14 @@ int main (int argc, char* argv[]){
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname, max_run);
 	
 	coless.method1_pass0();
+	time_start();
 	coless.method1_pass1();
+	time_end("pass1.");
+
+	time_start();
 	coless.method1_pass2();
+	time_end("pass2.");
+
 
 	//COLESS_Decompress cdec(num_kmers, M, C);
 
