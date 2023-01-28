@@ -632,7 +632,7 @@ public:
 
 		time_start();
 		create_table(dedup_bitmatrix_file.filename, M );
-		time_end("CMPH constructed perfect hash for "+string(M)+"keys.");
+		time_end("CMPH constructed perfect hash for "+to_string(M)+"keys.");
 
 
 		//if(!skip_pass){
@@ -643,13 +643,13 @@ public:
 				getline (dup_bitmatrix_file.fs,bv_line);
 				cmp_keys.fs<<lookup(bv_line)<<endl;
 			}
-			time_end("CMPH lookup for "+string(num_kmers)+"keys.");
+			time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
 
 		//}
 
 		time_start();
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
-		time_end("Sorting and getting freq for "+string(num_kmers)+"keys.");
+		time_end("Sorting and getting freq for "+to_string(num_kmers)+"keys.");
 		//
 		InputFile infile_freq("frqeuency_sorted");
 		string line;
