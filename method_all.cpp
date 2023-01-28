@@ -936,8 +936,11 @@ public:
 
 				assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 				//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
+			}
 
-
+			if(spss_boundary[(i+1)%num_kmers]=='1'){	// end k-mer of simplitig
+				local_ht.clear();
+				simplitig_it+=1;
 				if(skip!=0){ 	//not skipped, run break, write lm
 					int q, rem;
 					q = floor(skip/max_run);
@@ -952,12 +955,6 @@ public:
 					//100001
 				}
 				skip=0;
-			}
-
-			if(spss_boundary[(i+1)%num_kmers]=='1'){	// end k-mer of simplitig
-				local_ht.clear();
-				skip=0;
-				simplitig_it+=1;
 			}
 
 			prev_bv_hi=curr_bv_hi;
