@@ -7,6 +7,10 @@
 #include <sys/types.h>
 #include <random>
 #include <vector>
+#include <queue>
+
+#include <deque>
+
 #include <fstream>
 #include <algorithm>
 #include <sdsl/bit_vectors.hpp>
@@ -421,6 +425,12 @@ public:
 		mphf_destroy();
 	}
 
+	// template <typename T> void dump_to_disk(T& vec, uint64_t last_written_pos, fstream fs)
+	// {
+		
+	// 	fs << 
+	// }
+
 	int hammingDistance (uint64_t x, uint64_t y) {
 		uint64_t res = x ^ y;
 		return __builtin_popcountll (res) ;
@@ -450,15 +460,19 @@ public:
 	void write_number_at_loc_advanced_by_block_sz(vector<uint64_t> & positions, uint64_t num, uint64_t loc_advanced_by_block_sz, uint64_t block_sz){ //requires loc_advanced_by_block_sz += block_size; 
 		uint64_t j=0;
 		uint64_t begin = loc_advanced_by_block_sz;
-
+		queue<uint64_t> qpositions;
 		while(num!=0)
 		{
 			if(num%2 == 1){
-				positions.push_back(loc_advanced_by_block_sz-1-j); //b[loc_advanced_by_block_sz-1+j] = num%2;
+				//positions.push_back(loc_advanced_by_block_sz-1-j); //b[loc_advanced_by_block_sz-1+j] = num%2;
+				qpositions.push(loc_advanced_by_block_sz-1-j);
 			}
 			j++;
 			num /= 2;
 			
+		}
+		for(uint64_t q: qpositions){
+			positions.push_back(q);
 		}
 
 		debug1.fs<<-j<<" "<<block_sz<<endl;
@@ -528,7 +542,7 @@ public:
 
 	void store_as_binarystring(vector<uint64_t>& positions, uint64_t bv_size, string filename){
 		OutputFile binarystring_file(filename);
-		sort(positions.begin(), positions.end());
+		//sort(positions.begin(), positions.end());
 		uint64_t bvi = 0;
 		for (uint64_t k = 0; k<bv_size; k++){
 			if(bvi < positions.size()){
@@ -870,10 +884,13 @@ public:
 						int q = floor(skip/max_run);
 						int rem = skip % max_run;
 						assert(skip == q*max_run + rem); //skip = q*max_run + rem
+						//paul method
 						write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
 						write_unary_one_at_loc(positions, (uint64_t) q, b_it);
 						write_zero(positions, b_it);
 						write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
+						//my method
+						//100001
 					}
 					skip=0;
 
