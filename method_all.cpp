@@ -400,7 +400,7 @@ public:
 	uint64_t CATEGORY_COLVEC=(uint64_t) 2;
 	int lm = 0;
 	int lc = 0;
-
+	string* global_table;
 	int* per_simplitig_l;
 	vector<char> spss_boundary; 
 
@@ -568,11 +568,14 @@ public:
 
 		LogFile log_num_color_in_class;
 		log_num_color_in_class.init("log_num_color_in_class"); 
+		global_table = new string[M];
 		for(int x=0; x<M; x++){
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
 			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1) 
 			assert(idx < M);
+			global_table[idx] = bv_line;
+			assert(x==idx);
 
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ; 
 			cout<<array_hi[idx]<<endl;
@@ -587,6 +590,8 @@ public:
 
 			int num_ones_in_color = __builtin_popcountll(array_hi[idx]) + __builtin_popcountll(array_lo[idx]) ;
 			log_num_color_in_class.fs << num_ones_in_color <<endl;
+
+
 		}
 		cout << "Expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		dedup_bitmatrix_file.fs.close();
@@ -837,7 +842,7 @@ public:
 	void method1_pass2(){
 		vector<uint64_t> positions;
 		uint64_t b_it = 0;
-		dup_bitmatrix_file.rewind();
+		//dup_bitmatrix_file.rewind();
 
 		uint64_t curr_bv_hi =  0;
 		uint64_t curr_bv_lo = 0;
@@ -857,6 +862,7 @@ public:
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
+
 			curr_bv_hi = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
 			curr_bv_lo = 0;
 			if(C > 63){
@@ -898,6 +904,7 @@ public:
 						//100001
 					}
 					skip=0;
+					assert(hd!=1);
 
 					//if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size()){ //CATEGORY=LC
 					if(hd*(lc + 1) < lm){ //CATEGORY=LC
