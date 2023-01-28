@@ -188,6 +188,12 @@ using namespace Huffman;
 
 class COLESS_Decompress{
 public:
+    int max_run = 16;
+    int lmaxrun = 4;
+    char** global_class_table;
+
+
+
 	uint64_t convert_binary_string_to_uint(string& str, int start, int end, int block_sz2){ //convert_binary_string_to_uint
 		uint64_t res = 0;
 		int block_sz = end - start + 1;
@@ -202,6 +208,36 @@ public:
     	return res;
 	}
 
+    char read_one_bit(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
+    	return str[b_it++];
+	}
+
+    int read_number_encoded_in_unary_zero(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
+    	int length = 0;
+        while(str[b_it++]=='0'){
+            length+=1;
+        }
+        return length;
+	}
+    int read_number_encoded_in_unary_one(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
+    	int length = 0;
+        while(str[b_it++]=='1'){
+            length+=1;
+        }
+        return length;
+	}
+
+    
+    string read_color_vector(string& str, uint64_t& b_it){
+        string col_vec = str.substr(b_it, C);
+        b_it+=C;
+        return col_vec;
+    }
+
+    void flip_bit(string& s, int pos){
+        if(s[pos] == '1')   s[pos]='0';
+        if(s[pos] == '0')   s[pos]='1';
+    }
 	uint64_t read_uint(string& str, uint64_t& b_it, int block_sz){ //convert_binary_string_to_uint
 		uint64_t res = 0;
 		//int block_sz = end - start + 1;
@@ -228,7 +264,10 @@ public:
 	COLESS_Decompress(long num_kmers, int M, int C,  string sdsl_file=""){
 		int lm = ceil(log2(M));
 		int lc = ceil(log2(C));
+        OutputFile dec_ess_color("dec_ess_color");
+        string last_col_vector = "";
 
+        global_class_table = new char*[M];
 		if(1==0){
 
     	    rrr_vector<256> rrr_map;
@@ -253,11 +292,58 @@ public:
 
 		uint64_t b_it =  0;
 		for(int i = 0; i < M; i++){
-			uint64_t colclass = read_uint(str_map, b_it, C);
-			cout<<colclass<<endl;
+			string col_vector = read_color_vector(str_map, b_it);
+			cout<<col_vector<<endl;
+            global_class_table[i] = col_vector.c_str();
+            last_col_vector = col_vector;
 		}
 
-        //decompress bb_main
+        b_it =  0;
+        //decompress bb_main: only logm
+   
+        vector<int> differ_run;
+        while(b_it<str_map.length()){
+            char c = read_one_bit(str_map, b_it);
+            if (c=='0'){
+                if(differ_run.size()){
+                    for (int d: differ_run){
+                        for (int d: differ_run){
+                            flip_bit(last_col_vector, d);
+                            dec_ess_color.fs<<last_col_vector<<endl;
+                        }
+                    }
+                }
+                uint64_t col_class = read_uint(str_map, b_it, lm );
+                char* color_vector = global_table[col_class].c_str();
+                dec_ess_color.fs<<color_vector<<endl;
+               
+            }
+            if(c=='1'){
+                char c2 = read_one_bit(str_map, b_it);
+                if(c2=='1'){ //run
+                    if(differ_run.size()!=0){
+                        for (int d: differ_run){
+                            flip_bit(last_col_vector, d);
+                            dec_ess_color.fs<<last_col_vector<<endl;
+                        }
+                    }
+                    int q = read_number_encoded_in_unary_one(str_map, b_it);
+                    assert(read_one_bit(str_map, b_it)=='0');
+                    int rem = read_uint(str_map, b_it, lmaxrun);
+                    int skip = q*max_run + rem;
+                    while(skip){
+                        dec_ess_color.fs<<last_col_vector<<endl;
+                        skip--;
+                    }
+                }else{  //lc 10
+                    int differing_bit = read_uint(str_map, b_it, lc);
+                    differ_run.push_back(differing_bit);
+                }
+            }
+        }
+        
+        
+
         //decompress local hash table : bug is in local hash table
 
 
