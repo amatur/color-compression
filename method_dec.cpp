@@ -1,4 +1,4 @@
-//version: jan 28, FIXED MINI!
+//version: jan 28, FIXED SMALL TEST!
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -320,6 +320,18 @@ public:
         return res;
     }
 
+    void flush_skip_and_del(vector<int> &differ_run, string& last_col_vector, OutputFile& dec_ess_color){
+        if (differ_run.size())
+        {
+            for (int d : differ_run)
+            {
+                flip_bit(last_col_vector, d);
+            }
+            dec_ess_color.fs << last_col_vector << endl;
+            differ_run.clear();
+        }         
+    }
+
     void run()
     {
         OutputFile color_global("color_global");
@@ -356,10 +368,7 @@ public:
         create_table(color_global.filename, M);
 
         b_it = 0;
-        // decompress bb_main: only logm
-
         vector<int> differ_run;
-
         string last_col_vector = "";
 
         InputFile file_bb_main("bb_main");
@@ -371,17 +380,10 @@ public:
             char c = read_one_bit(str_map, b_it);
             if (c == '0')
             {
-                if (differ_run.size())
-                {
-                    for (int d : differ_run)
-                    {
-                        flip_bit(last_col_vector, d);
-                    }
-                    dec_ess_color.fs << last_col_vector << endl;
-                    differ_run.clear();
-                }         
+                flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
+
+
                 uint64_t col_class = read_uint(str_map, b_it, lm);
-                cout<<col_class<<" "<<"col_class"<<endl;
                 last_col_vector = global_table[col_class];
                 dec_ess_color.fs << last_col_vector << endl;
             }

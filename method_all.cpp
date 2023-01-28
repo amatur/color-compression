@@ -741,7 +741,7 @@ public:
 
 					sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 					local_col_classes_uniq_nonrun.insert(curr_kmer_cc_id);
-					if(hd*lc < lm){ //CAT=LC
+					if(hd*(1+lc) < lm){ //CAT=LC
 						case_dlc += 1;
 						
 						//cout<<"hd: "<<hd<<endl;
@@ -908,12 +908,9 @@ public:
 					}
 					skip=0;
 					
-					if(hd==1){
-						cout<<"HEyyyyyy"<<endl;
-					}
 
 					//if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size()){ //CATEGORY=LC
-					if(hd*(lc + 1) < lm){ //CATEGORY=LC
+					if(1==0){ //CATEGORY=LC
 						cases_smc.fs<<"d"<<endl;
 
 						//case_dlc += 1;
