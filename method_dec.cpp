@@ -190,11 +190,11 @@ class COLESS_Decompress{
 public:
     int max_run = 16;
     int lmaxrun = 4;
-    char** global_table;
+    string* global_table;
     int C;
     int M;
     int lm, lc;
-    OutputFile dec_ess_color("dec_ess_color");
+    OutputFile dec_ess_color;
 
     COLESS_Decompress(long num_kmers, int M, int C, string sdsl_file = "")
     {
@@ -203,7 +203,8 @@ public:
         this->sdsl_file = sdsl_file;
         lm = ceil(log2(M));
         lc = ceil(log2(C));
-        global_table = new char *[M];
+        global_table = new string[M];
+        dec_ess_color.init("dec_ess_color");
     }
 
     uint64_t convert_binary_string_to_uint(string &str, int start, int end, int block_sz2)
