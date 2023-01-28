@@ -576,9 +576,7 @@ public:
 			assert(idx < M);
 			global_table[idx] = bv_line;
 			assert(x==idx);
-
 			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ; 
-			cout<<array_hi[idx]<<endl;
 			write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
 
 			array_lo[idx]=0;
@@ -858,9 +856,7 @@ public:
 		Hashtable local_ht;
 		int lmaxrun = ceil(log2(max_run));
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
-			if(i==6){
-				cout<<6<<endl;	
-			}
+
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
