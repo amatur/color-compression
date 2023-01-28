@@ -842,7 +842,7 @@ public:
 	void method1_pass2(){
 		vector<uint64_t> positions;
 		uint64_t b_it = 0;
-		//dup_bitmatrix_file.rewind();
+		dup_bitmatrix_file.rewind();
 
 		uint64_t curr_bv_hi =  0;
 		uint64_t curr_bv_lo = 0;
