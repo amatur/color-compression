@@ -915,7 +915,7 @@ public:
 							write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
 							write_unary_one_at_loc(positions, (uint64_t) ceil(log2(skip)), b_it);
 							write_zero(positions, b_it);
-							write_number_at_loc(positions, (uint64_t) skip, (uint64_t) ceil(log2(skip), b_it);
+							write_number_at_loc(positions, (uint64_t) skip, (uint64_t) ceil(log2(skip)), b_it);
 						}
 
 					}
