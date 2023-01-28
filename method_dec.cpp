@@ -373,8 +373,8 @@ public:
                     for (int d : differ_run)
                     {
                         flip_bit(last_col_vector, d);
-                        dec_ess_color.fs << last_col_vector << endl;
                     }
+                    dec_ess_color.fs << last_col_vector << endl;
                     differ_run.clear();
                 }         
                 uint64_t col_class = read_uint(str_map, b_it, lm);
@@ -392,8 +392,8 @@ public:
                         for (int d : differ_run)
                         {
                             flip_bit(last_col_vector, d);
-                            dec_ess_color.fs << last_col_vector << endl;
                         }
+                        dec_ess_color.fs << last_col_vector << endl;
                         differ_run.clear();
                     }
                     int q = read_number_encoded_in_unary_one(str_map, b_it);
