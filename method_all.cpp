@@ -919,7 +919,7 @@ public:
 					
 
 					//if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size()){ //CATEGORY=LC
-					if(hd*(lc + 1) < lm){ //CATEGORY=LC
+					if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
 						cases_smc.fs<<"d"<<endl;
 
 						//case_dlc += 1;

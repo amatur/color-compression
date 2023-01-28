@@ -430,6 +430,8 @@ public:
                 }
                 else
                 { // lc 10
+                    flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
+
                     int differing_bit = read_uint(str_map, b_it, lc);
                     differ_run.push_back(differing_bit);
                 }
