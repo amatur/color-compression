@@ -937,7 +937,19 @@ public:
 				//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 
 
-
+				if(skip!=0){ 	//not skipped, run break, write lm
+					int q, rem;
+					q = floor(skip/max_run);
+					rem = skip % max_run;
+					assert(skip == q*max_run + rem); //skip = q*max_run + rem
+					//paul method
+					write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+					write_unary_one_at_loc(positions, (uint64_t) q, b_it);
+					write_zero(positions, b_it);
+					write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
+					//my method
+					//100001
+				}
 				skip=0;
 			}
 
