@@ -196,11 +196,10 @@ public:
     int lm, lc;
     OutputFile dec_ess_color;
 
-    COLESS_Decompress(long num_kmers, int M, int C, string sdsl_file = "")
+    COLESS_Decompress(long num_kmers, int M, int C)
     {
         this->C = C;
         this->M = M;
-        this->sdsl_file = sdsl_file;
         lm = ceil(log2(M));
         lc = ceil(log2(C));
         global_table = new string[M];
