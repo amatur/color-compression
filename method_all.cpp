@@ -859,7 +859,7 @@ public:
 		int lmaxrun = ceil(log2(max_run));
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
 			if(i==6){
-				
+				cout<<6<<endl;	
 			}
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
