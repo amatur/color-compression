@@ -906,7 +906,10 @@ public:
 						//100001
 					}
 					skip=0;
-					assert(hd!=1);
+					
+					if(hd==1){
+						cout<<"HEyyyyyy"<<endl;
+					}
 
 					//if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size()){ //CATEGORY=LC
 					if(hd*(lc + 1) < lm){ //CATEGORY=LC
