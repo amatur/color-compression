@@ -452,7 +452,7 @@ int main (int argc, char* argv[]){
 		// }
     }
 
-	COLESS_Decompress cdec(num_kmers, M, C);
+	COLESS_Decompress cdec(num_kmers, M, C, max_run);
     cdec.run();
 	return EXIT_SUCCESS;
 }
