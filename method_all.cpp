@@ -482,8 +482,8 @@ public:
 		uint64_t begin = loc_advanced_by_block_sz;
 		stack<uint64_t> qpositions;
 		if(num!=0){
-			assert(block_sz>0);
-			cout<<"must be non zero block size"<<endl;
+			if(block_sz==0)
+				cout<<"must be non zero block size"<<endl;
 		}
 		while(num!=0)
 		{
