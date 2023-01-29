@@ -139,7 +139,7 @@ class Hashtable {
 
 	void get_array(uint32_t * array){
 		array = new uint32_t[curr_id];
-		for( std::pair< std::uint32_t, std::uint32_t>& n : htmap ){
+		for( const std::pair< const std::uint32_t, std::uint32_t>& n : htmap ){
 			array[n.second] = n.first;
 		}
 	}
