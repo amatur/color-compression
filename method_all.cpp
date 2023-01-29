@@ -141,7 +141,7 @@ class Hashtable {
 		vector<uint32_t> array(curr_id, 0);
 		for (auto x : htmap){
 			array[x.second] =  x.first  ;
-			cout<<x.first<<"->"<<x.second<<endl;
+			//cout<<x.first<<"->"<<x.second<<endl;
 		}
 		return array;
 	}
