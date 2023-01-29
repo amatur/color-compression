@@ -250,15 +250,15 @@ namespace Huffman{
 
     vector<int> read_l_huff_codes(int l, string s, uint64_t& b_it, INode* root){
 		 vector<int> v ;
-        int loc  = 0;
+        //int loc  = 0;
         cout<<l<<":";
 		while(l){
-			u_int32_t decoded_col_class = HuffDecode(root, s, loc);
+			u_int32_t decoded_col_class = HuffDecode(root, s, b_it);
             v.push_back(decoded_col_class);
             cout<<decoded_col_class<<",";
 			l--;
 		}
-        b_it += loc;
+        //b_it += loc;
         cout<<endl;
         return v;
 	}
