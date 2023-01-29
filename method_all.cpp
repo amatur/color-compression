@@ -138,7 +138,7 @@ class Hashtable {
 	}
 
 	vector<uint32_t> get_array(){
-		vector<int> array(curr_id, 0);
+		vector<uint32_t> array(curr_id, 0);
 		for( const std::pair< const std::uint32_t, std::uint32_t>& n : htmap ){
 			array[n.first] =  n.second;
 		}
