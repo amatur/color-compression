@@ -796,12 +796,13 @@ public:
 				// decide what to do
 				int l = local_col_classes_uniq.size(); //case_lm
 
-				per_simplitig_l[simplitig_it] = l;
+				
 
 				int ll = ceil(log2(l)*1.0);
 				int l_nrun = local_col_classes_uniq_nonrun.size(); //case_lm
 				int ll_nrun = ceil(log2(l_nrun)*1.0);
 
+				per_simplitig_l[simplitig_it] = l_nrun;
 
 				case_nonrun = case_dlc + case_lm;
 				assert(sum_length_huff_uniq==0);
