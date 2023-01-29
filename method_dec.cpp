@@ -257,9 +257,11 @@ namespace Huffman{
 			l--;
 		}
         b_it += loc;
+        return v;
 	}
 }
 using namespace Huffman;
+HuffCodeMap huff_code_map;
 
 class COLESS_Decompress{
 public:
@@ -349,9 +351,9 @@ public:
 
 		time_start();
 		INode* root = BuildTree(frequencies, M);
-        // GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
-		// delete frequencies;
-		// delete root;
+        GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
+		delete frequencies;
+		delete root;
 		time_end("Build huffman tree on" +to_string(M)+" values.");
         return root;
     }
