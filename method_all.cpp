@@ -106,16 +106,15 @@ class InputFile{
 
 
 class Hashtable {
-    std::unordered_map<uint64_t, uint64_t> htmap; // m_to_l
-	
 
-public:
-	uint64_t curr_id = 0;
+	public:
+    std::unordered_map<uint32_t, uint32_t> htmap; // m_to_l
+	uint32_t curr_id = 0;
 	Hashtable(){
 		curr_id = 0;
 	}
 
-    uint64_t put_and_getid(uint64_t key) {
+    uint64_t put_and_getid(uint32_t key) {
 		if(htmap.count(key) > 0){ // present
 			return htmap[key];
 		}  else {	// absent
@@ -129,13 +128,20 @@ public:
     //         return htmap[key];
     // }
 
-	bool exists(int key){
+	bool exists(uint32_t key){
 		return htmap.count(key) > 0;
 	}
 
 	void clear(){
 		htmap.clear();
 		curr_id = 0;
+	}
+
+	void get_array(uint32_t * array){
+		array = new uint32_t[curr_id];
+		for(uint32_t key : htmap){
+			array[htmap[key]] = key;
+		}
 	}
 
 };
@@ -773,11 +779,15 @@ public:
 				
 				//write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
 				write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
-				for(int i = 0 ; i< local_hash_table.curr_id; i++){
-					uint32_t uniq_col_class_id = local_hash_table[i];
+
+				uint32_t* local_ht_arr;
+				local_hash_table.get_array(local_ht_arr);
+				for(uint32_t i = 0 ; i< local_hash_table.curr_id; i++){
+					uint32_t uniq_col_class_id = local_ht_arr[i];
 					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
 					write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
 				}
+				delete local_ht_arr;
 
 				all_ls.fs << l <<" "<<ll<<endl;  
 				use_local_hash_nonrun = ( (ll - lm ) * case_nonrun + lm * (1+l) ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
