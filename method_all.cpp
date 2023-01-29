@@ -325,33 +325,35 @@ namespace Huffman{
 		}
 	}
 
-	u_int32_t HuffDecode(const INode* root, string s)
-	{
-		string ans = "";
-		u_int32_t ansint=0;
-		const INode* curr = root;
-		for (int i = 0; i < s.size(); i++) {
-			if(  const LeafNode* lf  = dynamic_cast<const LeafNode*>(curr) ){
-					ansint = (u_int32_t)(lf->c);
-					return ansint;
-					curr = root;
-			}else if(const InternalNode* internal   = dynamic_cast<const InternalNode*>(curr) ){
-				if (s[i] == '0')
-					curr = internal->left;
-				else
-					curr = internal->right;
+	
 
-				if(const LeafNode* lf  = dynamic_cast<const LeafNode*>(curr)){
-					ansint = (u_int32_t)(lf->c);
-					cout<< ansint;
-				}
-			}else{
-				exit(2);
-			}
-		}
-		// cout<<ans<<endl;
-		return ansint;
-	}
+	// u_int32_t HuffDecode(const INode* root, string s, int& loc)
+	// {
+	// 	string ans = "";
+	// 	u_int32_t ansint=0;
+	// 	const INode* curr = root;
+	// 	for (int i = 0; i < s.size(); i++) {
+	// 		if(  const LeafNode* lf  = dynamic_cast<const LeafNode*>(curr) ){
+	// 				ansint = (u_int32_t)(lf->c);
+	// 				return ansint;
+	// 				curr = root;
+	// 		}else if(const InternalNode* internal   = dynamic_cast<const InternalNode*>(curr) ){
+	// 			if (s[i] == '0')
+	// 				curr = internal->left;
+	// 			else
+	// 				curr = internal->right;
+
+	// 			if(const LeafNode* lf  = dynamic_cast<const LeafNode*>(curr)){
+	// 				ansint = (u_int32_t)(lf->c);
+	// 				cout<< ansint;
+	// 			}
+	// 		}else{
+	// 			exit(2);
+	// 		}
+	// 	}
+	// 	// cout<<ans<<endl;
+	// 	return ansint;
+	// }
 }
 
 using namespace Huffman;
@@ -420,6 +422,12 @@ public:
 	string* global_table;
 	int* per_simplitig_l;
 	vector<char> spss_boundary; 
+
+	//run param
+	int d_class_diff = 1; //0,1,2
+
+	bool USE_LOCAL_TABLE = true;
+    bool USE_HUFFMAN = true;
 
 	COLESS(long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname, int max_run){
 		dedup_bitmatrix_file.init(dedup_bitmatrix_fname);
@@ -595,23 +603,21 @@ public:
 		log_num_color_in_class.init("log_num_color_in_class"); 
 		global_table = new string[M];
 		for(int x=0; x<M; x++){
-			if(b_it > 251950 || b_it == 251956 || b_it == 251954 ){
-				cout<<"break"<<endl;
-			}
+
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
 			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1) 
 			assert(idx < M);
 			global_table[idx] = bv_line;
 			assert(x==idx);
-			array_hi[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ; 
-			write_number_at_loc(positions, array_hi[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
+			array_lo[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ; 
+			write_number_at_loc(positions, array_lo[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
 
-			array_lo[idx]=0;
+			array_hi[idx]=0;
 			if(C > 64){
 				string ss=bv_line.substr(64,(C-64));
-				array_lo[idx]=std::stoull(ss, nullptr, 2);
-				write_number_at_loc(positions, array_lo[idx], C-64, b_it ); //array_lo[x] lower uint64_t
+				array_hi[idx]=std::stoull(ss, nullptr, 2);
+				write_number_at_loc(positions, array_hi[idx], C-64, b_it ); //array_lo[x] lower uint64_t
 			}
 
 			int num_ones_in_color = __builtin_popcountll(array_hi[idx]) + __builtin_popcountll(array_lo[idx]) ;
@@ -683,7 +689,9 @@ public:
 		uint64_t b_it_local_table = 0;
 		
 		dup_bitmatrix_file.rewind();
+		time_start();
 		store_global_color_class_table();
+		time_end("Written global table for "+to_string(M)+" values.");
 		// bit vector values
 		uint64_t b_it=0;
 		vector<uint64_t> positions; // positions for main vector
@@ -817,13 +825,13 @@ public:
 				}
 
 				
-				write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //num, bsize
+				//write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //always use local table
 				write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
 			
 
 
-				for(uint32_t uniq_col_class_id: local_col_classes_uniq){
-					//write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
+				for(uint32_t uniq_col_class_id: local_col_classes_uniq_nonrun){
+					write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
 				}
 
 				
@@ -878,7 +886,12 @@ public:
 		int simplitig_it = 0;
 		int l = per_simplitig_l[0];
 		int ll = ceil(log2(l));
-		int lm_or_ll = ll;
+		int lm_or_ll;
+		if(USE_LOCAL_TABLE){
+			lm_or_ll = ll;
+		}else{
+			lm_or_ll = lm;
+		}
 		Hashtable local_ht;
 		int lmaxrun = ceil(log2(max_run));
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
@@ -938,7 +951,7 @@ public:
 					skip=0;
 					
 
-					if(hd*(lc + 1) < ll && hd==1 ){ //CATEGORY=LC
+					if(hd*(lc + 1) < lm_or_ll && hd==1 ){ //CATEGORY=LC
 					//if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
 					//if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
 						cases_smc.fs<<"d"<<endl;
@@ -964,17 +977,22 @@ public:
 						cases_smc.fs<<"l"<<endl;
 
 						//case_lm += 1;
-						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-						//write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
-						assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 
-						uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
-						if(ll==0 && localid ==1)
-						{
-							cout<<"trouble"<<endl;
+						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
+						if(USE_LOCAL_TABLE){
+							uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
+							if (ll == 0 && localid == 1)
+							{
+								cout << "trouble" << endl;
+							}
+							write_number_at_loc(positions, localid, ll, b_it);
+						}else{
+							if(USE_HUFFMAN)
+								write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
+							else
+								write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+							//assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 						}
-						write_number_at_loc(positions, localid, ll, b_it);
-						//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 					}	
 				}
 			}else{	//start of simplitig, so CAT=LM
@@ -988,23 +1006,26 @@ public:
 				//case_nonrun +=1;
 				
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-
-				uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
-				if(ll==0)
-				{
-					assert(localid==0);
+				if(USE_LOCAL_TABLE){
+					uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
+					if(ll==0)
+					{
+						assert(localid==0);
+					}
+					write_number_at_loc(positions, localid, ll, b_it);
+				}else{
+					if(USE_HUFFMAN)
+						write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
+					else
+						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+					//assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 				}
-				write_number_at_loc(positions, localid, ll, b_it);
-				
-				//write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
-				//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
-				assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
-
 			}
 
 			if(spss_boundary[(i+1)%num_kmers]=='1'){	// end k-mer of simplitig
 				local_ht.clear();
 				simplitig_it+=1;
+				if(USE_LOCAL_TABLE) lm_or_ll = ll;
 				if(skip!=0){ 	//not skipped, run break, write lm
 					int q, rem;
 					q = floor(skip/max_run);
@@ -1015,15 +1036,12 @@ public:
 					write_unary_one_at_loc(positions, (uint64_t) q, b_it);
 					write_zero(positions, b_it);
 					write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
-					//my method
-					//100001
+					//my method //100001
 				}
 				skip=0;
 			}
-
 			prev_bv_hi=curr_bv_hi;
 			prev_bv_lo=curr_bv_lo;
-
 		}
 
 		OutputFile positions_out("positions_out");

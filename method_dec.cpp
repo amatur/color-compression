@@ -27,6 +27,7 @@ using namespace sdsl;
 uint64_t written_kmer = 0;
 #include <unordered_map>
 
+
 void dbg(){
 
 }
@@ -44,44 +45,43 @@ namespace TimeMeasure
 	}
 } using namespace TimeMeasure;
 
-namespace CMPH{
-	cmph_t *hash_cmph = NULL;
-	void create_table(string filename, int nelem ){
-		FILE * keys_fd = fopen(filename.c_str(), "r");
+// namespace CMPH{
+// 	cmph_t *hash_cmph = NULL;
+// 	void create_table(string filename, int nelem ){
+// 		FILE * keys_fd = fopen(filename.c_str(), "r");
 		
-		if (keys_fd == NULL) 
-		{
-		fprintf(stderr, "File not found\n");
-		exit(1);
-		}	
-		// Source of keys
-		cmph_io_adapter_t *source = cmph_io_nlfile_adapter(keys_fd);
+// 		if (keys_fd == NULL) 
+// 		{
+// 		fprintf(stderr, "File not found\n");
+// 		exit(1);
+// 		}	
+// 		// Source of keys
+// 		cmph_io_adapter_t *source = cmph_io_nlfile_adapter(keys_fd);
 	
-		cmph_config_t *config = cmph_config_new(source);
-		cmph_config_set_algo(config, CMPH_CHM);
-		hash_cmph = cmph_new(config);
-		cmph_config_destroy(config);
+// 		cmph_config_t *config = cmph_config_new(source);
+// 		cmph_config_set_algo(config, CMPH_CHM);
+// 		hash_cmph = cmph_new(config);
+// 		cmph_config_destroy(config);
 		
-		cmph_io_nlfile_adapter_destroy(source);   
-		fclose(keys_fd);
-	}
+// 		cmph_io_nlfile_adapter_destroy(source);   
+// 		fclose(keys_fd);
+// 	}
 
-	unsigned int lookup(string str){	
-		const char *key = str.c_str(); 
-		//Find key
-		unsigned int id = cmph_search(hash_cmph, key, (cmph_uint32)strlen(key));
-		// fprintf(stderr, "Id:%u\n", id);
-		//Destroy hash
-		//cmph_destroy(hash);
-		return id;
-	}
+// 	unsigned int lookup(string str){	
+// 		const char *key = str.c_str(); 
+// 		//Find key
+// 		unsigned int id = cmph_search(hash_cmph, key, (cmph_uint32)strlen(key));
+// 		// fprintf(stderr, "Id:%u\n", id);
+// 		//Destroy hash
+// 		//cmph_destroy(hash);
+// 		return id;
+// 	}
 
-	void mphf_destroy(){
-		cmph_destroy(hash_cmph);
-	}
-}
-using namespace CMPH;
-
+// 	void mphf_destroy(){
+// 		cmph_destroy(hash_cmph);
+// 	}
+// }
+// using namespace CMPH;
 
 class OutputFile{
 	public:
@@ -211,59 +211,151 @@ namespace Huffman{
 		}
 	}
 
-	u_int32_t HuffDecode(const INode* root, string s)
-	{
-		string ans = "";
-		u_int32_t ansint=0;
-		const INode* curr = root;
-		for (int i = 0; i < s.size(); i++) {
-			if(  const LeafNode* lf  = dynamic_cast<const LeafNode*>(curr) ){
-					ansint = (u_int32_t)(lf->c);
-					return ansint;
-					curr = root;
-			}else if(const InternalNode* internal   = dynamic_cast<const InternalNode*>(curr) ){
-				if (s[i] == '0')
-					curr = internal->left;
-				else
-					curr = internal->right;
+    u_int32_t HuffDecode(const INode *root, string s, int &start_loc)
+    {
+        string ans = "";
+        u_int32_t ansint = 0;
+        const INode *curr = root;
+        for (int i = start_loc; i < s.size() + 1; i++)
+        {
+            if (const LeafNode *lf = dynamic_cast<const LeafNode *>(curr))
+            {
+                ansint = (u_int32_t)(lf->c);
+                start_loc = i;
+                return ansint;
+                curr = root;
+            }
+            else if (const InternalNode *internal = dynamic_cast<const InternalNode *>(curr))
+            {
+                if (s[i] == '0')
+                    curr = internal->left;
+                else
+                    curr = internal->right;
 
-				if(const LeafNode* lf  = dynamic_cast<const LeafNode*>(curr)){
-					ansint = (u_int32_t)(lf->c);
-					cout<< ansint;
-				}
-			}else{
-				exit(2);
-			}
+                if (const LeafNode *lf = dynamic_cast<const LeafNode *>(curr))
+                {
+                    ansint = (u_int32_t)(lf->c);
+                    // cout<< ansint;
+                }
+            }
+            else
+            {
+                cout << "FAIL" << endl;
+            }
+        }
+        // cout<<ans<<endl;
+
+        return ansint;
+    }
+
+    vector<int> read_l_huff_codes(int l, string s, uint64_t& b_it, INode* root){
+		 vector<int> v ;
+        int loc  = 0;
+		while(l){
+			u_int32_t decoded_col_class = HuffDecode(root, s, loc);
+            v.push_back(decoded_col_class);
+			l--;
 		}
-		// cout<<ans<<endl;
-		return ansint;
+        b_it += loc;
 	}
 }
-
 using namespace Huffman;
-
 
 class COLESS_Decompress{
 public:
+    long num_kmers;
     int max_run = 16;
     int lmaxrun = 4;
-    string* global_table;
+    
     int C;
     int M;
     int lm, lc;
-    OutputFile dec_ess_color;
 
-    COLESS_Decompress(long num_kmers, int M, int C, int max_run)
+    OutputFile dec_ess_color;
+    InputFile spss_boundary_file;
+    
+    int simplitig_it = 0;
+    string str_local;
+    u_int64_t b_it_local = 0;
+
+    string str_map;  //reuse
+    uint64_t b_it = 0; //reuse
+
+    //global
+    string* global_table;
+    vector<char> spss_boundary;
+
+    //per simplitig
+    int* per_simplitig_l;
+    vector<int> local_hash_table;
+    
+    bool USE_LOCAL_TABLE = true;
+    bool USE_HUFFMAN = true;
+
+    COLESS_Decompress(long num_kmers, int M, int C, string spss_boundary_file, int max_run)
     {
+        this->num_kmers = num_kmers;
         this->C = C;
         this->M = M;
         this->max_run = max_run;
-        this->lmaxrun = ceil(log2(max_run));
+        
+        lmaxrun = ceil(log2(max_run));
         lm = ceil(log2(M));
         lc = ceil(log2(C));
+
         global_table = new string[M];
+
         dec_ess_color.init("dec_ess_color");
+        spss_boundary_file.init(spss_boundary_file);
     }
+
+    void load_rrr_into_string(string rrr_filename, string &where_to_load){
+        // rrr_vector<256> rrr_map; // rrr_vector rrr_map = rrr_vector<256>();
+        // load_from_file(rrr_map, "rrr_map"); //sdsl namespace
+        // rrr_vector<256> rrr_main; // rrr_main =  rrr_vector<256>();
+        // load_from_file(rrr_main, "rrr_main"); //sdsl namespace  
+        rrr_vector<256> rrr_bv;      
+        load_from_file(rrr_bv, rrr_filename);  //sdsl namespace
+        // std::ofstream out("str_bv_mapping.txt");
+        // out << rrr_map;
+        // out.close();
+        stringstream buffer;
+        buffer << rrr_bv;
+        where_to_load = buffer.str();
+    }
+    void load_bb_into_string(string filename_bb, string &where_to_load){
+        InputFile file_bb(filename_bb);//i.e. bb_main
+        getline(file_bb.fs, where_to_load);
+    }
+
+    INode* build_huff_tree(string freq="frqeuency_sorted"){
+        
+		time_start();
+		InputFile infile_freq("frqeuency_sorted");
+		string line;
+
+		// Build frequency table
+		u_int32_t *frequencies = new u_int32_t[M]; // M -> no. of unique symbols
+		std::fill_n(frequencies, M, 0);
+		u_int32_t i = 0;
+		while(getline(infile_freq.fs, line)){
+			stringstream ss(line);
+			u_int32_t a ;
+			ss >> a; 
+			frequencies[i++]= a;
+		}		
+		time_end("Read freq for "+to_string(M)+" values.");
+
+
+		time_start();
+		INode* root = BuildTree(frequencies, M);
+        // GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
+		// delete frequencies;
+		// delete root;
+		time_end("Build huffman tree on" +to_string(M)+" values.");
+        return root;
+    }
+
 
     uint64_t convert_binary_string_to_uint(string &str, int start, int end, int block_sz2)
     { // convert_binary_string_to_uint
@@ -338,6 +430,25 @@ public:
         return res;
     }
 
+    void read_local_hash_table_per_simplitig(int simplitig_it,  string str_local, u_int64_t& b_it){
+        //char useLocalId = read_one_bit(str_local, b_it);
+        char useLocalId = '1';
+        if(useLocalId == '1'){
+            int l = read_uint(str_local, b_it, lm);
+            //int ll = ceil(log2(l));
+            per_simplitig_l[simplitig_it]  = l;
+            local_hash_table = read_l_huff_codes(l, str_local, b_it, huff_root); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
+        }
+    }
+
+    bool start_of_simplitig(int written_kmer_idx){
+        return spss_boundary[written_kmer_idx] == '1';
+    }
+
+    bool end_of_simplitig(int written_kmer_idx){
+        return spss_boundary[(written_kmer_idx+1)%num_kmers] == '1';
+    }
+
     void flush_skip_and_del(vector<int> &differ_run, string& last_col_vector, OutputFile& dec_ess_color){
         if (differ_run.size())
         {
@@ -346,39 +457,21 @@ public:
                 flip_bit(last_col_vector, d);
             }
             dec_ess_color.fs << last_col_vector << endl;
+            // if(start_of_simplitig(written_kmer)){ 
+            //     read_local_hash_table_per_simplitig(str_local, b_it_local);
+            // }
             written_kmer+=1;
+            
             differ_run.clear();
         }         
     }
 
     void run()
-    {
-        OutputFile color_global("color_global");
-       
-        if (1 == 0)
-        {
-            rrr_vector<256> rrr_map;
-            rrr_vector<256> rrr_main;
-            // rrr_vector rrr_map = rrr_vector<256>();
-            // rrr_main =  rrr_vector<256>();
-            load_from_file(rrr_map, "rrr_map");
-            load_from_file(rrr_map, "rrr_main");
-            std::ofstream out("str_bv_mapping.txt");
-            out << rrr_map;
-            out.close();
-            stringstream ss_rrr_map;
-            ss_rrr_map << rrr_map;
-            string str_map = ss_rrr_map.str();
-        }
-
-        InputFile file_bb_map("bb_map");
-        string str_map;
-        getline(file_bb_map.fs, str_map);
-        file_bb_map.fs.close();
-
-        uint64_t b_it = 0;
-
-
+    {   
+        INode* huff_root = build_huff_tree();
+        load_bb_into_string("bb_map", str_map);
+        b_it = 0;
+        OutputFile color_global("color_global"); //M color vectors //DEBUGFILE
         for (int i = 0; i < M; i++)
         {
             string col_vector = read_color_vector(str_map, b_it);
@@ -387,35 +480,52 @@ public:
         }
         color_global.fs.close();
 
-        time_start();
-        create_table(color_global.filename, M);
-        time_end("CMPH table create for "+to_string(M)+" keys.");
+        int num_simplitig = 0;
+        // Load SPSS boundary file
+        for (uint64_t i=0; i < num_kmers; i+=1){ //load spss_boundary vector in memory from disk
+			string spss_line;
+			getline (spss_boundary_file.fs,spss_line); 
+			spss_boundary.push_back(spss_line[0]); //this kmer starts a simplitig
+            if(spss_line[0]=='1'){
+                num_simplitig+=1;
+            }
+		}
+		per_simplitig_l = new int[num_simplitig];
 
+        //read local table, 
+        load_bb_into_string("bb_local_table", str_local);
+        
+        // time_start();
+        // create_table(color_global.filename, M);
+        // time_end("CMPH table create for "+to_string(M)+" keys.");
 
+        load_bb_into_string("bb_main", str_map);
         b_it = 0;
         vector<int> differ_run;
         string last_col_vector = "";
-
-        InputFile file_bb_main("bb_main");
-        getline(file_bb_main.fs, str_map);
-        file_bb_main.fs.close();
-
         while (b_it < str_map.length())
         {
-            if(written_kmer>=22483){
-                dbg();
-
-            }
             char c = read_one_bit(str_map, b_it);
             if (c == '0')
             {
                 flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
-                uint64_t col_class = read_uint(str_map, b_it, lm);
-                last_col_vector = global_table[col_class];
-                dec_ess_color.fs << last_col_vector << endl;
-                written_kmer+=1;
+                if(start_of_simplitig(written_kmer)){ 
+                    read_local_hash_table_per_simplitig(str_local, b_it_local);
+                }
+                if(USE_LOCAL_TABLE){//using local table
+                    int local_id = read_uint(str_map, b_it, ceil(log2(l)));
+                    int col_class = local_hash_table[local_id];
+                    last_col_vector = global_table[col_class];
+                    dec_ess_color.fs << last_col_vector << endl;
+                    written_kmer+=1;
+                }else{
+                    uint64_t col_class = read_uint(str_map, b_it, lm);
+                    last_col_vector = global_table[col_class];
+                    dec_ess_color.fs << last_col_vector << endl;
+                    written_kmer+=1;
+                }
             }
-            if (c == '1')
+            else if (c == '1')
             {
                 char c2 = read_one_bit(str_map, b_it);
                 if (c2 == '1')
@@ -457,15 +567,7 @@ public:
             }
         } 
         flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
-
     }
-
-    // decompress local hash table : bug is in local hash table
-    // stringstream ss_cc_map;
-    //  rrr_vector<256> cc_map = rrr_vector<256>();
-    //  load_from_file(cc_map, index_file);
-    //  cout<<cc_map<<endl;
-    //  ss_cc_map<<cc_map;
 };
 
 
@@ -499,7 +601,7 @@ int main (int argc, char* argv[]){
 		// }
     }
 
-	COLESS_Decompress cdec(num_kmers, M, C, max_run);
+	COLESS_Decompress cdec(num_kmers, M, C,  spss_boundary_file, max_run);
     cdec.run();
 	return EXIT_SUCCESS;
 }
