@@ -139,8 +139,8 @@ class Hashtable {
 
 	void get_array(uint32_t * array){
 		array = new uint32_t[curr_id];
-		for(uint32_t key : htmap){
-			array[htmap[key]] = key;
+		for( std::pair< std::uint32_t, std::uint32_t>& n : htmap ){
+			array[n.second] = n.first;
 		}
 	}
 
