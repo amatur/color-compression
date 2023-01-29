@@ -784,7 +784,7 @@ public:
 				use_local_hash_huff_nonrun = ( ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun  );
 
 				//logfile_main.fs<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
-				logfile_main.fs<<num_kmer_in_simplitig<<" "<<sum_length_huff_uniq<<" "<<sum_length_huff_uniq_nonrun<<endl;
+				logfile_main.fs<<num_kmer_in_simplitig<<" "<< l << " " << l*lm <<" "<<sum_length_huff_uniq_nonrun<<endl;
 				
 				//re-init for new simplitig
 				local_hash_table.clear();
