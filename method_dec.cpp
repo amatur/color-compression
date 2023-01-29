@@ -254,7 +254,7 @@ namespace Huffman{
 		while(l){
 			u_int32_t decoded_col_class = HuffDecode(root, s, loc);
             v.push_back(decoded_col_class);
-            cout<<decoded_col_class<",";
+            cout<<decoded_col_class<<",";
 			l--;
 		}
         b_it += loc;
