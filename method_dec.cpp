@@ -251,7 +251,7 @@ namespace Huffman{
     vector<int> read_l_huff_codes(int l, string s, uint64_t& b_it, INode* root){
 		 vector<int> v ;
         int loc  = 0;
-        cout<<"l:";
+        cout<<l<<":";
 		while(l){
 			u_int32_t decoded_col_class = HuffDecode(root, s, loc);
             v.push_back(decoded_col_class);
