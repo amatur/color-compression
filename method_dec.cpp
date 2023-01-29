@@ -351,8 +351,16 @@ public:
 
 		time_start();
 		INode* root = BuildTree(frequencies, M);
+        OutputFile huff_codes("huff_codes");
         GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
 		delete frequencies;
+        for (HuffCodeMap::const_iterator it = codes.begin(); it != codes.end(); ++it)
+    {
+        huff_codes.fs << it->first << " ";
+        std::copy(it->second.begin(), it->second.end(),
+                  std::ostream_iterator<bool>(huff_codes.fs));
+        huff_codes.fs << std::endl;
+    }
 		//delete root;
 		time_end("Build huffman tree on" +to_string(M)+" values.");
         return root;
