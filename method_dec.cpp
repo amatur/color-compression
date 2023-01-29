@@ -274,7 +274,6 @@ public:
     OutputFile dec_ess_color;
     InputFile spss_boundary_file;
     
-    int simplitig_it = 0;
     string str_local;
     u_int64_t b_it_local = 0;
 
@@ -284,15 +283,16 @@ public:
     //global
     string* global_table;
     vector<char> spss_boundary;
+    INode* huff_root;
 
     //per simplitig
-    int* per_simplitig_l;
     vector<int> local_hash_table;
+    int l_of_curr_simplitig;
     
     bool USE_LOCAL_TABLE = true;
     bool USE_HUFFMAN = true;
 
-    COLESS_Decompress(long num_kmers, int M, int C, string spss_boundary_file, int max_run)
+    COLESS_Decompress(long num_kmers, int M, int C, string spss_boundary_fname, int max_run)
     {
         this->num_kmers = num_kmers;
         this->C = C;
@@ -306,7 +306,7 @@ public:
         global_table = new string[M];
 
         dec_ess_color.init("dec_ess_color");
-        spss_boundary_file.init(spss_boundary_file);
+        spss_boundary_file.init(spss_boundary_fname);
     }
 
     void load_rrr_into_string(string rrr_filename, string &where_to_load){
@@ -430,14 +430,13 @@ public:
         return res;
     }
 
-    void read_local_hash_table_per_simplitig(int simplitig_it,  string str_local, u_int64_t& b_it){
+    void read_local_hash_table_per_simplitig(string str_local, u_int64_t& b_it){
         //char useLocalId = read_one_bit(str_local, b_it);
         char useLocalId = '1';
         if(useLocalId == '1'){
-            int l = read_uint(str_local, b_it, lm);
+            l_of_curr_simplitig = read_uint(str_local, b_it, lm);
             //int ll = ceil(log2(l));
-            per_simplitig_l[simplitig_it]  = l;
-            local_hash_table = read_l_huff_codes(l, str_local, b_it, huff_root); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
+            local_hash_table = read_l_huff_codes(l_of_curr_simplitig, str_local, b_it, huff_root); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
         }
     }
 
@@ -468,7 +467,7 @@ public:
 
     void run()
     {   
-        INode* huff_root = build_huff_tree();
+        huff_root = build_huff_tree();
         load_bb_into_string("bb_map", str_map);
         b_it = 0;
         OutputFile color_global("color_global"); //M color vectors //DEBUGFILE
@@ -490,7 +489,6 @@ public:
                 num_simplitig+=1;
             }
 		}
-		per_simplitig_l = new int[num_simplitig];
 
         //read local table, 
         load_bb_into_string("bb_local_table", str_local);
@@ -510,10 +508,10 @@ public:
             {
                 flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
                 if(start_of_simplitig(written_kmer)){ 
-                    read_local_hash_table_per_simplitig(str_local, b_it_local);
+                    read_local_hash_table_per_simplitig(str_local, b_it_local); //changes l_of_curr_simplitig
                 }
                 if(USE_LOCAL_TABLE){//using local table
-                    int local_id = read_uint(str_map, b_it, ceil(log2(l)));
+                    int local_id = read_uint(str_map, b_it, ceil(log2(l_of_curr_simplitig)));
                     int col_class = local_hash_table[local_id];
                     last_col_vector = global_table[col_class];
                     dec_ess_color.fs << last_col_vector << endl;
@@ -601,7 +599,7 @@ int main (int argc, char* argv[]){
 		// }
     }
 
-	COLESS_Decompress cdec(num_kmers, M, C,  spss_boundary_file, max_run);
+	COLESS_Decompress cdec(num_kmers, M, C,  spss_boundary_fname, max_run);
     cdec.run();
 	return EXIT_SUCCESS;
 }
