@@ -258,7 +258,7 @@ namespace Huffman{
             cout<<decoded_col_class<<",";
 			l--;
 		}
-        //b_it += loc;
+        b_it = loc;
         cout<<endl;
         return v;
 	}
