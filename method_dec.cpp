@@ -1,4 +1,4 @@
-//version: jan 28, FIXED SMALL TEST!
+//version: jan 29, FIXED huff+local: mini3 TEST!
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>
