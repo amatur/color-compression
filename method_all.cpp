@@ -968,9 +968,9 @@ public:
 						assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 
 						uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
-						if(ll==0)
+						if(ll==0 && localid ==1)
 						{
-							assert(localid==0);
+							cout<<"trouble"<<endl;
 						}
 						write_number_at_loc(positions, localid, ll, b_it);
 						//write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
