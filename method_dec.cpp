@@ -512,7 +512,7 @@ public:
                 }
                 if(USE_LOCAL_TABLE){//using local table
                     int local_id = read_uint(str_map, b_it, ceil(log2(l_of_curr_simplitig)));
-                    int col_class = local_hash_table[local_id];
+                    int col_class = local_hash_table[local_id]; 
                     last_col_vector = global_table[col_class];
                     dec_ess_color.fs << last_col_vector << endl;
                     written_kmer+=1;

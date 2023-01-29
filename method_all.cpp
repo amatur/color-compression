@@ -826,7 +826,7 @@ public:
 
 				
 				//write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //always use local table
-				write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
+				write_number_at_loc(positions_local_table, l_nrun, lm, b_it_local_table);
 			
 
 
