@@ -754,7 +754,6 @@ public:
 						case_dlc += 1;
 					}else{ //CAT=LM
 						case_lm += 1;
-						sum_length_huff += huff_code_map[curr_kmer_cc_id].size();
 					}
 				}
 			}else{	//start of simplitig, so CAT=LM
@@ -773,7 +772,7 @@ public:
 				case_nonrun = case_dlc + case_lm;
 				
 				//write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
-				write_number_at_loc(positions_local_table, l_nrun, lm, b_it_local_table);
+				write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
 				for(int i = 0 ; i< local_hash_table.curr_id; i++){
 					uint32_t uniq_col_class_id = local_hash_table[i];
 					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
