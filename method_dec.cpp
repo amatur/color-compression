@@ -336,7 +336,7 @@ public:
     INode* build_huff_tree(string freq="frequency_sorted"){
         
 		time_start();
-		InputFile infile_freq("frqeuency_sorted");
+		InputFile infile_freq(freq);
 		string line;
 
 		// Build frequency table
