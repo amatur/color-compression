@@ -333,7 +333,7 @@ public:
         getline(file_bb.fs, where_to_load);
     }
 
-    INode* build_huff_tree(string freq="frqeuency_sorted"){
+    INode* build_huff_tree(string freq="frequency_sorted"){
         
 		time_start();
 		InputFile infile_freq("frqeuency_sorted");

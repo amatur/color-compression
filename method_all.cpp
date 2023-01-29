@@ -107,9 +107,10 @@ class InputFile{
 
 class Hashtable {
     std::unordered_map<uint64_t, uint64_t> htmap; // m_to_l
-	uint64_t curr_id = 0;
+	
 
 public:
+	uint64_t curr_id = 0;
 	Hashtable(){
 		curr_id = 0;
 	}
@@ -421,6 +422,8 @@ public:
 	int lc = 0;
 	string* global_table;
 	int* per_simplitig_l;
+	//per_simplitig_d
+	//per simplitig use_local_hash
 	vector<char> spss_boundary; 
 
 	//run param
@@ -603,16 +606,15 @@ public:
 		log_num_color_in_class.init("log_num_color_in_class"); 
 		global_table = new string[M];
 		for(int x=0; x<M; x++){
-
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
 			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1) 
 			assert(idx < M);
 			global_table[idx] = bv_line;
 			assert(x==idx);
+
 			array_lo[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ; 
 			write_number_at_loc(positions, array_lo[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
-
 			array_hi[idx]=0;
 			if(C > 64){
 				string ss=bv_line.substr(64,(C-64));
@@ -623,12 +625,9 @@ public:
 			int num_ones_in_color = __builtin_popcountll(array_hi[idx]) + __builtin_popcountll(array_lo[idx]) ;
 			log_num_color_in_class.fs << num_ones_in_color <<endl;
 
-
 		}
-		cout << "Expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
 		dedup_bitmatrix_file.fs.close();
 
- 		
 		store_as_binarystring(positions, b_it, "bb_map" );
 		store_as_sdsl(positions, b_it, "rrr_map" );
 
@@ -655,12 +654,11 @@ public:
 		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
 
 		time_start();
-		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frqeuency_sorted");
+		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frequency_sorted");
 		time_end("Sorting and getting freq for "+to_string(num_kmers)+" keys.");
 		
-
 		time_start();
-		InputFile infile_freq("frqeuency_sorted");
+		InputFile infile_freq("frequency_sorted");
 		string line;
 		// Build frequency table
 		u_int32_t *frequencies = new u_int32_t[M]; // M -> no. of unique symbols
@@ -674,7 +672,6 @@ public:
 		}		
 		time_end("Read freq for "+to_string(M)+" values.");
 
-
 		time_start();
 		INode* root = BuildTree(frequencies, M);
         GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
@@ -685,14 +682,11 @@ public:
 	}
 
 	void method1_pass1(bool skip_pass = false){ //decide whether to use local hash table, can skip
-		vector<uint64_t> positions_local_table;
-		uint64_t b_it_local_table = 0;
-		
 		dup_bitmatrix_file.rewind();
 		time_start();
 		store_global_color_class_table();
 		time_end("Written global table for "+to_string(M)+" values.");
-		// bit vector values
+		
 		uint64_t b_it=0;
 		vector<uint64_t> positions; // positions for main vector
 
@@ -703,41 +697,32 @@ public:
 		}
 		per_simplitig_l = new int[spss_boundary.size()];
 
-		//per simplitig values
-		set<uint32_t> local_col_classes_uniq; //get the bool HuffCodeMap[M-1]
-		set<uint32_t> local_col_classes_uniq_nonrun; //get the bool HuffCodeMap[M-1]
-
-		int use_local_hash = 0;
+		//per simplitig values		
+		Hashtable local_hash_table;
 		int use_local_hash_nonrun = 0;
-		int use_local_hash_huff = 0;
 		int use_local_hash_huff_nonrun = 0;
+		uint64_t sum_length_huff_nonrun = 0;
+		uint64_t sum_length_huff_uniq_nonrun = 0;
+		uint64_t num_kmer_in_simplitig = 0;
+		//
 		uint64_t skip=0;
 		int case_run = 0;
 		int case_lm = 0;
 		int case_nonrun = 0;
 		int case_dlc = 0;
-		uint64_t sum_length_huff = 0;
-		uint64_t sum_length_huff_nonrun = 0;
-		uint64_t sum_length_huff_uniq = 0;	
-		uint64_t sum_length_huff_uniq_nonrun = 0;
-		
+		//		
+		vector<uint64_t> positions_local_table;
+		uint64_t b_it_local_table = 0;
+
 		//per kmer values
-		uint64_t num_kmer_in_simplitig = 0;
 		uint64_t curr_bv_hi = 0;
 		uint64_t curr_bv_lo = 0;
 		uint64_t prev_bv_hi = 0;
 		uint64_t prev_bv_lo = 0;
-
-		
+	
 		InputFile cmp_keys("cmp_keys");
-
-
 		int simplitig_it = 0;
-		//pass 1: collect if local or not 
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
-			
-			
-			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
 			curr_bv_lo = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
@@ -754,7 +739,6 @@ public:
 			getline(cmp_keys.fs, curr_kmer_cc_id_str);
 			unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10); 
 			
-				
 			if(spss_boundary[i]=='0'){ // non-start
 				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
 				int hd_lo = hammingDistance(prev_bv_lo, curr_bv_lo);
@@ -764,101 +748,53 @@ public:
 					case_run+=1;	
 				}else{ //CAT=NRUN
 					case_nonrun += 1;
-					if(skip!=0){ 	//not skipped, write lm
-						//write_number_at_loc(positions, CATEGORY_RUN, 2, b_it);
-						//write_number_at_loc(positions, skip, 1+floor(log2(skip)), b_it);
-					}
 					skip=0;
-
-					sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
-					local_col_classes_uniq_nonrun.insert(curr_kmer_cc_id);
-					if(hd*(1+lc) < lm){ //CAT=LC
+					local_hash_table.put_and_getid(curr_kmer_cc_id);
+					if(hd*(1+lc) < lm && hd == 1){ //CAT=LC
 						case_dlc += 1;
-						
-						//cout<<"hd: "<<hd<<endl;
 					}else{ //CAT=LM
 						case_lm += 1;
 						sum_length_huff += huff_code_map[curr_kmer_cc_id].size();
-						local_col_classes_uniq.insert(curr_kmer_cc_id);
 					}
-					
 				}
 			}else{	//start of simplitig, so CAT=LM
 				case_lm+=1;
 				case_nonrun +=1;
-				// if(skip!=0){ 	//not skipped, write lm
-				// 	write_number_at_loc(positions, skip, 1+floor(log2(skip)), b_it);
-				// }
 				skip=0;
-				
-				sum_length_huff += huff_code_map[curr_kmer_cc_id].size();
 				sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
-
-				local_col_classes_uniq.insert(curr_kmer_cc_id);
-				local_col_classes_uniq_nonrun.insert(curr_kmer_cc_id);
-
-				// write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+				local_hash_table.put_and_getid(curr_kmer_cc_id);
 			}
 
 			if(spss_boundary[(i+1)%num_kmers]=='1'){	// end k-mer of simplitig
-				// decide what to do
-				int l = local_col_classes_uniq.size(); //case_lm
-
-				
-
+				int l = local_hash_table.curr_id; 
 				int ll = ceil(log2(l)*1.0);
-				int l_nrun = local_col_classes_uniq_nonrun.size(); //case_lm
-				int ll_nrun = ceil(log2(l_nrun)*1.0);
-
-				per_simplitig_l[simplitig_it] = l_nrun;
+				per_simplitig_l[simplitig_it] = l;
 
 				case_nonrun = case_dlc + case_lm;
-				assert(sum_length_huff_uniq==0);
-				assert(sum_length_huff_uniq_nonrun==0);
-
-				for(uint32_t uniq_col_class_id: local_col_classes_uniq){
-					sum_length_huff_uniq += huff_code_map[uniq_col_class_id].size();
-				}
-
-				for(uint32_t uniq_col_class_id: local_col_classes_uniq_nonrun){
-					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
-				}
-
 				
-				//write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //always use local table
+				//write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
 				write_number_at_loc(positions_local_table, l_nrun, lm, b_it_local_table);
-			
-
-
-				for(uint32_t uniq_col_class_id: local_col_classes_uniq_nonrun){
+				for(int i = 0 ; i< local_hash_table.curr_id; i++){
+					uint32_t uniq_col_class_id = local_hash_table[i];
+					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
 					write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
 				}
 
-				
-
-
-				//all_ls.fs << l <<" "<<ll<<endl;  
-				//all_ls.fs << l <<" "<<ll<<" "<<l_nrun<<" "<<ll_nrun<<endl;  
-				//all_ls.fs << "P "<<ll*case_lm<<" "<<lm*case_lm<<" "<<sum_length_huff<<" "<<lm + sum_length_huff_uniq<<" "<<lm * (1+l)<<endl;
-				use_local_hash = ( (ll - lm ) * case_lm + lm * (1+l)  ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
-				use_local_hash_nonrun = ( (ll_nrun - lm ) * case_nonrun + lm * (1+l_nrun) ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
-				use_local_hash_huff =  (ll*case_lm - sum_length_huff + lm + sum_length_huff_uniq) ;
-				use_local_hash_huff_nonrun = ( ll_nrun*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun  );
+				all_ls.fs << l <<" "<<ll<<endl;  
+				use_local_hash_nonrun = ( (ll - lm ) * case_nonrun + lm * (1+l) ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
+				use_local_hash_huff_nonrun = ( ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun  );
 
 				//logfile_main.fs<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
-				logfile_main.fs<<ll*case_lm<<" "<<lm*case_lm<<" "<<sum_length_huff<<" "<<ll_nrun*case_lm<<" "<<lm*case_nonrun<<" "<<sum_length_huff_nonrun<<" "<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" s "<<case_run<<" c "<<case_dlc<<" m "<<case_lm<<" "<<num_kmer_in_simplitig<<" "<<sum_length_huff_uniq<<" "<<sum_length_huff_uniq_nonrun<<endl;
+				logfile_main.fs<<num_kmer_in_simplitig<<" "<<sum_length_huff_uniq<<" "<<sum_length_huff_uniq_nonrun<<endl;
 				
 				//re-init for new simplitig
-				//vector<uint32_t>().swap(local_col_classes_uniq);//
-				local_col_classes_uniq.clear();
-				local_col_classes_uniq_nonrun.clear();
+				local_hash_table.clear();
 				num_kmer_in_simplitig = 0;
 
-				
-				use_local_hash = use_local_hash_nonrun = use_local_hash_huff = use_local_hash_huff_nonrun = 0;
+				use_local_hash_nonrun =  use_local_hash_huff_nonrun = 0;
 				skip=0;
 				case_run = case_lm = case_nonrun = case_dlc = 0;
-				sum_length_huff = sum_length_huff_nonrun = sum_length_huff_uniq = sum_length_huff_uniq_nonrun =  0;
+				sum_length_huff_nonrun = sum_length_huff_uniq_nonrun =  0;
 			
 				simplitig_it+=1;
 			}
@@ -867,8 +803,6 @@ public:
 		}
 		store_as_binarystring(positions_local_table, b_it_local_table, "bb_local_table");
 		store_as_sdsl(positions_local_table, b_it_local_table, "rrr_local_table");
-		
-		
 	}
 
 	void method1_pass2(){
