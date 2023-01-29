@@ -353,7 +353,7 @@ public:
 		INode* root = BuildTree(frequencies, M);
         GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
 		delete frequencies;
-		delete root;
+		//delete root;
 		time_end("Build huffman tree on" +to_string(M)+" values.");
         return root;
     }
