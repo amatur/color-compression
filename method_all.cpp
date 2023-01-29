@@ -140,7 +140,7 @@ class Hashtable {
 	vector<uint32_t> get_array(){
 		vector<uint32_t> array(curr_id, 0);
 		for( const auto& [key, value] : htmap )
-       		array[value] =  key
+       		array[value] =  key ;
 			cout<<n.first<<" "<<n.second<<endl;
 		}
 		return array;
