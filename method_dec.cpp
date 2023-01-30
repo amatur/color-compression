@@ -1,4 +1,4 @@
-//version: jan 29, FIXED huff+local: mini3 TEST!
+//version: jan 29, FIXED huff+local: ecoli10 TEST pass
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>
