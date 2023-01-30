@@ -255,7 +255,7 @@ namespace Huffman{
 		while(l){
 			u_int32_t decoded_col_class = HuffDecode(root, s, loc);
             v.push_back(decoded_col_class);
-            cout<<decoded_col_class<<",";
+            logfile_huff_decode.fs<<decoded_col_class<<",";
 			l--;
 		}
         b_it = loc;
@@ -296,6 +296,9 @@ public:
     
     bool USE_LOCAL_TABLE = true;
     bool USE_HUFFMAN = true;
+    bool ALWAYS_LOCAL_OR_GLOBAL = true;
+
+    OutputFile logfile_huff_decode;
 
     COLESS_Decompress(long num_kmers, int M, int C, string spss_boundary_fname, int max_run)
     {
@@ -312,6 +315,7 @@ public:
 
         dec_ess_color.init("dec_ess_color");
         spss_boundary_file.init(spss_boundary_fname);
+        logfile_huff_decode.init("logfile_huff_decode");
     }
 
     void load_rrr_into_string(string rrr_filename, string &where_to_load){
@@ -444,8 +448,11 @@ public:
     }
 
     void read_local_hash_table_per_simplitig(string str_local, u_int64_t& b_it){
-        //char useLocalId = read_one_bit(str_local, b_it);
         char useLocalId = '1';
+        if(!ALWAYS_LOCAL_OR_GLOBAL){
+            useLocalId = read_one_bit(str_local, b_it);
+        }
+        
         if(useLocalId == '1'){
             l_of_curr_simplitig = read_uint(str_local, b_it, lm);
             //int ll = ceil(log2(l));
@@ -534,10 +541,19 @@ public:
                     dec_ess_color.fs << last_col_vector << endl;
                     written_kmer+=1;
                 }else{
-                    uint64_t col_class = read_uint(str_map, b_it, lm);
-                    last_col_vector = global_table[col_class];
-                    dec_ess_color.fs << last_col_vector << endl;
-                    written_kmer+=1;
+                    if(USE_HUFFMAN==false){
+                        uint64_t col_class = read_uint(str_map, b_it, lm);
+                        last_col_vector = global_table[col_class];
+                        dec_ess_color.fs << last_col_vector << endl;
+                        written_kmer+=1;
+                    }else{
+                        //TODO -- untested
+                        uint64_t col_class = read_l_huff_codes(1, str_map, b_it, huff_root)[0];
+                        last_col_vector = global_table[col_class];
+                        dec_ess_color.fs << last_col_vector << endl;
+                        written_kmer+=1;
+                    }
+
                 }
             }
             else if (c == '1')
@@ -590,7 +606,7 @@ int main (int argc, char* argv[]){
 	vector<string> args(argv + 1, argv + argc);
     string dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname; //string tmp_dir;
     int M, C;
-    int max_run;
+    int max_run = 16;
 	long num_kmers=0;
     for (auto i = args.begin(); i != args.end(); ++i) {
         if (*i == "-h" || *i == "--help") {

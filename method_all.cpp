@@ -430,6 +430,8 @@ public:
 	int lc = 0;
 	string* global_table;
 	int* per_simplitig_l;
+	bool* per_simplitig_use_local;
+	
 	//per_simplitig_d
 	//per simplitig use_local_hash
 	vector<char> spss_boundary; 
@@ -437,8 +439,9 @@ public:
 	//run param
 	int d_class_diff = 1; //0,1,2
 
-	bool USE_LOCAL_TABLE = true;
+	bool USE_LOCAL_TABLE = false;
     bool USE_HUFFMAN = true;
+	bool ALWAYS_LOCAL_OR_GLOBAL = true;
 
 	COLESS(long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname, int max_run){
 		dedup_bitmatrix_file.init(dedup_bitmatrix_fname);
@@ -462,6 +465,8 @@ public:
 
 	~COLESS(){
 		mphf_destroy();
+		delete per_simplitig_l;
+		delete per_simplitig_use_local;
 	}
 
 	// template <typename T> void dump_to_disk(T& vec, uint64_t last_written_pos, fstream fs)
@@ -704,6 +709,7 @@ public:
 			spss_boundary.push_back(spss_line[0]); //this kmer starts a simplitig
 		}
 		per_simplitig_l = new int[spss_boundary.size()];
+		per_simplitig_use_local =  new bool[spss_boundary.size()];
 
 		//per simplitig values		
 		Hashtable local_hash_table;
@@ -779,7 +785,10 @@ public:
 
 				case_nonrun = case_dlc + case_lm;
 				
-				//write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
+				if(!ALWAYS_LOCAL_OR_GLOBAL){
+					write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
+				}
+				
 				write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
 
 				vector<uint32_t> local_ht_arr = local_hash_table.get_array();
@@ -793,6 +802,14 @@ public:
 				all_ls.fs << l <<" "<<ll<<endl;  
 				use_local_hash_nonrun = ( (ll - lm ) * case_nonrun + lm * (1+l) ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
 				use_local_hash_huff_nonrun = ( ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun  );
+
+				if(use_local_hash_huff_nonrun < 0){
+					per_simplitig_use_local[simplitig_it] = true;
+				}else{
+					per_simplitig_use_local[simplitig_it] = false;
+				}
+
+
 
 				//logfile_main.fs<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
 				logfile_main.fs<<num_kmer_in_simplitig<<" "<< l << " " << l*lm <<" "<<sum_length_huff_uniq_nonrun<<endl;
