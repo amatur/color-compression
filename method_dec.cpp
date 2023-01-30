@@ -294,6 +294,7 @@ public:
     //per simplitig
     vector<int> local_hash_table;
     int l_of_curr_simplitig;
+    char per_simplitig_use_local_id;
     
     bool USE_LOCAL_TABLE = false;
     bool USE_HUFFMAN = true;
@@ -448,12 +449,11 @@ public:
     }
 
     void read_local_hash_table_per_simplitig(string str_local, u_int64_t& b_it){
-        char useLocalId = '1';
         if(!ALWAYS_LOCAL_OR_GLOBAL){
-            useLocalId = read_one_bit(str_local, b_it);
+            per_simplitig_use_local_id = read_one_bit(str_local, b_it);
         }
-        
-        if(useLocalId == '1'){
+
+        if(per_simplitig_use_local_id == '1'){
             l_of_curr_simplitig = read_uint(str_local, b_it, lm);
             //int ll = ceil(log2(l));
             local_hash_table = read_l_huff_codes(l_of_curr_simplitig, str_local, b_it, huff_root); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
@@ -530,7 +530,7 @@ public:
                 if(start_of_simplitig(written_kmer)){ 
                     read_local_hash_table_per_simplitig(str_local, b_it_local); //changes l_of_curr_simplitig
                 }
-                if(USE_LOCAL_TABLE){//using local table
+                if(USE_LOCAL_TABLE && per_simplitig_use_local_id == '1'){//using local table
                     int local_id = 0;
                     if(ceil(log2(l_of_curr_simplitig)) != 0){
                         local_id = read_uint(str_map, b_it, ceil(log2(l_of_curr_simplitig)));
