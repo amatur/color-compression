@@ -249,9 +249,10 @@ namespace Huffman{
     }
 
     vector<int> read_l_huff_codes(int l, string s, uint64_t& b_it, INode* root){
+        OutputFile logfile_huff_decode;
 		 vector<int> v ;
         int loc  = b_it;
-        cout<<l<<":";
+        logfile_huff_decode.fs<<l<<":";
 		while(l){
 			u_int32_t decoded_col_class = HuffDecode(root, s, loc);
             v.push_back(decoded_col_class);
@@ -259,7 +260,7 @@ namespace Huffman{
 			l--;
 		}
         b_it = loc;
-        cout<<endl;
+        logfile_huff_decode.fs<<endl;
         return v;
 	}
 }
@@ -294,11 +295,11 @@ public:
     vector<int> local_hash_table;
     int l_of_curr_simplitig;
     
-    bool USE_LOCAL_TABLE = true;
+    bool USE_LOCAL_TABLE = false;
     bool USE_HUFFMAN = true;
     bool ALWAYS_LOCAL_OR_GLOBAL = true;
 
-    OutputFile logfile_huff_decode;
+ 
 
     COLESS_Decompress(long num_kmers, int M, int C, string spss_boundary_fname, int max_run)
     {
