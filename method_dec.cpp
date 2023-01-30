@@ -249,7 +249,7 @@ namespace Huffman{
     }
 
     vector<int> read_l_huff_codes(int l, string s, uint64_t& b_it, INode* root){
-        OutputFile logfile_huff_decode;
+        OutputFile logfile_huff_decode("logfile_huff_decode");
 		 vector<int> v ;
         int loc  = b_it;
         logfile_huff_decode.fs<<l<<":";
@@ -316,7 +316,6 @@ public:
 
         dec_ess_color.init("dec_ess_color");
         spss_boundary_file.init(spss_boundary_fname);
-        logfile_huff_decode.init("logfile_huff_decode");
     }
 
     void load_rrr_into_string(string rrr_filename, string &where_to_load){
