@@ -65,6 +65,9 @@ class OutputFile{
 	void write(string towrite){
 		fs << towrite; // <<endl;
 	}
+	void close(){
+		fs.close();
+	}
 	~OutputFile(){
 		fs.close();
 	}
@@ -78,6 +81,13 @@ class DebugFile : public OutputFile	//derived class
 					fs.open (filename.c_str(),  std::fstream::out );
 			}
 
+		}
+		void init(const std::string filename)
+		{
+			if(!DEBUG_MODE){
+				this->filename = filename;
+				this->fs.open(this->filename, fstream::out);
+			}
 		}
 };
 class LogFile : public OutputFile	//derived class
@@ -111,6 +121,9 @@ class InputFile{
 		this->fs.open(this->filename, fstream::in);
 	}
 
+	void close(){
+		fs.close();
+	}
 	~InputFile(){
 		fs.close();
 	}
@@ -428,10 +441,10 @@ public:
 	InputFile dedup_bitmatrix_file, spss_boundary_file, dup_bitmatrix_file;
 	
 	
-	LogFile logfile_main;
-	LogFile debug1;
-	LogFile debug2;
-	OutputFile all_ls;
+	DebugFile logfile_main;
+	DebugFile debug1;
+	DebugFile debug2;
+	DebugFile all_ls;
 	long num_kmers;
 	int M;
 	int C;
@@ -822,7 +835,7 @@ public:
 					local_ht_arr.clear();
 				}
 
-				all_ls.fs << l <<" "<<ll<<endl;  
+				if(DEBUG_MODE) all_ls.fs << l <<" "<<ll<<endl;  
 				use_local_hash_nonrun = ( (ll - lm ) * case_nonrun + lm * (1+l) ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
 				use_local_hash_huff_nonrun = ( ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun  );
 
@@ -860,7 +873,7 @@ public:
 		vector<uint64_t> positions;
 		uint64_t b_it = 0;
 		dup_bitmatrix_file.rewind();
-		OutputFile cases_smc("cases_smc");
+		DebugFile cases_smc("cases_smc");
 		uint64_t curr_bv_hi = 0;
 		uint64_t curr_bv_lo = 0;
 		uint64_t prev_bv_hi = 0;
@@ -886,7 +899,7 @@ public:
 		{
 			l = per_simplitig_l[simplitig_it];
 			ll = ceil(log2(l));
-			all_ls.fs << l << endl;
+			if(DEBUG_MODE) all_ls.fs << l << endl;
 
 			// load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
@@ -914,7 +927,7 @@ public:
 				{ // CATEGORY=RUN
 					skip += 1;
 					// case_run+=1;
-					cases_smc.fs << "r" << endl;
+					if(DEBUG_MODE) cases_smc.fs << "r" << endl;
 				}
 				else
 				{ // CATEGORY=NOT_RUN
@@ -947,7 +960,7 @@ public:
 					{ // CATEGORY=LC
 						// if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
 						// if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
-						cases_smc.fs << "d" << endl;
+						if(DEBUG_MODE) cases_smc.fs << "d" << endl;
 
 						// case_dlc += 1;
 
@@ -971,7 +984,7 @@ public:
 					}
 					else
 					{ // CATEGORY=LM
-						cases_smc.fs << "l" << endl;
+						if(DEBUG_MODE) cases_smc.fs << "l" << endl;
 
 						// case_lm += 1;
 
@@ -1002,7 +1015,7 @@ public:
 			}
 			else
 			{ // start of simplitig, so CAT=LM
-				cases_smc.fs << "l" << endl;
+				if(DEBUG_MODE) cases_smc.fs << "l" << endl;
 
 				l = per_simplitig_l[simplitig_it];
 				ll = ceil(log2(l));
