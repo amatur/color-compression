@@ -83,7 +83,7 @@ class DebugFile : public OutputFile	//derived class
 
 		}
 		DebugFile(){
-			
+
 		}
 		void init(const std::string filename)
 		{
@@ -470,8 +470,8 @@ public:
 	//run param
 	int d_class_diff = 1; //0,1,2
 
-	bool USE_LOCAL_TABLE = false;
-    bool USE_HUFFMAN = false;
+	bool USE_LOCAL_TABLE = true;
+    bool USE_HUFFMAN = true;
 	bool ALWAYS_LOCAL_OR_GLOBAL = false;
 
 	COLESS(long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname, int max_run){
@@ -883,7 +883,7 @@ public:
 		uint64_t prev_bv_lo = 0;
 		uint64_t skip = 0;
 
-		InputFile cmp_keys("cmp_keys");
+		//InputFile cmp_keys("cmp_keys");
 		int simplitig_it = 0;
 		int l = per_simplitig_l[0];
 		int ll = ceil(log2(l));
@@ -915,10 +915,10 @@ public:
 				curr_bv_hi = std::stoull(bv_line.substr(64, bv_line.length() - 64), nullptr, 2);
 			}
 
-			// unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
-			string curr_kmer_cc_id_str;
-			getline(cmp_keys.fs, curr_kmer_cc_id_str);
-			unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10);
+			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+			// string curr_kmer_cc_id_str;
+			// getline(cmp_keys.fs, curr_kmer_cc_id_str);
+			// unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10);
 
 			if (spss_boundary[i] == '0')
 			{ // non-start
@@ -1051,8 +1051,10 @@ public:
 			{ // end k-mer of simplitig
 				local_ht.clear();
 				simplitig_it += 1;
-				if (USE_LOCAL_TABLE)
+				if (USE_LOCAL_TABLE){
+
 					lm_or_ll = ll;
+				}
 				if (skip != 0)
 				{ // not skipped, run break, write lm
 					int q, rem;
@@ -1075,7 +1077,7 @@ public:
 		DebugFile positions_out("positions_out");
 		for (uint64_t tt : positions)
 		{
-			positions_out.fs << tt << endl;
+			if(DEBUG_MODE) positions_out.fs << tt << endl;
 		}
 		cout << "b_it_size: " << b_it << endl;
 		store_as_sdsl(positions, b_it, "rrr_main");
