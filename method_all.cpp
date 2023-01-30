@@ -1,4 +1,4 @@
-//version: jan 30: not working, pause
+//version: jan 29, FIXED huff+local: ecoli10 TEST pass
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,8 +29,6 @@ using namespace std;
 using namespace sdsl;
 
 #include <unordered_map>
-
-const bool DEBUG_MODE = false;
 
 namespace TimeMeasure
 {
@@ -65,33 +63,9 @@ class OutputFile{
 	void write(string towrite){
 		fs << towrite; // <<endl;
 	}
-	void close(){
-		fs.close();
-	}
 	~OutputFile(){
 		fs.close();
 	}
-};
-class DebugFile : public OutputFile	//derived class
-{
-	public:
-		DebugFile(string filename){
-			if(!DEBUG_MODE){
-					this->filename = filename;
-					fs.open (filename.c_str(),  std::fstream::out );
-			}
-
-		}
-		DebugFile(){
-
-		}
-		void init(const std::string filename)
-		{
-			if(!DEBUG_MODE){
-				this->filename = filename;
-				this->fs.open(this->filename, fstream::out);
-			}
-		}
 };
 class LogFile : public OutputFile	//derived class
 {
@@ -124,9 +98,6 @@ class InputFile{
 		this->fs.open(this->filename, fstream::in);
 	}
 
-	void close(){
-		fs.close();
-	}
 	~InputFile(){
 		fs.close();
 	}
@@ -442,12 +413,10 @@ using namespace Huffman;
 class COLESS{
 public:
 	InputFile dedup_bitmatrix_file, spss_boundary_file, dup_bitmatrix_file;
-	
-	
-	DebugFile logfile_main;
-	DebugFile debug1;
-	DebugFile debug2;
-	DebugFile all_ls;
+	LogFile logfile_main;
+	LogFile debug1;
+	LogFile debug2;
+	OutputFile all_ls;
 	long num_kmers;
 	int M;
 	int C;
@@ -461,8 +430,6 @@ public:
 	int lc = 0;
 	string* global_table;
 	int* per_simplitig_l;
-	bool* per_simplitig_use_local;
-	
 	//per_simplitig_d
 	//per simplitig use_local_hash
 	vector<char> spss_boundary; 
@@ -472,7 +439,6 @@ public:
 
 	bool USE_LOCAL_TABLE = true;
     bool USE_HUFFMAN = true;
-	bool ALWAYS_LOCAL_OR_GLOBAL = false;
 
 	COLESS(long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname, int max_run){
 		dedup_bitmatrix_file.init(dedup_bitmatrix_fname);
@@ -496,8 +462,6 @@ public:
 
 	~COLESS(){
 		mphf_destroy();
-		delete per_simplitig_l;
-		delete per_simplitig_use_local;
 	}
 
 	// template <typename T> void dump_to_disk(T& vec, uint64_t last_written_pos, fstream fs)
@@ -555,7 +519,7 @@ public:
 			qpositions.pop();
 		}
 
-		if(DEBUG_MODE) debug1.fs<<-j<<" "<<block_sz<<endl;
+		debug1.fs<<-j<<" "<<block_sz<<endl;
 		assert (-j<=block_sz);
 
 	}
@@ -612,7 +576,7 @@ public:
 			bv[p] = 1;
 		}
 		if(filename=="rrr_main"){
-			if(DEBUG_MODE) debug2.fs<<bv;
+			debug2.fs<<bv;
 		}
 		rrr_vector<256> rrr_bv(bv);
 		//cout << "rrr_MB_bv_mapping="<<size_in_bytes(rrr_bv_mapping)/1024.0/1024.0 << endl;
@@ -646,9 +610,8 @@ public:
 		uint64_t* array_hi = new uint64_t[M];	// maintaing upto C/2 bits
 		uint64_t* array_lo = new uint64_t[M];	// maintaing upto C/2 bits
 
-		//LogFile log_num_color_in_class;
-		//log_num_color_in_class.init("log_num_color_in_class"); 
-		
+		LogFile log_num_color_in_class;
+		log_num_color_in_class.init("log_num_color_in_class"); 
 		global_table = new string[M];
 		for(int x=0; x<M; x++){
 			string bv_line;
@@ -667,10 +630,8 @@ public:
 				write_number_at_loc(positions, array_hi[idx], C-64, b_it ); //array_lo[x] lower uint64_t
 			}
 
-			// if(DEBUG_MODE) {
-			// 	int num_ones_in_color = __builtin_popcountll(array_hi[idx]) + __builtin_popcountll(array_lo[idx]) ;
-			// 	log_num_color_in_class.fs << num_ones_in_color <<endl;
-			// }
+			int num_ones_in_color = __builtin_popcountll(array_hi[idx]) + __builtin_popcountll(array_lo[idx]) ;
+			log_num_color_in_class.fs << num_ones_in_color <<endl;
 
 		}
 		dedup_bitmatrix_file.fs.close();
@@ -693,14 +654,12 @@ public:
 
 		time_start();
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
-		
 		for (uint64_t i=0; i < num_kmers; i+=1){
 			string bv_line;
 			getline (dup_bitmatrix_file.fs,bv_line);
 			cmp_keys.fs<<lookup(bv_line)<<endl;
 		}
 		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
-		cmp_keys.close();
 
 		time_start();
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frequency_sorted");
@@ -720,14 +679,13 @@ public:
 			frequencies[i++]= a;
 		}		
 		time_end("Read freq for "+to_string(M)+" values.");
-		infile_freq.close();
 
 		time_start();
 		INode* root = BuildTree(frequencies, M);
         GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
 		delete frequencies;
 		delete root;
-		time_end("Build huffman tree on " +to_string(M)+" values.");
+		time_end("Build huffman tree on" +to_string(M)+" values.");
 
 	}
 
@@ -746,7 +704,6 @@ public:
 			spss_boundary.push_back(spss_line[0]); //this kmer starts a simplitig
 		}
 		per_simplitig_l = new int[spss_boundary.size()];
-		per_simplitig_use_local =  new bool[spss_boundary.size()];
 
 		//per simplitig values		
 		Hashtable local_hash_table;
@@ -771,7 +728,7 @@ public:
 		uint64_t prev_bv_hi = 0;
 		uint64_t prev_bv_lo = 0;
 	
-		//InputFile cmp_keys("cmp_keys");
+		InputFile cmp_keys("cmp_keys");
 		int simplitig_it = 0;
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
 			string bv_line;
@@ -785,10 +742,10 @@ public:
 			//per kmer task
 			num_kmer_in_simplitig+=1;  //start of simplitig id: num_kmer_in_simplitig
 			
-			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
-			// string curr_kmer_cc_id_str;
-			// getline(cmp_keys.fs, curr_kmer_cc_id_str);
-			// unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10); 
+			//unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+			string curr_kmer_cc_id_str;
+			getline(cmp_keys.fs, curr_kmer_cc_id_str);
+			unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10); 
 			
 			if(spss_boundary[i]=='0'){ // non-start
 				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
@@ -822,36 +779,23 @@ public:
 
 				case_nonrun = case_dlc + case_lm;
 				
-				if(USE_LOCAL_TABLE){
-					if(!ALWAYS_LOCAL_OR_GLOBAL){
-						write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
-					}
-					
-					write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
+				//write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
+				write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
 
-					vector<uint32_t> local_ht_arr = local_hash_table.get_array();
-					for(uint32_t i = 0 ; i< local_hash_table.curr_id; i++){
-						uint32_t uniq_col_class_id = local_ht_arr[i];
-						sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
-						write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
-					}
-					local_ht_arr.clear();
+				vector<uint32_t> local_ht_arr = local_hash_table.get_array();
+				for(uint32_t i = 0 ; i< local_hash_table.curr_id; i++){
+					uint32_t uniq_col_class_id = local_ht_arr[i];
+					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
+					write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
 				}
+				local_ht_arr.clear();
 
-				if(DEBUG_MODE) all_ls.fs << l <<" "<<ll<<endl;  
+				all_ls.fs << l <<" "<<ll<<endl;  
 				use_local_hash_nonrun = ( (ll - lm ) * case_nonrun + lm * (1+l) ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
 				use_local_hash_huff_nonrun = ( ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun  );
 
-				if(use_local_hash_huff_nonrun < 0){
-					per_simplitig_use_local[simplitig_it] = true;
-				}else{
-					per_simplitig_use_local[simplitig_it] = false;
-				}
-
-
-
 				//logfile_main.fs<<use_local_hash<<" "<<use_local_hash_nonrun<<" "<<use_local_hash_huff<<" "<<use_local_hash_huff_nonrun<<" "<<num_kmer_in_simplitig<<endl;
-				if(DEBUG_MODE) logfile_main.fs<<num_kmer_in_simplitig<<" "<< l << " " << l*lm <<" "<<sum_length_huff_uniq_nonrun<<endl;
+				logfile_main.fs<<num_kmer_in_simplitig<<" "<< l << " " << l*lm <<" "<<sum_length_huff_uniq_nonrun<<endl;
 				
 				//re-init for new simplitig
 				local_hash_table.clear();
@@ -871,215 +815,184 @@ public:
 		store_as_sdsl(positions_local_table, b_it_local_table, "rrr_local_table");
 	}
 
-	void method1_pass2()
-	{
+	void method1_pass2(){
 		vector<uint64_t> positions;
 		uint64_t b_it = 0;
 		dup_bitmatrix_file.rewind();
-		DebugFile cases_smc("cases_smc");
-		uint64_t curr_bv_hi = 0;
+		OutputFile cases_smc("cases_smc");
+		uint64_t curr_bv_hi =  0;
 		uint64_t curr_bv_lo = 0;
 		uint64_t prev_bv_hi = 0;
 		uint64_t prev_bv_lo = 0;
 		uint64_t skip = 0;
 
-		//InputFile cmp_keys("cmp_keys");
+		InputFile cmp_keys("cmp_keys");
 		int simplitig_it = 0;
 		int l = per_simplitig_l[0];
 		int ll = ceil(log2(l));
 		int lm_or_ll;
-		if (USE_LOCAL_TABLE)
-		{
+		if(USE_LOCAL_TABLE){
 			lm_or_ll = ll;
-		}
-		else
-		{
+		}else{
 			lm_or_ll = lm;
 		}
 		Hashtable local_ht;
 		int lmaxrun = ceil(log2(max_run));
-		for (uint64_t i = 0; i < num_kmers; i += 1)
-		{
-			l = per_simplitig_l[simplitig_it];
+		for (uint64_t i=0; i < num_kmers; i+=1){ 
+			l=per_simplitig_l[simplitig_it];
 			ll = ceil(log2(l));
-			if(DEBUG_MODE) all_ls.fs << l << endl;
+			all_ls.fs<<l<<endl;
 
-			// load the color vector of current k-mer from disk to "curr_bv_hi/lo"
+			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
-			getline(dup_bitmatrix_file.fs, bv_line); // bv line = color vector C bits
+			getline (dup_bitmatrix_file.fs,bv_line); // bv line = color vector C bits
 
-			curr_bv_lo = std::stoull(bv_line.substr(0, std::min(64, C)), nullptr, 2);
+			curr_bv_lo = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
 			curr_bv_hi = 0;
-			if (C > 64 - 1)
-			{
-				curr_bv_hi = std::stoull(bv_line.substr(64, bv_line.length() - 64), nullptr, 2);
-			}
+			if(C > 64-1){
+				curr_bv_hi = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
+			} 
 
-			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
-			// string curr_kmer_cc_id_str;
-			// getline(cmp_keys.fs, curr_kmer_cc_id_str);
-			// unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10);
-
-			if (spss_boundary[i] == '0')
-			{ // non-start
+			//unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+			string curr_kmer_cc_id_str;
+			getline(cmp_keys.fs, curr_kmer_cc_id_str);
+			unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10); 
+			
+			if(spss_boundary[i]=='0'){ // non-start
 				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
 				int hd_lo = hammingDistance(prev_bv_lo, curr_bv_lo);
-				int hd = hd_hi + hd_lo;
-
-				if (hd == 0)
-				{ // CATEGORY=RUN
-					skip += 1;
-					// case_run+=1;
-					if(DEBUG_MODE) cases_smc.fs << "r" << endl;
-				}
-				else
-				{ // CATEGORY=NOT_RUN
-					// case_nonrun += 1;
-					if (skip != 0)
-					{ // not skipped, run break, write lm
-						// paul method
+				int hd= hd_hi+hd_lo;
+				
+				
+				if(hd==0){	//CATEGORY=RUN
+					skip+=1;	
+					//case_run+=1;	
+					cases_smc.fs<<"r"<<endl;
+				}else{ //CATEGORY=NOT_RUN
+					//case_nonrun += 1;
+					if(skip!=0){ 	//not skipped, run break, write lm
+						//paul method
 						{
 							int q, rem;
-							q = floor(skip / max_run);
+							q = floor(skip/max_run);
 							rem = skip % max_run;
-							assert(skip == q * max_run + rem); // skip = q*max_run + rem
-							write_number_at_loc(positions, CATEGORY_RUN, (uint64_t)2, b_it);
-							write_unary_one_at_loc(positions, (uint64_t)q, b_it);
+							assert(skip == q*max_run + rem); //skip = q*max_run + rem
+							write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+							write_unary_one_at_loc(positions, (uint64_t) q, b_it);
 							write_zero(positions, b_it);
-							write_number_at_loc(positions, (uint64_t)rem, (uint64_t)lmaxrun, b_it);
+							write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
 						}
-
-						// my method
+						
+						//my method
 						{
 							// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
 							// write_unary_one_at_loc(positions, (uint64_t) ceil(log2(skip)), b_it);
 							// write_zero(positions, b_it);
 							// write_number_at_loc(positions, (uint64_t) skip, (uint64_t) ceil(log2(skip)), b_it);
 						}
+
 					}
-					skip = 0;
+					skip=0;
+					
 
-					if (hd * (lc + 1) < lm_or_ll && hd == 1)
-					{ // CATEGORY=LC
-						// if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
-						// if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
-						if(DEBUG_MODE) cases_smc.fs << "d" << endl;
+					if(hd*(lc + 1) < lm_or_ll && hd==1 ){ //CATEGORY=LC
+					//if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
+					//if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
+						cases_smc.fs<<"d"<<endl;
 
-						// case_dlc += 1;
-
-						for (int i_bit = 0; i_bit < 64 && i_bit < C; i_bit += 1)
-						{
-							if (((prev_bv_lo >> i_bit) & 1) != ((curr_bv_lo >> i_bit) & 1))
-							{
-								write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
-								write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+						//case_dlc += 1;
+						
+							for (int i_bit=0; i_bit < 64 && i_bit < C; i_bit+=1){
+								if ((( prev_bv_lo >>  i_bit) & 1) != (( curr_bv_lo >>  i_bit) & 1)){ 
+									write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
+									write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+								}
 							}
-						}
-						for (int i_bit = 64; i_bit < C; i_bit += 1)
-						{
-							int actual_i_bit = i_bit - 64;
-							if (((prev_bv_hi >> actual_i_bit) & 1) != ((curr_bv_hi >> actual_i_bit) & 1))
-							{
-								write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
-								write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+							for (int i_bit=64; i_bit < C; i_bit+=1){
+								int actual_i_bit = i_bit-64;
+								if ((( prev_bv_hi >>  actual_i_bit) & 1) != (( curr_bv_hi >>  actual_i_bit) & 1)){
+									write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
+									write_number_at_loc(positions, i_bit, lc, b_it);	//i_bit is the different bit loc
+								}
 							}
-						}
-					}
-					else
-					{ // CATEGORY=LM
-						if(DEBUG_MODE) cases_smc.fs << "l" << endl;
+						
+						
+					}else{ //CATEGORY=LM
+						cases_smc.fs<<"l"<<endl;
 
-						// case_lm += 1;
+						//case_lm += 1;
 
 						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-						if (USE_LOCAL_TABLE)
-						{
+						if(USE_LOCAL_TABLE){
 							uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
 							if (ll == 0 && localid == 1)
 							{
 								cout << "trouble" << endl;
 							}
 							write_number_at_loc(positions, localid, ll, b_it);
-						}
-						else
-						{
-							if (USE_HUFFMAN)
-							{
+						}else{
+							if(USE_HUFFMAN)
 								write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
-							}
 							else
-							{
 								write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
-							}
-							// assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
+							//assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 						}
-					}
+					}	
 				}
-			}
-			else
-			{ // start of simplitig, so CAT=LM
-				if(DEBUG_MODE) cases_smc.fs << "l" << endl;
+			}else{	//start of simplitig, so CAT=LM
+				cases_smc.fs<<"l"<<endl;
 
 				l = per_simplitig_l[simplitig_it];
 				ll = ceil(log2(l));
 				lm_or_ll = ll;
 
-				// case_lm+=1;
-				// case_nonrun +=1;
-
+				//case_lm+=1;
+				//case_nonrun +=1;
+				
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-				if (USE_LOCAL_TABLE)
-				{
+				if(USE_LOCAL_TABLE){
 					uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
-					if (ll == 0)
+					if(ll==0)
 					{
-						assert(localid == 0);
+						assert(localid==0);
 					}
 					write_number_at_loc(positions, localid, ll, b_it);
-				}
-				else
-				{
-					if (USE_HUFFMAN==true)
+				}else{
+					if(USE_HUFFMAN)
 						write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 					else
 						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
-					// assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
+					//assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 				}
 			}
 
-			if (spss_boundary[(i + 1) % num_kmers] == '1')
-			{ // end k-mer of simplitig
+			if(spss_boundary[(i+1)%num_kmers]=='1'){	// end k-mer of simplitig
 				local_ht.clear();
-				simplitig_it += 1;
-				if (USE_LOCAL_TABLE){
-
-					lm_or_ll = ll;
-				}
-				if (skip != 0)
-				{ // not skipped, run break, write lm
+				simplitig_it+=1;
+				if(USE_LOCAL_TABLE) lm_or_ll = ll;
+				if(skip!=0){ 	//not skipped, run break, write lm
 					int q, rem;
-					q = floor(skip / max_run);
+					q = floor(skip/max_run);
 					rem = skip % max_run;
-					assert(skip == q * max_run + rem); // skip = q*max_run + rem
-					// paul method
-					write_number_at_loc(positions, CATEGORY_RUN, (uint64_t)2, b_it);
-					write_unary_one_at_loc(positions, (uint64_t)q, b_it);
+					assert(skip == q*max_run + rem); //skip = q*max_run + rem
+					//paul method
+					write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+					write_unary_one_at_loc(positions, (uint64_t) q, b_it);
 					write_zero(positions, b_it);
-					write_number_at_loc(positions, (uint64_t)rem, (uint64_t)lmaxrun, b_it);
-					// my method //100001
+					write_number_at_loc(positions, (uint64_t) rem, (uint64_t) lmaxrun, b_it);
+					//my method //100001
 				}
-				skip = 0;
+				skip=0;
 			}
-			prev_bv_hi = curr_bv_hi;
-			prev_bv_lo = curr_bv_lo;
+			prev_bv_hi=curr_bv_hi;
+			prev_bv_lo=curr_bv_lo;
 		}
 
-		DebugFile positions_out("positions_out");
-		for (uint64_t tt : positions)
-		{
-			if(DEBUG_MODE) positions_out.fs << tt << endl;
+		OutputFile positions_out("positions_out");
+		for(uint64_t tt: positions){
+			positions_out.fs<<tt<<endl;
 		}
-		cout << "b_it_size: " << b_it << endl;
+		cout<<"b_it_size: "<<b_it<<endl;
 		store_as_sdsl(positions, b_it, "rrr_main");
 		store_as_binarystring(positions, b_it, "bb_main");
 	}
@@ -1133,4 +1046,3 @@ int main (int argc, char* argv[]){
 
 	return EXIT_SUCCESS;
 }
-
