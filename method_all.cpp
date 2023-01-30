@@ -1,4 +1,4 @@
-//version: jan 29, FIXED huff+local: ecoli10 TEST pass
+//version: jan 30: not working, pause
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>

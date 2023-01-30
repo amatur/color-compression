@@ -1,4 +1,4 @@
-//version: jan 29, FIXED huff+local: ecoli10 TEST pass
+//version: jan 30: not working, pause
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,6 +31,7 @@ uint64_t written_kmer = 0;
 void dbg(){
 
 }
+bool DEBUG_MODE = false;
 
 namespace TimeMeasure
 {
@@ -101,6 +102,9 @@ class OutputFile{
 	void write(string towrite){
 		fs << towrite; // <<endl;
 	}
+    void close(){
+        fs.close();
+    }
 	~OutputFile(){
 		fs.close();
 	}
@@ -124,12 +128,35 @@ class InputFile{
 		this->fs.close();
 		this->fs.open(this->filename, fstream::in);
 	}
-
+    void close(){
+        fs.close();
+    }
 	~InputFile(){
 		fs.close();
 	}
 };
 
+class DebugFile : public OutputFile	//derived class
+{
+	public:
+		DebugFile(string filename){
+			if(!DEBUG_MODE){
+					this->filename = filename;
+					fs.open (filename.c_str(),  std::fstream::out );
+			}
+
+		}
+		DebugFile(){
+
+		}
+		void init(const std::string filename)
+		{
+			if(!DEBUG_MODE){
+				this->filename = filename;
+				this->fs.open(this->filename, fstream::out);
+			}
+		}
+};
 
 typedef std::vector<bool> HuffCode;
 typedef std::map<u_int32_t, HuffCode> HuffCodeMap;
@@ -249,18 +276,18 @@ namespace Huffman{
     }
 
     vector<int> read_l_huff_codes(int l, string s, uint64_t& b_it, INode* root){
-        OutputFile logfile_huff_decode("logfile_huff_decode");
+        DebugFile logfile_huff_decode("logfile_huff_decode");
 		 vector<int> v ;
         int loc  = b_it;
-        logfile_huff_decode.fs<<l<<":";
+        if(DEBUG_MODE) logfile_huff_decode.fs<<l<<":";
 		while(l){
 			u_int32_t decoded_col_class = HuffDecode(root, s, loc);
             v.push_back(decoded_col_class);
-            logfile_huff_decode.fs<<decoded_col_class<<",";
+            if(DEBUG_MODE) logfile_huff_decode.fs<<decoded_col_class<<",";
 			l--;
 		}
         b_it = loc;
-        logfile_huff_decode.fs<<endl;
+        if(DEBUG_MODE) logfile_huff_decode.fs<<endl;
         return v;
 	}
 }
@@ -359,15 +386,15 @@ public:
 
 		time_start();
 		INode* root = BuildTree(frequencies, M);
-        OutputFile huff_codes("huff_codes");
+        DebugFile huff_codes("huff_codes");
         GenerateCodes(root, HuffCode(), huff_code_map); // huff_code_map is filled: uint32t colclassid-> vector bool
 		delete frequencies;
         for (HuffCodeMap::const_iterator it = huff_code_map.begin(); it != huff_code_map.end(); ++it)
     {
-        huff_codes.fs << it->first << " ";
+        if(DEBUG_MODE) huff_codes.fs << it->first << " ";
         std::copy(it->second.begin(), it->second.end(),
                   std::ostream_iterator<bool>(huff_codes.fs));
-        huff_codes.fs << std::endl;
+        if(DEBUG_MODE) huff_codes.fs << std::endl;
     }
 		//delete root;
 		time_end("Build huffman tree on" +to_string(M)+" values.");
@@ -490,11 +517,11 @@ public:
         huff_root = build_huff_tree();
         load_bb_into_string("bb_map", str_map);
         b_it = 0;
-        OutputFile color_global("color_global"); //M color vectors //DEBUGFILE
+        DebugFile color_global("color_global"); //M color vectors //DEBUGFILE
         for (int i = 0; i < M; i++)
         {
             string col_vector = read_color_vector(str_map, b_it);
-            color_global.fs << col_vector << endl;
+            if(DEBUG_MODE) color_global.fs << col_vector << endl;
             global_table[i] = col_vector;
         }
         color_global.fs.close();
