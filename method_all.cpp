@@ -82,6 +82,9 @@ class DebugFile : public OutputFile	//derived class
 			}
 
 		}
+		DebugFile(){
+			
+		}
 		void init(const std::string filename)
 		{
 			if(!DEBUG_MODE){
