@@ -715,6 +715,8 @@ public:
 		
 		cc_ids = new unsigned int[num_kmers];
 		hds = new int[num_kmers];
+		uint64_t prev_bv_lo = 0;
+		uint64_t prev_bv_hi = 0;
 
 		for (uint64_t i=0; i < num_kmers; i+=1){  // read two files of length num_kmers 
 			string bv_line;
@@ -735,6 +737,10 @@ public:
 				curr_bv_hi = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
 			} 
 			hds[i] = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
+
+			prev_bv_hi = curr_bv_hi;
+			prev_bv_lo = curr_bv_lo;
+
 		}
 		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
 		cmp_keys.close();
@@ -952,9 +958,12 @@ public:
 		{
 			int bigD = per_simplitig_optimal_bigD[simplitig_it];
 			int useLocal = per_simplitig_optimal_useLocal[simplitig_it];
-
+			
 			l = per_simplitig_l[simplitig_it];
 			ll = ceil(log2(l));
+
+			if(DEBUG_MODE)
+				all_ls.fs<<bigD<<" "<<useLocal<<" "<<l<<" "<<ll<<endl;
 			if (useLocal == 1)
 			{
 				lm_or_ll = ll;
