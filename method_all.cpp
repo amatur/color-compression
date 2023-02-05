@@ -861,6 +861,7 @@ public:
 					ll = ceil(log2(l) * 1.0);
 				}
 				
+				vector<uint32_t> local_ht_arr = local_hash_table.get_array();
 				for (uint32_t i = 0; i < local_hash_table.curr_id; i++)
 				{
 					uint32_t uniq_col_class_id = local_ht_arr[i];
@@ -870,7 +871,7 @@ public:
 				int per_simplitig_space_needed = sum_length_huff_nonrun + useLocal * (ll * case_lm + lm + sum_length_huff_uniq_nonrun) + (1 - useLocal) * (sum_dlc_space + lm * case_lm);
 				if (per_simplitig_space_needed < optimal_space)
 				{
-					optimal_useLocal = uselocal;
+					optimal_useLocal = useLocal;
 					optimal_bigD = bigD;
 					optimal_space = per_simplitig_space_needed;
 					optimal_ht = local_hash_table;
