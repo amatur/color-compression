@@ -775,7 +775,7 @@ public:
 
 		int optimal_bigD = 0;
 		int optimal_useLocal = 0;
-		int optimal_space = 99999999999;
+		int optimal_space = 999999999;
 		Hashtable optimal_ht;
 
 		//per simplitig values		
@@ -795,13 +795,17 @@ public:
 		int simplitig_start_id = 0;
 		int simplitig_it = 0;
 		uint64_t i = 0;
+		per_simplitig_l = new int[num_simplitig];
+		per_simplitig_optimal_useLocal = new int[num_simplitig];
+		per_simplitig_optimal_bigD = new int[num_simplitig];
+
 
 		for (int big_d_local_combo = 0; big_d_local_combo < 6; big_d_local_combo++)
 		{
 			int hd = hds[i];
 			unsigned int curr_kmer_cc_id = cc_ids[i]; // uint64_t num = bphf->lookup(curr_bv);
 
-			int uselocal = (int)(big_d_local_combo / 3);
+			int useLocal = (int)(big_d_local_combo / 3);
 			int bigD = big_d_local_combo % 3;
 			if (spss_boundary[i] == '0')
 			{ // non-start
@@ -870,7 +874,7 @@ public:
 				}
 
 				skip = 0;
-				case_run = case_lm = case_nonrun = case_dlc = 0;
+				case_run = case_lm  = case_dlc = 0;
 				sum_length_huff_nonrun = sum_length_huff_uniq_nonrun = sum_dlc_space = 0;
 
 				
@@ -904,7 +908,7 @@ public:
 					// out of loop 6, reinit opt value
 					optimal_bigD = 0;
 					optimal_useLocal = 0;
-					optimal_space = 99999999999;
+					optimal_space = 999999999;
 					// re-init for new simplitig
 					local_hash_table.clear();
 					// num_kmer_in_simplitig = 0;
