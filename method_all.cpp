@@ -758,6 +758,7 @@ public:
 					case_nonrun += 1;
 					skip=0;
 					local_hash_table.put_and_getid(curr_kmer_cc_id);
+					sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 					if(false){ //CAT=LC
 						case_dlc += 1;
 					}else{ //CAT=LM
@@ -786,7 +787,7 @@ public:
 				}
 				local_ht_arr.clear();
 
-				cout<<"hey "<<ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun  <<endl;
+				cout<<"hey "<<ll*case_nonrun<<" "<<sum_length_huff_nonrunll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun  <<endl;
 				if(  ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun   <0){
 					write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
 					write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
