@@ -915,7 +915,7 @@ public:
 						write_zero(positions_local_table, b_it_local_table);
 					}
 
-					if(DEBUG_MODE) all_ls.fs<<big_d_local_combo<<" "<<optimal_bigD<<" "<<optimal_useLocal<<" "<<optimal_space<<endl;
+					if(DEBUG_MODE) cout<<big_d_local_combo<<" "<<optimal_bigD<<" "<<optimal_useLocal<<" "<<optimal_space<<endl;
 					// out of loop 6, reinit opt value
 					optimal_bigD = 0;
 					optimal_useLocal = 0;
