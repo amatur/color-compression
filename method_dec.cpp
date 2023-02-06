@@ -323,9 +323,9 @@ public:
     int l_of_curr_simplitig;
     char per_simplitig_use_local_id;
     
-    bool USE_LOCAL_TABLE = false;
+    bool USE_LOCAL_TABLE = true;
     bool USE_HUFFMAN = true;
-    bool ALWAYS_LOCAL_OR_GLOBAL = true;
+    bool ALWAYS_LOCAL_OR_GLOBAL = false;
 
  
 

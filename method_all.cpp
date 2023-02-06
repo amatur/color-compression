@@ -1029,7 +1029,7 @@ public:
 					}
 					skip = 0;
 
-					if (hd <= bigD && useLocal == 0)
+					if (hd <= bigD)
 					{ // CATEGORY=LC
 						// if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
 						// if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
