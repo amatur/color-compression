@@ -1,4 +1,4 @@
-//version: jan 30: not working, pause
+//version: feb 6:pausing the combo
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -828,7 +828,7 @@ public:
 				{ // CAT=NRUN
 					skip = 0;
 					local_hash_table.put_and_getid(curr_kmer_cc_id);
-					if (hd <= bigD && useLocal == 0)
+					if (hd <= bigD)
 					{ // CAT=LC
 						case_dlc += 1;
 						sum_dlc_space += hd * lc + 2; // 101 = d>2 = 100 = d>1, d upto 4 per simp 2 bit

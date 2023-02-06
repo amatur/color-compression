@@ -1,4 +1,4 @@
-//version: jan 30: not working, pause
+//version: feb 6:pausing the combo
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>
