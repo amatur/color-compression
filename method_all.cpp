@@ -779,10 +779,13 @@ public:
 
 				case_nonrun = case_dlc + case_lm;
 
+				vector<uint32_t> local_ht_arr = local_hash_table.get_array();
 				for(uint32_t i = 0 ; i< local_hash_table.curr_id; i++){
 					uint32_t uniq_col_class_id = local_ht_arr[i];
 					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
 				}
+				local_ht_arr.clear();
+
 				
 				if(  ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun   <0){
 					write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
