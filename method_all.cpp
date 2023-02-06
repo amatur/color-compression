@@ -778,25 +778,34 @@ public:
 				per_simplitig_l[simplitig_it] = l;
 
 				case_nonrun = case_dlc + case_lm;
+
+				for(uint32_t i = 0 ; i< local_hash_table.curr_id; i++){
+					uint32_t uniq_col_class_id = local_ht_arr[i];
+					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
+				}
 				
-				if( ( (ll - lm ) * case_nonrun + lm * (1+l) ) <0){
+				if(  ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun   <0){
 					write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
 					write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
 
 					vector<uint32_t> local_ht_arr = local_hash_table.get_array();
 					for(uint32_t i = 0 ; i< local_hash_table.curr_id; i++){
 						uint32_t uniq_col_class_id = local_ht_arr[i];
-						sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
 						write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
 					}
 					local_ht_arr.clear();
+
+					
 				}else{
 					write_zero(positions_local_table, b_it_local_table);
+					per_simplitig_l[simplitig_it] = 0;
+					cout<<"zero"<<endl;
+
 				}
 
 				
 
-				all_ls.fs << l <<" "<<ll<<endl;  
+				all_ls.fs << l <<" "<<per_simplitig_l[simplitig_it]<<endl;  
 				use_local_hash_nonrun = ( (ll - lm ) * case_nonrun + lm * (1+l) ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
 				use_local_hash_huff_nonrun = ( ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun  );
 
@@ -847,7 +856,6 @@ public:
 		for (uint64_t i=0; i < num_kmers; i+=1){ 
 			l=per_simplitig_l[simplitig_it];
 			ll = ceil(log2(l));
-			all_ls.fs<<l<<endl;
 
 			//load the color vector of current k-mer from disk to "curr_bv_hi/lo"
 			string bv_line;
