@@ -814,8 +814,9 @@ public:
 			int hd = hds[i];
 			unsigned int curr_kmer_cc_id = cc_ids[i]; // uint64_t num = bphf->lookup(curr_bv);
 
-			int useLocal = (int)(big_d_local_combo / 3);
+			int useLocal = (big_d_local_combo / 3);
 			int bigD = big_d_local_combo % 3;
+			cout<<useLocal<<" "<<bigD<<endl;
 			if (spss_boundary[i] == '0')
 			{ // non-start
 				if (hd == 0)
@@ -915,7 +916,7 @@ public:
 						write_zero(positions_local_table, b_it_local_table);
 					}
 
-					if(DEBUG_MODE) cout<<big_d_local_combo<<" "<<optimal_bigD<<" "<<optimal_useLocal<<" "<<optimal_space<<endl;
+					cout<<big_d_local_combo<<" "<<optimal_bigD<<" "<<optimal_useLocal<<" "<<optimal_space<<endl;
 					// out of loop 6, reinit opt value
 					optimal_bigD = 0;
 					optimal_useLocal = 0;
