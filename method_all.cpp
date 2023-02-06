@@ -798,11 +798,11 @@ public:
 					}
 					local_ht_arr.clear();
 
-					
+					all_ls.fs<<"one"<<endl;
 				}else{
 					write_zero(positions_local_table, b_it_local_table);
 					per_simplitig_l[simplitig_it] = 0;
-					cout<<"zero"<<endl;
+					all_ls.fs<<"zero"<<endl;
 
 				}
 
