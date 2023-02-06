@@ -967,7 +967,7 @@ public:
 				//case_nonrun +=1;
 				
 				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-				if(USE_LOCAL_TABLE){
+				if(l!=0){
 					uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
 					if(ll==0)
 					{
@@ -986,7 +986,7 @@ public:
 			if(spss_boundary[(i+1)%num_kmers]=='1'){	// end k-mer of simplitig
 				local_ht.clear();
 				simplitig_it+=1;
-				if(USE_LOCAL_TABLE) lm_or_ll = ll;
+				if(l!=0) lm_or_ll = ll;
 				if(skip!=0){ 	//not skipped, run break, write lm
 					int q, rem;
 					q = floor(skip/max_run);
