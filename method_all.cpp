@@ -808,6 +808,9 @@ public:
 
 		for (int big_d_local_combo = 0; big_d_local_combo < 6; big_d_local_combo++)
 		{
+			if(DEBUG_MODE)
+				all_ls.fs<<"Start_bigd"<<" "<<big_d_local_combo<<endl;
+
 			int hd = hds[i];
 			unsigned int curr_kmer_cc_id = cc_ids[i]; // uint64_t num = bphf->lookup(curr_bv);
 
@@ -912,6 +915,7 @@ public:
 						write_zero(positions_local_table, b_it_local_table);
 					}
 
+					if(DEBUG_MODE) all_ls.fs<<big_d_local_combo<<" "<<optimal_bigD<<" "<<optimal_useLocal<<" "<<optimal_space<<endl;
 					// out of loop 6, reinit opt value
 					optimal_bigD = 0;
 					optimal_useLocal = 0;
@@ -919,8 +923,8 @@ public:
 					// re-init for new simplitig
 					local_hash_table.clear();
 					// num_kmer_in_simplitig = 0;
-					positions_local_table.clear();
-					b_it_local_table=0;
+					//positions_local_table.clear();
+					//b_it_local_table=0;
 
 					optimal_ht.clear();
 					simplitig_it += 1;
