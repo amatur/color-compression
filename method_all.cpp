@@ -779,20 +779,22 @@ public:
 
 				case_nonrun = case_dlc + case_lm;
 				
-				if( ( (ll - lm ) * case_nonrun + lm * (1+l) ) <0)
+				if( ( (ll - lm ) * case_nonrun + lm * (1+l) ) <0){
 					write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
-				else	
+					write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
+
+					vector<uint32_t> local_ht_arr = local_hash_table.get_array();
+					for(uint32_t i = 0 ; i< local_hash_table.curr_id; i++){
+						uint32_t uniq_col_class_id = local_ht_arr[i];
+						sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
+						write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
+					}
+					local_ht_arr.clear();
+				}else{
 					write_zero(positions_local_table, b_it_local_table);
-
-				write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
-
-				vector<uint32_t> local_ht_arr = local_hash_table.get_array();
-				for(uint32_t i = 0 ; i< local_hash_table.curr_id; i++){
-					uint32_t uniq_col_class_id = local_ht_arr[i];
-					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
-					write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
 				}
-				local_ht_arr.clear();
+
+				
 
 				all_ls.fs << l <<" "<<ll<<endl;  
 				use_local_hash_nonrun = ( (ll - lm ) * case_nonrun + lm * (1+l) ) ;  //ll*case_lm + (lm + l*lm) ::: lm * case_lm 
