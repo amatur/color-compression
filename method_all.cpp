@@ -76,22 +76,22 @@ class DebugFile : public OutputFile	//derived class
 {
 	public:
 		DebugFile(string filename){
-			if(!DEBUG_MODE){
+			//if(!DEBUG_MODE){
 					this->filename = filename;
 					fs.open (filename.c_str(),  std::fstream::out );
-			}
+			//}
 
 		}
 		DebugFile(){
 
 		}
-		void init(const std::string filename)
-		{
-			if(!DEBUG_MODE){
-				this->filename = filename;
-				this->fs.open(this->filename, fstream::out);
-			}
-		}
+		// void init(const std::string filename)
+		// {
+		// 	if(!DEBUG_MODE){
+		// 		this->filename = filename;
+		// 		this->fs.open(this->filename, fstream::out);
+		// 	}
+		// }
 };
 class LogFile : public OutputFile	//derived class
 {
