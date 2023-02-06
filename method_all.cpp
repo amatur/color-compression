@@ -758,7 +758,7 @@ public:
 					case_nonrun += 1;
 					skip=0;
 					local_hash_table.put_and_getid(curr_kmer_cc_id);
-					if(hd*(1+lc) < lm && hd == 1){ //CAT=LC
+					if(false){ //CAT=LC
 						case_dlc += 1;
 					}else{ //CAT=LM
 						case_lm += 1;
@@ -779,7 +779,11 @@ public:
 
 				case_nonrun = case_dlc + case_lm;
 				
-				//write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
+				if( ( (ll - lm ) * case_nonrun + lm * (1+l) ) <0)
+					write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
+				else	
+					write_zero(positions_local_table, b_it_local_table);
+
 				write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
 
 				vector<uint32_t> local_ht_arr = local_hash_table.get_array();
@@ -895,7 +899,7 @@ public:
 					skip=0;
 					
 
-					if(hd*(lc + 1) < lm_or_ll && hd==1 ){ //CATEGORY=LC
+					if(false ){ //CATEGORY=LC
 					//if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
 					//if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
 						cases_smc.fs<<"d"<<endl;
@@ -923,7 +927,7 @@ public:
 						//case_lm += 1;
 
 						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-						if(USE_LOCAL_TABLE){
+						if(l!=0){
 							uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
 							if (ll == 0 && localid == 1)
 							{
