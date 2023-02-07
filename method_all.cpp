@@ -787,7 +787,7 @@ public:
 				}
 				local_ht_arr.clear();
 
-				cout<<"hey "<<ll*case_nonrun<<" "<<sum_length_huff_nonrun<<" "<<sum_length_huff_uniq_nonrun<<" "<<ll*case_nonrun - sum_length_huff_nonrun  + sum_length_huff_uniq_nonrun  <<endl;
+				all_ls.fs<<"hey "<<ll*case_nonrun<<" "<<sum_length_huff_nonrun<<" "<<sum_length_huff_uniq_nonrun<<" "<<ll*case_nonrun - sum_length_huff_nonrun  + sum_length_huff_uniq_nonrun  <<endl;
 				if(  ll*case_nonrun - sum_length_huff_nonrun + lm + sum_length_huff_uniq_nonrun   <0){
 					write_number_at_loc(positions_local_table, 1, 1, b_it_local_table); //if always use local table, skip
 					write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
