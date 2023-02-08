@@ -872,7 +872,8 @@ public:
 					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
 				}
 
-				int per_simplitig_space_needed = sum_length_huff_nonrun + useLocal * (ll * case_lm + lm + sum_length_huff_uniq_nonrun) + (1 - useLocal) * (sum_dlc_space + lm * case_lm);
+				int per_simplitig_space_needed =  useLocal * (ll * case_lm + lm + sum_length_huff_uniq_nonrun + sum_dlc_space) + (1 - useLocal) * (sum_length_huff_nonrun + sum_dlc_space + lm * case_lm);
+				cout<<bigD<<" "<<useLocal<<" "<<per_simplitig_space_needed<<endl;
 				if (per_simplitig_space_needed < optimal_space)
 				{
 					optimal_useLocal = useLocal;
