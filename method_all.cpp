@@ -957,8 +957,12 @@ public:
 
 					simplitig_it += 1;
 					it_kmer++;
-					if (it_kmer == num_kmers)
+					if (it_kmer == num_kmers){
 						break;
+					}else{
+						big_d_local_combo = 0;
+						continue;
+					}
 				}
 				local_hash_table.clear();
 			}
