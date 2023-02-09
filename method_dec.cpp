@@ -31,6 +31,12 @@ uint64_t written_kmer = 0;
 void dbg(){
 
 }
+uint64_t CATEGORY_RUN=(uint64_t) 3;
+uint64_t CATEGORY_COLCLASS=(uint64_t) 0;
+uint64_t CATEGORY_COLVEC=(uint64_t) 2;
+uint64_t CATEGORY_COLVEC_ONE = (uint64_t) 4; //100
+uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
+
 bool DEBUG_MODE = false;
 
 namespace TimeMeasure
@@ -322,6 +328,7 @@ public:
     vector<int> local_hash_table;
     int l_of_curr_simplitig;
     char per_simplitig_use_local_id;
+    uint64_t per_simplitig_bigD;
     
     bool USE_LOCAL_TABLE = true;
     bool USE_HUFFMAN = true;
@@ -476,14 +483,15 @@ public:
     }
 
     void read_local_hash_table_per_simplitig(string str_local, u_int64_t& b_it){
-        if(!ALWAYS_LOCAL_OR_GLOBAL){
-            per_simplitig_use_local_id = read_one_bit(str_local, b_it);
-        }
-
+        per_simplitig_bigD = read_uint(str_local, b_it, 2); //0, 1, 2
+        per_simplitig_use_local_id = read_one_bit(str_local, b_it);
+        
         if(per_simplitig_use_local_id == '1'){
             l_of_curr_simplitig = read_uint(str_local, b_it, lm);
             //int ll = ceil(log2(l));
             local_hash_table = read_l_huff_codes(l_of_curr_simplitig, str_local, b_it, huff_root); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
+        }else{
+            
         }
     }
 
@@ -557,7 +565,7 @@ public:
                 if(start_of_simplitig(written_kmer)){ 
                     read_local_hash_table_per_simplitig(str_local, b_it_local); //changes l_of_curr_simplitig
                 }
-                if(USE_LOCAL_TABLE && per_simplitig_use_local_id == '1'){//using local table
+                if(per_simplitig_use_local_id == '1'){//using local table
                     int local_id = 0;
                     if(ceil(log2(l_of_curr_simplitig)) != 0){
                         local_id = read_uint(str_map, b_it, ceil(log2(l_of_curr_simplitig)));
@@ -585,7 +593,11 @@ public:
             }
             else if (c == '1')
             {
-                char c2 = read_one_bit(str_map, b_it);
+                char c2 = '1';
+                if(per_simplitig_bigD != 0){
+                    c2 = read_one_bit(str_map, b_it);;
+                }
+                
                 if (c2 == '1')
                 { // run
                     flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
@@ -618,9 +630,24 @@ public:
                 else
                 { // lc 10
                     flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
+                    if(per_simplitig_bigD == 1){
+                        int differing_bit = read_uint(str_map, b_it, lc);
+                        differ_run.push_back(differing_bit);
+                    }else if(per_simplitig_bigD == 2){
+                        char c3 = read_one_bit(str_map, b_it);;
+                        if(c3 == '1'){ // 101 // read two
+                            differing_bit = read_uint(str_map, b_it, lc);
+                            differ_run.push_back(differing_bit);
 
-                    int differing_bit = read_uint(str_map, b_it, lc);
-                    differ_run.push_back(differing_bit);
+                            differing_bit = read_uint(str_map, b_it, lc);
+                            differ_run.push_back(differing_bit);
+                        }else{//c3 = 0, 100 // read one
+                            differing_bit = read_uint(str_map, b_it, lc);
+                            differ_run.push_back(differing_bit);
+                        }
+
+                    }
+                    
                 }
             }
         } 

@@ -463,6 +463,10 @@ public:
 	uint64_t CATEGORY_RUN=(uint64_t) 3;
 	uint64_t CATEGORY_COLCLASS=(uint64_t) 0;
 	uint64_t CATEGORY_COLVEC=(uint64_t) 2;
+	uint64_t CATEGORY_COLVEC_ONE = (uint64_t) 4; //100
+	uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
+
+
 	int lm = 0;
 	int lc = 0;
 	string* global_table;
@@ -471,6 +475,8 @@ public:
 	int* per_simplitig_l;
 	int* per_simplitig_optimal_bigD; 
 	int* per_simplitig_optimal_useLocal;
+	int* per_simplitig_optimal_space;
+
 
 	//bool* per_simplitig_use_local;
 	//int* per_simplitig_bigD;
@@ -518,6 +524,7 @@ public:
 		delete per_simplitig_l;
 		delete per_simplitig_optimal_bigD;
 		delete per_simplitig_optimal_useLocal;
+		delete per_simplitig_optimal_space;
 	}
 
 	// template <typename T> void dump_to_disk(T& vec, uint64_t last_written_pos, fstream fs)
@@ -602,6 +609,30 @@ public:
 	}
 	void write_unary_zero_at_loc(vector<uint64_t> & positions, uint64_t unary_num, uint64_t& b_it ){
 		b_it+=unary_num;
+	}
+
+	void write_category(vector<uint64_t> & positions, uint64_t & b_it, uint64_t category, int bigD, int hd){ //0 run, case_lm, case_dlc
+		if(category == CATEGORY_RUN){
+			if(bigD==0){
+				write_one(positions, b_it);
+			}else{
+				write_number_at_loc(positions, CATEGORY_RUN, (uint64_t)2, b_it);
+			}
+		}else if(category == CATEGORY_COLCLASS){
+			if(bigD==0){
+				write_zero(positions, b_it);
+			}else{
+				write_number_at_loc(positions, CATEGORY_COLCLASS, (uint64_t)1, b_it);
+			}
+		}else if(category == CATEGORY_COLVEC){ //assert bigD == 1
+			if(bigD == 1 && hd == 1){
+				write_number_at_loc(positions, CATEGORY_COLVEC, (uint64_t)2, b_it);
+			}else if(bigD == 2 && hd==2){
+				write_number_at_loc(positions, CATEGORY_COLVEC_TWO, (uint64_t)3, b_it);
+			}else if(bigD == 2 && hd==1){
+				write_number_at_loc(positions, CATEGORY_COLVEC_ONE, (uint64_t)3, b_it);
+			}
+		}
 	}
 
 	void write_binary_string_at_loc(vector<uint64_t> & positions, string binarystring, uint64_t& b_it){
@@ -780,8 +811,7 @@ public:
 	void method1_pass1(){ //decide whether to use local hash table, can skip
 
 		int optimal_bigD = 0;
-		int optimal_useLocal = 0;
-		int optimal_space = 999999999;
+		//int optimal_space = 999999999;
 		Hashtable optimal_ht;
 
 		//per simplitig values		
@@ -800,10 +830,14 @@ public:
 		//per kmer values
 		int simplitig_start_id = 0;
 		int simplitig_it = 0;
-		uint64_t i = 0;
+		uint64_t it_kmer = 0;
 		per_simplitig_l = new int[num_simplitig];
 		per_simplitig_optimal_useLocal = new int[num_simplitig];
 		per_simplitig_optimal_bigD = new int[num_simplitig];
+		per_simplitig_optimal_space = new int[num_simplitig];
+		for(int x = 0; x < num_simplitig; x++){
+			per_simplitig_optimal_space[x] = 99999999; 
+		}
 
 
 		for (int big_d_local_combo = 0; big_d_local_combo < 6; big_d_local_combo++)
@@ -811,13 +845,14 @@ public:
 			if(DEBUG_MODE)
 				all_ls.fs<<"Start_bigd"<<" "<<big_d_local_combo<<endl;
 
-			int hd = hds[i];
-			unsigned int curr_kmer_cc_id = cc_ids[i]; // uint64_t num = bphf->lookup(curr_bv);
+			int hd = hds[it_kmer];
+			unsigned int curr_kmer_cc_id = cc_ids[it_kmer]; // uint64_t num = bphf->lookup(curr_bv);
 
 			int useLocal = (big_d_local_combo / 3);
 			int bigD = big_d_local_combo % 3;
-			cout<<useLocal<<" "<<bigD<<endl;
-			if (spss_boundary[i] == '0')
+
+			cout<<"U B C S "<<useLocal<<" "<<bigD<<" "<<curr_kmer_cc_id<<" "<<simplitig_it<<endl;
+			if (spss_boundary[it_kmer] == '0')
 			{ // non-start
 				if (hd == 0)
 				{ // CAT=RUN
@@ -837,72 +872,70 @@ public:
 					{ // CAT=LM
 						if(useLocal == 1){
 							local_hash_table.put_and_getid(curr_kmer_cc_id);
+						}else{
+							sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 						}
 						case_lm += 1;
-						sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
-						
 					}
 				}
 			}
 			else
 			{ // start of simplitig, so CAT=LM
-				simplitig_start_id = i;
+				simplitig_start_id = it_kmer;
 				skip = 0;
 				case_lm += 1;
-				sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 				if(useLocal == 1){
 					local_hash_table.put_and_getid(curr_kmer_cc_id);
+				}else{
+					sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 				}
 			}
 
-			if (spss_boundary[(i + 1) % num_kmers] == '1')
+			if (spss_boundary[(it_kmer + 1) % num_kmers] == '1')
 			{ // end k-mer of simplitig
 
 				int l = -1;
 				int ll = -1;
+
 				if(useLocal == 1){
 					l = local_hash_table.curr_id;
 					ll = ceil(log2(l) * 1.0);
-				}
-				
-				vector<uint32_t> local_ht_arr = local_hash_table.get_array();
-				for (uint32_t i = 0; i < local_hash_table.curr_id; i++)
-				{
-					uint32_t uniq_col_class_id = local_ht_arr[i];
-					sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
+					vector<uint32_t> local_ht_arr = local_hash_table.get_array();
+					for (uint32_t i = 0; i < local_hash_table.curr_id; i++)
+					{
+						uint32_t uniq_col_class_id = local_ht_arr[i];
+						sum_length_huff_uniq_nonrun += huff_code_map[uniq_col_class_id].size();
+					}
 				}
 
 				int per_simplitig_space_needed =  useLocal * (ll * case_lm + lm + sum_length_huff_uniq_nonrun + sum_dlc_space) + (1 - useLocal) * (sum_length_huff_nonrun + sum_dlc_space + lm * case_lm);
-				cout<<bigD<<" "<<useLocal<<" "<<per_simplitig_space_needed<<endl;
-				if (per_simplitig_space_needed < optimal_space)
+				
+				cout<<bigD<<" "<<useLocal<<" "<<per_simplitig_space_needed<<" "<<per_simplitig_optimal_space[simplitig_it]<<endl;
+				
+				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
 				{
-					optimal_useLocal = useLocal;
-					optimal_bigD = bigD;
-					optimal_space = per_simplitig_space_needed;
-					optimal_ht = local_hash_table;
+					per_simplitig_optimal_space[simplitig_it] = per_simplitig_space_needed;
 					per_simplitig_l[simplitig_it] = optimal_ht.curr_id;
 					per_simplitig_optimal_bigD[simplitig_it]  = optimal_bigD;
-					per_simplitig_optimal_useLocal[simplitig_it] = optimal_useLocal;
+					per_simplitig_optimal_useLocal[simplitig_it] = useLocal;
+					optimal_ht = local_hash_table;
 				}
 
 				skip = 0;
 				case_run = case_lm  = case_dlc = 0;
 				sum_length_huff_nonrun = sum_length_huff_uniq_nonrun = sum_dlc_space = 0;
-
 				
 				if (big_d_local_combo < 5)
 				{
-					i = simplitig_start_id;
+					it_kmer = simplitig_start_id;
 				}
 				else
 				{
-					if (optimal_useLocal == 1)
+					write_number_at_loc(positions_local_table, bigD, 2, b_it_local_table);
+					if (per_simplitig_optimal_useLocal[simplitig_it] == 1)
 					{
-						if (!ALWAYS_LOCAL_OR_GLOBAL)
-						{
-							write_one(positions_local_table, b_it_local_table);
-						}
-						
+						write_one(positions_local_table, b_it_local_table);
+						//
 						write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
 						vector<uint32_t> local_ht_arr = optimal_ht.get_array();
 						for (uint32_t ii = 0; ii < optimal_ht.curr_id; ii++)
@@ -917,23 +950,17 @@ public:
 						write_zero(positions_local_table, b_it_local_table);
 					}
 
-					cout<<big_d_local_combo<<" "<<optimal_bigD<<" "<<optimal_useLocal<<" "<<optimal_space<<endl;
-					// out of loop 6, reinit opt value
-					optimal_bigD = 0;
-					optimal_useLocal = 0;
-					optimal_space = 999999999;
-					// re-init for new simplitig
-					local_hash_table.clear();
-					// num_kmer_in_simplitig = 0;
-					//positions_local_table.clear();
-					//b_it_local_table=0;
+					cout<<big_d_local_combo<<" "<<per_simplitig_optimal_bigD[simplitig_it]<<" "<<per_simplitig_optimal_useLocal[simplitig_it]<<" "<<per_simplitig_optimal_space[simplitig_it]<<endl;
 
+					// re-init for new simplitig
 					optimal_ht.clear();
+
 					simplitig_it += 1;
-					i++;
-					if (i == num_kmers)
+					it_kmer++;
+					if (it_kmer == num_kmers)
 						break;
 				}
+				local_hash_table.clear();
 			}
 		}
 
@@ -1010,7 +1037,6 @@ public:
 				}
 				else
 				{ // CATEGORY=NOT_RUN
-					// case_nonrun += 1;
 					if (skip != 0)
 					{ // not skipped, run break, write lm
 						// paul method
@@ -1040,11 +1066,19 @@ public:
 						// if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
 						// if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
 						if(DEBUG_MODE) cases_smc.fs << "d" << endl;
+
+
+						//category colvec = 100, 101 //cAT COLVEC = 10 HD = 1 
+						
+						//write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
+
+
+						write_category(positions, b_it, CATEGORY_COLVEC, bigD, hd);
 						for (int i_bit = 0; i_bit < 64 && i_bit < C; i_bit += 1)
 						{
 							if (((prev_bv_lo >> i_bit) & 1) != ((curr_bv_lo >> i_bit) & 1))
 							{
-								write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
+								
 								write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
 							}
 						}
@@ -1053,7 +1087,6 @@ public:
 							int actual_i_bit = i_bit - 64;
 							if (((prev_bv_hi >> actual_i_bit) & 1) != ((curr_bv_hi >> actual_i_bit) & 1))
 							{
-								write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
 								write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
 							}
 						}
@@ -1061,7 +1094,7 @@ public:
 					else
 					{ // CATEGORY=LM
 						
-						write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
+						write_category(positions, b_it, CATEGORY_COLCLASS, bigD, hd);
 						if (useLocal==1)
 						{
 							if(DEBUG_MODE) cases_smc.fs << "l" << endl;
@@ -1096,9 +1129,9 @@ public:
 				lm_or_ll = ll;
 
 				// case_lm+=1;
-				// case_nonrun +=1;
 
-				write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
+				//write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
+				write_category(positions, b_it, CATEGORY_COLCLASS, bigD, hd);
 				if (useLocal == 1)
 				{
 					if(DEBUG_MODE) cases_smc.fs << "l" << endl;
@@ -1112,10 +1145,12 @@ public:
 				else
 				{
 					if(DEBUG_MODE) cases_smc.fs << "m" << endl;
-					if (USE_HUFFMAN==true)
+					if (USE_HUFFMAN==true){
 						write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
-					else
+					}else{
 						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+					}
+						
 					// assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 				}
 			}
@@ -1136,7 +1171,7 @@ public:
 					rem = skip % max_run;
 					assert(skip == q * max_run + rem); // skip = q*max_run + rem
 					// paul method
-					write_number_at_loc(positions, CATEGORY_RUN, (uint64_t)2, b_it);
+					write_category(positions, b_it, CATEGORY_RUN, bigD, hd);
 					write_unary_one_at_loc(positions, (uint64_t)q, b_it);
 					write_zero(positions, b_it);
 					write_number_at_loc(positions, (uint64_t)rem, (uint64_t)lmaxrun, b_it);
@@ -1198,7 +1233,7 @@ int main (int argc, char* argv[]){
 	time_end("pass1.");
 
 	time_start();
-	coless.method1_pass2();
+	//coless.method1_pass2();
 	time_end("pass2.");
 
 
