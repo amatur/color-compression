@@ -957,11 +957,13 @@ public:
 
 					simplitig_it += 1;
 					it_kmer++;
+					cout<<"hello"<<endl;
 					if (it_kmer == num_kmers){
 						break;
 					}else{
 						big_d_local_combo = 0;
-						continue;
+						//continue;
+						cout<<"pello"<<endl;
 					}
 				}
 				local_hash_table.clear();
