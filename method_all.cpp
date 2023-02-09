@@ -1131,7 +1131,7 @@ public:
 				// case_lm+=1;
 
 				//write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-				write_category(positions, b_it, CATEGORY_COLCLASS, bigD, hd);
+				write_category(positions, b_it, CATEGORY_COLCLASS, bigD, 0);
 				if (useLocal == 1)
 				{
 					if(DEBUG_MODE) cases_smc.fs << "l" << endl;
@@ -1171,7 +1171,7 @@ public:
 					rem = skip % max_run;
 					assert(skip == q * max_run + rem); // skip = q*max_run + rem
 					// paul method
-					write_category(positions, b_it, CATEGORY_RUN, bigD, hd);
+					write_category(positions, b_it, CATEGORY_RUN, bigD, 0);
 					write_unary_one_at_loc(positions, (uint64_t)q, b_it);
 					write_zero(positions, b_it);
 					write_number_at_loc(positions, (uint64_t)rem, (uint64_t)lmaxrun, b_it);

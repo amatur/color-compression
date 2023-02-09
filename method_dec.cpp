@@ -636,13 +636,13 @@ public:
                     }else if(per_simplitig_bigD == 2){
                         char c3 = read_one_bit(str_map, b_it);;
                         if(c3 == '1'){ // 101 // read two
-                            differing_bit = read_uint(str_map, b_it, lc);
+                            int differing_bit = read_uint(str_map, b_it, lc);
                             differ_run.push_back(differing_bit);
 
                             differing_bit = read_uint(str_map, b_it, lc);
                             differ_run.push_back(differing_bit);
                         }else{//c3 = 0, 100 // read one
-                            differing_bit = read_uint(str_map, b_it, lc);
+                            int differing_bit = read_uint(str_map, b_it, lc);
                             differ_run.push_back(differing_bit);
                         }
 
