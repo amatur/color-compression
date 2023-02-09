@@ -928,6 +928,7 @@ public:
 				if (big_d_local_combo < 5)
 				{
 					it_kmer = simplitig_start_id;
+					cout<<"pello"<<endl;
 				}
 				else
 				{
