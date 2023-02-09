@@ -839,8 +839,8 @@ public:
 			per_simplitig_optimal_space[x] = 99999999; 
 		}
 
-
-		for (int big_d_local_combo = 0; big_d_local_combo < 6; big_d_local_combo++)
+		int big_d_local_combo = 0;
+		for (; big_d_local_combo < 6; big_d_local_combo++)
 		{
 			if(DEBUG_MODE)
 				all_ls.fs<<"Start_bigd"<<" "<<big_d_local_combo<<endl;
