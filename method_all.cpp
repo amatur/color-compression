@@ -982,7 +982,7 @@ public:
 				local_hash_table.clear();
 			}
 			
-			if (it_kmer == num_kmer - 1 && big_d_local_combo == 5)
+			if (it_kmer == num_kmers - 1 && big_d_local_combo == 5)
 				break;
 			it_kmer++;
 		}
