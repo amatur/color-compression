@@ -170,7 +170,12 @@ class Hashtable {
 	}
 
 	void clear(){
-		htmap.clear();
+		if (htmap.size()!=0)
+		{
+			htmap.clear();
+		}
+		
+		
 		curr_id = 0;
 	}
 
