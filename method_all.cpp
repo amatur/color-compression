@@ -1010,7 +1010,7 @@ public:
 	{
 		vector<uint64_t> positions;
 		uint64_t b_it = 0;
-		dup_bitmatrix_file.rewind();
+		//dup_bitmatrix_file.rewind();
 		DebugFile cases_smc("cases_smc");
 		uint64_t curr_bv_hi = 0;
 		uint64_t curr_bv_lo = 0;
@@ -1046,8 +1046,8 @@ public:
 			}
 			
 			// load the color vector of current k-mer from disk to "curr_bv_hi/lo"
-			string bv_line;
-			getline(dup_bitmatrix_file.fs, bv_line); // bv line = color vector C bits
+			//string bv_line;
+			//getline(dup_bitmatrix_file.fs, bv_line); // bv line = color vector C bits
 
 			curr_bv_lo = std::stoull(bv_line.substr(0, std::min(64, C)), nullptr, 2);
 			curr_bv_hi = 0;
@@ -1056,16 +1056,14 @@ public:
 				curr_bv_hi = std::stoull(bv_line.substr(64, bv_line.length() - 64), nullptr, 2);
 			}
 
-			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+			unsigned int curr_kmer_cc_id = cc_ids[i]; //uint64_t num = bphf->lookup(curr_bv);
 			// string curr_kmer_cc_id_str;
 			// getline(cmp_keys.fs, curr_kmer_cc_id_str);
 			// unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10);
 
 			if (spss_boundary[i] == '0')
 			{ // non-start
-				int hd_hi = hammingDistance(prev_bv_hi, curr_bv_hi);
-				int hd_lo = hammingDistance(prev_bv_lo, curr_bv_lo);
-				int hd = hd_hi + hd_lo;
+				int hd = hds[i];
 
 				if (hd == 0)
 				{ // CATEGORY=RUN
@@ -1272,7 +1270,7 @@ int main (int argc, char* argv[]){
 	time_end("pass1.");
 
 	time_start();
-	//coless.method1_pass2();
+	coless.method1_pass2();
 	time_end("pass2.");
 
 
