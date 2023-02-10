@@ -945,7 +945,8 @@ public:
 				if (big_d_local_combo < 5)
 				{
 					it_kmer = simplitig_start_id;
-					local_hash_table.clear();
+					if(useLocal == 1)
+						local_hash_table.clear();
 					big_d_local_combo++;
 					continue;
 					
@@ -976,13 +977,14 @@ public:
 
 					// re-init for new simplitig
 					optimal_ht.clear();
+					local_hash_table.clear();
 					simplitig_it += 1;
 
 					if (it_kmer != num_kmers)
 						big_d_local_combo = 0;
 
 				}
-				local_hash_table.clear();
+				
 			}
 
 			
