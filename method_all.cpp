@@ -624,20 +624,20 @@ public:
 
 	void write_category(vector<uint64_t> & positions, uint64_t & b_it, uint64_t category, int bigD, int hd){ //0 run, case_lm, case_dlc
 		if(category == CATEGORY_RUN){
-			if(bigD==0){
+			if(false){ //if(bigD==0){
 				write_one(positions, b_it);
 			}else{
-				write_number_at_loc(positions, CATEGORY_RUN, (uint64_t)2, b_it);
+				write_number_at_loc(positions, CATEGORY_RUN, (uint64_t)2, b_it); //11
 			}
 		}else if(category == CATEGORY_COLCLASS){
-			if(bigD==0){
+			if(false){ //if(bigD==0){
 				write_zero(positions, b_it);
 			}else{
-				write_number_at_loc(positions, CATEGORY_COLCLASS, (uint64_t)1, b_it);
+				write_number_at_loc(positions, CATEGORY_COLCLASS, (uint64_t)1, b_it); //0
 			}
 		}else if(category == CATEGORY_COLVEC){ //assert bigD == 1
 			if(bigD == 1 && hd == 1){
-				write_number_at_loc(positions, CATEGORY_COLVEC, (uint64_t)2, b_it);
+				write_number_at_loc(positions, CATEGORY_COLVEC, (uint64_t)2, b_it); //10
 			}else if(bigD == 2 && hd==2){
 				write_number_at_loc(positions, CATEGORY_COLVEC_TWO, (uint64_t)3, b_it);
 			}else if(bigD == 2 && hd==1){
@@ -952,7 +952,7 @@ public:
 				case_run = case_lm = case_dlc = 0;
 				sum_length_huff_nonrun = sum_length_huff_uniq_nonrun = sum_dlc_space = 0;
 
-				if (big_d_local_combo < 0)
+				if (big_d_local_combo < 5)
 				{
 					it_kmer = simplitig_start_id;
 					if(useLocal == 1)

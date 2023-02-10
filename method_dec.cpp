@@ -37,7 +37,7 @@ uint64_t CATEGORY_COLVEC=(uint64_t) 2;
 uint64_t CATEGORY_COLVEC_ONE = (uint64_t) 4; //100
 uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
 
-bool DEBUG_MODE = false;
+bool DEBUG_MODE = true;
 
 namespace TimeMeasure
 {
@@ -146,10 +146,8 @@ class DebugFile : public OutputFile	//derived class
 {
 	public:
 		DebugFile(string filename){
-			if(!DEBUG_MODE){
 					this->filename = filename;
 					fs.open (filename.c_str(),  std::fstream::out );
-			}
 
 		}
 		DebugFile(){
@@ -157,10 +155,8 @@ class DebugFile : public OutputFile	//derived class
 		}
 		void init(const std::string filename)
 		{
-			if(!DEBUG_MODE){
 				this->filename = filename;
 				this->fs.open(this->filename, fstream::out);
-			}
 		}
 };
 
