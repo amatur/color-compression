@@ -169,7 +169,7 @@ class Hashtable {
 		return htmap.count(key) > 0;
 	}
 
-	void clear(){
+	void all_clear(){
 		if (htmap.size()!=0)
 		{
 			htmap.clear();
@@ -878,7 +878,6 @@ public:
 				else
 				{ // CAT=NRUN
 					skip = 0;
-					local_hash_table.put_and_getid(curr_kmer_cc_id);
 					if (hd <= bigD)
 					{ // CAT=LC
 						case_dlc += 1;
@@ -935,8 +934,12 @@ public:
 
 				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
 				{
-					optimal_ht.copyFrom(local_hash_table);
-					per_simplitig_l[simplitig_it] = optimal_ht.curr_id;
+					if(useLocal==1){
+						optimal_ht.copyFrom(local_hash_table);
+						per_simplitig_l[simplitig_it] = optimal_ht.curr_id;
+					}else{
+						per_simplitig_l[simplitig_it] = 0;
+					}
 					per_simplitig_optimal_space[simplitig_it] = per_simplitig_space_needed;
 					per_simplitig_optimal_bigD[simplitig_it] = bigD;
 					per_simplitig_optimal_useLocal[simplitig_it] = useLocal;
