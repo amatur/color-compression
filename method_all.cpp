@@ -1208,6 +1208,7 @@ int main (int argc, char* argv[]){
     int M, C;
 	int max_run = 16;
 	long num_kmers=0;
+	cout<<"Version: Feb 9"<<endl;
     for (auto i = args.begin(); i != args.end(); ++i) {
         if (*i == "-h" || *i == "--help") {
             cout << "Syntax: tool -i <DE-DUP-bitmatrix> -d <dup-bitmatrix> -c <num-colors> -m <M> -k <num-kmers> -s <spss-bound> -x <max-run>" << endl;
