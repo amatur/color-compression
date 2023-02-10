@@ -845,9 +845,10 @@ public:
 		uint64_t it_kmer = 0;
 		while (true)
 		{
+			cout<<"kmer"<<it_kmer<<" "<<simplitig_it<<" "<<big_d_local_combo<<endl;
 			if (DEBUG_MODE)
 				all_ls.fs << "Start_bigd"
-						  << " " << big_d_local_combo << endl;
+						  << " " << big_d_local_combo <<it_kmer<<" "<<simplitig_it<<" " << endl;
 
 			int hd = hds[it_kmer];
 			unsigned int curr_kmer_cc_id = cc_ids[it_kmer]; // uint64_t num = bphf->lookup(curr_bv);
@@ -921,8 +922,6 @@ public:
 
 				int per_simplitig_space_needed = useLocal * (ll * case_lm + lm + sum_length_huff_uniq_nonrun + sum_dlc_space) + (1 - useLocal) * (sum_length_huff_nonrun + sum_dlc_space + lm * case_lm);
 
-				cout << bigD << " " << useLocal << " " << per_simplitig_space_needed << " " << per_simplitig_optimal_space[simplitig_it] << endl;
-
 				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
 				{
 					per_simplitig_optimal_space[simplitig_it] = per_simplitig_space_needed;
@@ -939,7 +938,6 @@ public:
 				if (big_d_local_combo < 5)
 				{
 					it_kmer = simplitig_start_id;
-					cout << "pello" << endl;
 					local_hash_table.clear();
 					continue;
 					
@@ -965,26 +963,23 @@ public:
 						write_zero(positions_local_table, b_it_local_table);
 					}
 
-					cout << big_d_local_combo << " " << per_simplitig_optimal_bigD[simplitig_it] << " " << per_simplitig_optimal_useLocal[simplitig_it] << " " << per_simplitig_optimal_space[simplitig_it] << endl;
+					cout << "opt "<< big_d_local_combo << " " << per_simplitig_optimal_bigD[simplitig_it] << " " << per_simplitig_optimal_useLocal[simplitig_it] << " " << per_simplitig_optimal_space[simplitig_it] << endl;
 
 					// re-init for new simplitig
 					optimal_ht.clear();
-					
-
 					simplitig_it += 1;
 
-					cout << "hello" << endl;
 					if (it_kmer != num_kmers)
 						big_d_local_combo = 0;
-					// continue;
-					cout << "pello" << endl;
+
 				}
 				local_hash_table.clear();
 			}
-			
-			if (it_kmer == num_kmers - 1 && big_d_local_combo == 5)
-				break;
+
 			it_kmer++;
+						
+			if (it_kmer == num_kmers)
+				break;
 		}
 		store_as_binarystring(positions_local_table, b_it_local_table, "bb_local_table");
 		store_as_sdsl(positions_local_table, b_it_local_table, "rrr_local_table");
