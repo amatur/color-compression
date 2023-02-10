@@ -143,7 +143,7 @@ class Hashtable {
 		curr_id = 0;
 	}
 
-	Hashtable(Hashtable & h){
+	void copyFrom(Hashtable & h){
 		for(const auto& entry:  h.htmap)
 		{
 			this->htmap[entry.first] = entry.second;
@@ -183,9 +183,9 @@ class Hashtable {
 		return array;
 	}
 
-	~Hashtable(){
-		htmap.clear();
-	}
+	// ~Hashtable(){
+	// 	htmap.clear();
+	// }
 };
 
 namespace CMPH{
@@ -930,11 +930,12 @@ public:
 
 				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
 				{
-					per_simplitig_optimal_space[simplitig_it] = per_simplitig_space_needed;
+					optimal_ht.copyFrom(local_hash_table);
 					per_simplitig_l[simplitig_it] = optimal_ht.curr_id;
-					per_simplitig_optimal_bigD[simplitig_it] = optimal_bigD;
+					per_simplitig_optimal_space[simplitig_it] = per_simplitig_space_needed;
+					per_simplitig_optimal_bigD[simplitig_it] = bigD;
 					per_simplitig_optimal_useLocal[simplitig_it] = useLocal;
-					optimal_ht = local_hash_table;
+					
 				}
 
 				skip = 0;
