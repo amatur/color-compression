@@ -808,42 +808,46 @@ public:
 		time_end("Written global table for "+to_string(M)+" values.");
 	}
 
-	void method1_pass1(){ //decide whether to use local hash table, can skip
+	void method1_pass1()
+	{ // decide whether to use local hash table, can skip
 
 		int optimal_bigD = 0;
-		//int optimal_space = 999999999;
+		// int optimal_space = 999999999;
 		Hashtable optimal_ht;
 
-		//per simplitig values		
+		// per simplitig values
 		Hashtable local_hash_table;
 		uint64_t sum_length_huff_nonrun = 0;
 		uint64_t sum_length_huff_uniq_nonrun = 0;
 		uint64_t sum_dlc_space = 0;
 
-		uint64_t skip=0;
+		uint64_t skip = 0;
 		int case_run = 0;
 		int case_lm = 0;
 		int case_dlc = 0;
-		//		
+		//
 		vector<uint64_t> positions_local_table;
 		uint64_t b_it_local_table = 0;
-		//per kmer values
+		// per kmer values
 		int simplitig_start_id = 0;
 		int simplitig_it = 0;
-		uint64_t it_kmer = 0;
+
 		per_simplitig_l = new int[num_simplitig];
 		per_simplitig_optimal_useLocal = new int[num_simplitig];
 		per_simplitig_optimal_bigD = new int[num_simplitig];
 		per_simplitig_optimal_space = new int[num_simplitig];
-		for(int x = 0; x < num_simplitig; x++){
-			per_simplitig_optimal_space[x] = 99999999; 
-		}
-
-		int big_d_local_combo = 0;
-		for (; big_d_local_combo < 6; big_d_local_combo++)
+		for (int x = 0; x < num_simplitig; x++)
 		{
-			if(DEBUG_MODE)
-				all_ls.fs<<"Start_bigd"<<" "<<big_d_local_combo<<endl;
+			per_simplitig_optimal_space[x] = 99999999;
+		}
+		//	cout<<"U B C S "<<useLocal<<" "<<bigD<<" "<<curr_kmer_cc_id<<" "<<simplitig_it<<endl;		for (; big_d_local_combo < 6; big_d_local_combo++)
+		int big_d_local_combo = 0;
+		uint64_t it_kmer = 0;
+		while (true)
+		{
+			if (DEBUG_MODE)
+				all_ls.fs << "Start_bigd"
+						  << " " << big_d_local_combo << endl;
 
 			int hd = hds[it_kmer];
 			unsigned int curr_kmer_cc_id = cc_ids[it_kmer]; // uint64_t num = bphf->lookup(curr_bv);
@@ -851,7 +855,7 @@ public:
 			int useLocal = (big_d_local_combo / 3);
 			int bigD = big_d_local_combo % 3;
 
-			cout<<"U B C S "<<useLocal<<" "<<bigD<<" "<<curr_kmer_cc_id<<" "<<simplitig_it<<endl;
+			cout << "U B C S " << useLocal << " " << bigD << " " << curr_kmer_cc_id << " " << simplitig_it << endl;
 			if (spss_boundary[it_kmer] == '0')
 			{ // non-start
 				if (hd == 0)
@@ -870,9 +874,12 @@ public:
 					}
 					else
 					{ // CAT=LM
-						if(useLocal == 1){
+						if (useLocal == 1)
+						{
 							local_hash_table.put_and_getid(curr_kmer_cc_id);
-						}else{
+						}
+						else
+						{
 							sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 						}
 						case_lm += 1;
@@ -884,9 +891,12 @@ public:
 				simplitig_start_id = it_kmer;
 				skip = 0;
 				case_lm += 1;
-				if(useLocal == 1){
+				if (useLocal == 1)
+				{
 					local_hash_table.put_and_getid(curr_kmer_cc_id);
-				}else{
+				}
+				else
+				{
 					sum_length_huff_nonrun += huff_code_map[curr_kmer_cc_id].size();
 				}
 			}
@@ -897,7 +907,8 @@ public:
 				int l = -1;
 				int ll = -1;
 
-				if(useLocal == 1){
+				if (useLocal == 1)
+				{
 					l = local_hash_table.curr_id;
 					ll = ceil(log2(l) * 1.0);
 					vector<uint32_t> local_ht_arr = local_hash_table.get_array();
@@ -908,27 +919,30 @@ public:
 					}
 				}
 
-				int per_simplitig_space_needed =  useLocal * (ll * case_lm + lm + sum_length_huff_uniq_nonrun + sum_dlc_space) + (1 - useLocal) * (sum_length_huff_nonrun + sum_dlc_space + lm * case_lm);
-				
-				cout<<bigD<<" "<<useLocal<<" "<<per_simplitig_space_needed<<" "<<per_simplitig_optimal_space[simplitig_it]<<endl;
-				
+				int per_simplitig_space_needed = useLocal * (ll * case_lm + lm + sum_length_huff_uniq_nonrun + sum_dlc_space) + (1 - useLocal) * (sum_length_huff_nonrun + sum_dlc_space + lm * case_lm);
+
+				cout << bigD << " " << useLocal << " " << per_simplitig_space_needed << " " << per_simplitig_optimal_space[simplitig_it] << endl;
+
 				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
 				{
 					per_simplitig_optimal_space[simplitig_it] = per_simplitig_space_needed;
 					per_simplitig_l[simplitig_it] = optimal_ht.curr_id;
-					per_simplitig_optimal_bigD[simplitig_it]  = optimal_bigD;
+					per_simplitig_optimal_bigD[simplitig_it] = optimal_bigD;
 					per_simplitig_optimal_useLocal[simplitig_it] = useLocal;
 					optimal_ht = local_hash_table;
 				}
 
 				skip = 0;
-				case_run = case_lm  = case_dlc = 0;
+				case_run = case_lm = case_dlc = 0;
 				sum_length_huff_nonrun = sum_length_huff_uniq_nonrun = sum_dlc_space = 0;
-				
+
 				if (big_d_local_combo < 5)
 				{
 					it_kmer = simplitig_start_id;
-					cout<<"pello"<<endl;
+					cout << "pello" << endl;
+					local_hash_table.clear();
+					continue;
+					
 				}
 				else
 				{
@@ -951,26 +965,27 @@ public:
 						write_zero(positions_local_table, b_it_local_table);
 					}
 
-					cout<<big_d_local_combo<<" "<<per_simplitig_optimal_bigD[simplitig_it]<<" "<<per_simplitig_optimal_useLocal[simplitig_it]<<" "<<per_simplitig_optimal_space[simplitig_it]<<endl;
+					cout << big_d_local_combo << " " << per_simplitig_optimal_bigD[simplitig_it] << " " << per_simplitig_optimal_useLocal[simplitig_it] << " " << per_simplitig_optimal_space[simplitig_it] << endl;
 
 					// re-init for new simplitig
 					optimal_ht.clear();
+					
 
 					simplitig_it += 1;
-					it_kmer++;
-					cout<<"hello"<<endl;
-					if (it_kmer == num_kmers){
-						break;
-					}else{
+
+					cout << "hello" << endl;
+					if (it_kmer != num_kmers)
 						big_d_local_combo = 0;
-						//continue;
-						cout<<"pello"<<endl;
-					}
+					// continue;
+					cout << "pello" << endl;
 				}
 				local_hash_table.clear();
 			}
+			
+			if (it_kmer == num_kmer - 1 && big_d_local_combo == 5)
+				break;
+			it_kmer++;
 		}
-
 		store_as_binarystring(positions_local_table, b_it_local_table, "bb_local_table");
 		store_as_sdsl(positions_local_table, b_it_local_table, "rrr_local_table");
 	}
