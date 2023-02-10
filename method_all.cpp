@@ -979,7 +979,7 @@ public:
 			}
 
 			
-						
+			it_kmer++;			
 			if (it_kmer == num_kmers)
 				break;
 		}
