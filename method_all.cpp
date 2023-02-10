@@ -845,7 +845,7 @@ public:
 		uint64_t it_kmer = 0;
 		while (true)
 		{
-			cout<<"kmer"<<it_kmer<<" "<<simplitig_it<<" "<<big_d_local_combo<<endl;
+			cout<<"kmer"<<it_kmer<<" simp"<<simplitig_it<<" bigdlocal"<<big_d_local_combo<<endl;
 			if (DEBUG_MODE)
 				all_ls.fs << "Start_bigd"
 						  << " " << big_d_local_combo <<it_kmer<<" "<<simplitig_it<<" " << endl;
@@ -945,6 +945,7 @@ public:
 				}
 				else
 				{
+					it_kmer++;
 					write_number_at_loc(positions_local_table, bigD, 2, b_it_local_table);
 					if (per_simplitig_optimal_useLocal[simplitig_it] == 1)
 					{
@@ -977,7 +978,7 @@ public:
 				local_hash_table.clear();
 			}
 
-			it_kmer++;
+			
 						
 			if (it_kmer == num_kmers)
 				break;
