@@ -952,7 +952,7 @@ public:
 				case_run = case_lm = case_dlc = 0;
 				sum_length_huff_nonrun = sum_length_huff_uniq_nonrun = sum_dlc_space = 0;
 
-				if (big_d_local_combo < 5)
+				if (big_d_local_combo < 0)
 				{
 					it_kmer = simplitig_start_id;
 					if(useLocal == 1)
