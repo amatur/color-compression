@@ -961,7 +961,7 @@ public:
 				}
 				else
 				{
-					it_kmer++;
+					//it_kmer++;
 					write_number_at_loc(positions_local_table, bigD, 2, b_it_local_table);
 					if (per_simplitig_optimal_useLocal[simplitig_it] == 1)
 					{
