@@ -169,7 +169,7 @@ class Hashtable {
 		return htmap.count(key) > 0;
 	}
 
-	void all_clear(){
+	void clear(){
 		if (htmap.size()!=0)
 		{
 			htmap.clear();
