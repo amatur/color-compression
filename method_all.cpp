@@ -624,13 +624,13 @@ public:
 
 	void write_category(vector<uint64_t> & positions, uint64_t & b_it, uint64_t category, int bigD, int hd){ //0 run, case_lm, case_dlc
 		if(category == CATEGORY_RUN){
-			if(false){ //if(bigD==0){
+			if(bigD==0){ //if(false){ //
 				write_one(positions, b_it);
 			}else{
 				write_number_at_loc(positions, CATEGORY_RUN, (uint64_t)2, b_it); //11
 			}
 		}else if(category == CATEGORY_COLCLASS){
-			if(false){ //if(bigD==0){
+			if(bigD==0){
 				write_zero(positions, b_it);
 			}else{
 				write_number_at_loc(positions, CATEGORY_COLCLASS, (uint64_t)1, b_it); //0
