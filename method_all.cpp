@@ -877,11 +877,26 @@ public:
 				}
 				else
 				{ // CAT=NRUN
+
+					if(skip!=0){
+						if(bigD==2){
+							sum_skip_space += 2; 
+						}else{
+							sum_skip_space += 1; 
+						}
+					}
 					skip = 0;
+
 					if (hd <= bigD)
 					{ // CAT=LC
 						case_dlc += 1;
-						sum_dlc_space += hd * lc + 2; // 101 = d>2 = 100 = d>1, d upto 4 per simp 2 bit
+						if(bigD==2){
+							sum_dlc_space += hd * lc + 3; // 101 = d>2 = 100 = d>1, d upto 4 per simp 2 bit
+						}else{
+							sum_dlc_space += hd * lc + 2; // 101 = d>2 = 100 = d>1, d upto 4 per simp 2 bit
+						}
+
+						
 					}
 					else
 					{ // CAT=LM
@@ -901,6 +916,7 @@ public:
 			{ // start of simplitig, so CAT=LM
 				simplitig_start_id = it_kmer;
 				skip = 0;
+
 				case_lm += 1;
 				if (useLocal == 1)
 				{
@@ -930,7 +946,18 @@ public:
 					}
 				}
 
-				int per_simplitig_space_needed = useLocal * (ll * case_lm + lm + sum_length_huff_uniq_nonrun + sum_dlc_space) + (1 - useLocal) * (sum_length_huff_nonrun + sum_dlc_space + lm * case_lm);
+				
+				if(skip!=0){
+					if(bigD==2){
+						sum_skip_space += 2; 
+					}else{
+						sum_skip_space += 1; 
+					}
+				}
+				skip = 0;
+
+				int per_simplitig_space_needed = useLocal * ((ll+1) * case_lm + sum_dlc_space + lm + sum_length_huff_uniq_nonrun ) + (1 - useLocal) * (sum_length_huff_nonrun + sum_dlc_space + (lm+1) * case_lm);
+				
 
 				cout << "every: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<<" space:"<<per_simplitig_space_needed<<" optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
 
@@ -948,7 +975,7 @@ public:
 					
 				}
 
-				skip = 0;
+				
 				case_run = case_lm = case_dlc = 0;
 				sum_length_huff_nonrun = sum_length_huff_uniq_nonrun = sum_dlc_space = 0;
 
@@ -1002,6 +1029,7 @@ public:
 			if (it_kmer == num_kmers)
 				break;
 		}
+		cout << "b_it_local_table_size: " << b_it_local_table << endl;
 		store_as_binarystring(positions_local_table, b_it_local_table, "bb_local_table");
 		store_as_sdsl(positions_local_table, b_it_local_table, "rrr_local_table");
 	}
