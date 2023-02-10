@@ -1010,7 +1010,7 @@ public:
 	{
 		vector<uint64_t> positions;
 		uint64_t b_it = 0;
-		//dup_bitmatrix_file.rewind();
+		dup_bitmatrix_file.rewind();
 		DebugFile cases_smc("cases_smc");
 		uint64_t curr_bv_hi = 0;
 		uint64_t curr_bv_lo = 0;
@@ -1046,8 +1046,8 @@ public:
 			}
 			
 			// load the color vector of current k-mer from disk to "curr_bv_hi/lo"
-			//string bv_line;
-			//getline(dup_bitmatrix_file.fs, bv_line); // bv line = color vector C bits
+			string bv_line;
+			getline(dup_bitmatrix_file.fs, bv_line); // bv line = color vector C bits
 
 			curr_bv_lo = std::stoull(bv_line.substr(0, std::min(64, C)), nullptr, 2);
 			curr_bv_hi = 0;
