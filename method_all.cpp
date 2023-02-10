@@ -867,7 +867,7 @@ public:
 			int useLocal = (big_d_local_combo / 3);
 			int bigD = big_d_local_combo % 3;
 
-			cout << "U B C S " << useLocal << " " << bigD << " " << curr_kmer_cc_id << " " << simplitig_it << endl;
+			//cout << "U B C S " << useLocal << " " << bigD << " " << curr_kmer_cc_id << " " << simplitig_it << endl;
 			if (spss_boundary[it_kmer] == '0')
 			{ // non-start
 				if (hd == 0)
@@ -932,6 +932,8 @@ public:
 
 				int per_simplitig_space_needed = useLocal * (ll * case_lm + lm + sum_length_huff_uniq_nonrun + sum_dlc_space) + (1 - useLocal) * (sum_length_huff_nonrun + sum_dlc_space + lm * case_lm);
 
+				cout << "every: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<< " optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
+
 				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
 				{
 					if(useLocal==1){
@@ -981,7 +983,7 @@ public:
 						write_zero(positions_local_table, b_it_local_table);
 					}
 
-					cout << "opt "<< big_d_local_combo << " " << per_simplitig_optimal_bigD[simplitig_it] << " " << per_simplitig_optimal_useLocal[simplitig_it] << " " << per_simplitig_optimal_space[simplitig_it] << endl;
+					cout << "curr: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<< " optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
 
 					// re-init for new simplitig
 					optimal_ht.clear();
