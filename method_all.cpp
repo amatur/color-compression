@@ -939,6 +939,7 @@ public:
 				{
 					it_kmer = simplitig_start_id;
 					local_hash_table.clear();
+					big_d_local_combo++;
 					continue;
 					
 				}
