@@ -144,7 +144,10 @@ class Hashtable {
 	}
 
 	Hashtable(Hashtable & h){
-		this->htmap = h.htmap;
+		for(const auto& entry:  h.htmap)
+		{
+			this->htmap[entry.first] = entry.second;
+		}
 		this->curr_id = h.curr_id;
 	}
 
@@ -180,6 +183,9 @@ class Hashtable {
 		return array;
 	}
 
+	~Hashtable(){
+		htmap.clear();
+	}
 };
 
 namespace CMPH{
