@@ -831,6 +831,8 @@ public:
 		uint64_t sum_length_huff_nonrun = 0;
 		uint64_t sum_length_huff_uniq_nonrun = 0;
 		uint64_t sum_dlc_space = 0;
+		uint64_t sum_skip_space = 0;
+
 
 		uint64_t skip = 0;
 		int case_run = 0;
@@ -977,7 +979,7 @@ public:
 
 				
 				case_run = case_lm = case_dlc = 0;
-				sum_length_huff_nonrun = sum_length_huff_uniq_nonrun = sum_dlc_space = 0;
+				sum_length_huff_nonrun = sum_length_huff_uniq_nonrun = sum_dlc_space = sum_skip_space = 0;
 
 				if (big_d_local_combo < 5)
 				{
