@@ -184,7 +184,7 @@ class Hashtable {
 
 	vector<uint32_t> get_array(){
 		vector<uint32_t> array(curr_id, 0);
-		for (auto x : htmap){
+		for (const auto& x : htmap){
 			array[x.second] =  x.first  ;
 			//cout<<x.first<<"->"<<x.second<<endl;
 		}
@@ -984,6 +984,7 @@ public:
 				if(per_simplitig_optimal_space[simplitig_it] == big_d_local_combo)
 				{
 					if(useLocal==1){
+						optimal_ht.clear();
 						optimal_ht = local_hash_table.get_array();
 						per_simplitig_l[simplitig_it] = local_hash_table.curr_id;
 					}else{
@@ -1016,7 +1017,7 @@ public:
 					{
 						write_one(positions_local_table, b_it_local_table);
 						//
-						write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
+						write_number_at_loc(positions_local_table, optimal_ht.size(), lm, b_it_local_table);
 						
 						for (uint32_t ii = 0; ii < optimal_ht.size(); ii++)
 						{
