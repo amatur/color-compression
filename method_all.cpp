@@ -865,7 +865,7 @@ public:
 		for (int x = 0; x < num_simplitig; x++)
 		{
 			per_simplitig_optimal_space[x] = 99999999;
-			per_simplitig_optimal_space[x] =rand() % 6;
+			//per_simplitig_optimal_space[x] =rand() % 6;
 		}
 		//	cout<<"U B C S "<<useLocal<<" "<<bigD<<" "<<curr_kmer_cc_id<<" "<<simplitig_it<<endl;		for (; big_d_local_combo < 6; big_d_local_combo++)
 		int big_d_local_combo = 0;
@@ -980,8 +980,9 @@ public:
 				if(DEBUG_MODE)
 					optout.fs << "every: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<<" space:"<<per_simplitig_space_needed<<" optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] <<" sum_huff:"<<sum_length_huff_uniq_nonrun<<" sum_dlc: "<<sum_dlc_space<<"sum_skip_space: "<<sum_skip_space << endl;
 
-				//if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
-				if(per_simplitig_optimal_space[simplitig_it] == big_d_local_combo)
+
+				//if(per_simplitig_optimal_space[simplitig_it] == big_d_local_combo)//random
+				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
 				{
 					if(useLocal==1){
 						optimal_ht.clear();
@@ -1284,7 +1285,7 @@ public:
 };
 
 int main (int argc, char* argv[]){
-	srand(time(nullptr));
+	//srand(time(nullptr));
 	//srand(0);
 	vector<string> args(argv + 1, argv + argc);
     string dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname;
