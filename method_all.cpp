@@ -539,7 +539,7 @@ public:
 		delete per_simplitig_optimal_bigD;
 		delete per_simplitig_optimal_useLocal;
 		delete per_simplitig_optimal_space;
-		delete global_table;
+		//delete global_table;
 		delete cc_ids;
 		delete hds;
 	}
