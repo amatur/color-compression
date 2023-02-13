@@ -481,14 +481,17 @@ public:
     void read_local_hash_table_per_simplitig(string str_local, u_int64_t& b_it){
         per_simplitig_bigD = read_uint(str_local, b_it, 2); //0, 1, 2
         per_simplitig_use_local_id = read_one_bit(str_local, b_it);
+        cout<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id;
         
         if(per_simplitig_use_local_id == '1'){
             l_of_curr_simplitig = read_uint(str_local, b_it, lm);
             //int ll = ceil(log2(l));
             local_hash_table = read_l_huff_codes(l_of_curr_simplitig, str_local, b_it, huff_root); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
+            cout<<l_of_curr_simplitig;
         }else{
             
         }
+        cout<<endl;
     }
 
     bool start_of_simplitig(int written_kmer_idx){
