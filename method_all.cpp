@@ -829,7 +829,7 @@ public:
 	{ // decide whether to use local hash table, can skip
 
 		DebugFile optout("optout");
-		int ranval = 0;
+
 		
 		int optimal_bigD = 0;
 		// int optimal_space = 999999999;
@@ -862,6 +862,7 @@ public:
 		for (int x = 0; x < num_simplitig; x++)
 		{
 			per_simplitig_optimal_space[x] = 99999999;
+			per_simplitig_optimal_space[x] =rand() % 6;
 		}
 		//	cout<<"U B C S "<<useLocal<<" "<<bigD<<" "<<curr_kmer_cc_id<<" "<<simplitig_it<<endl;		for (; big_d_local_combo < 6; big_d_local_combo++)
 		int big_d_local_combo = 0;
@@ -927,8 +928,7 @@ public:
 			}
 			else
 			{ // start of simplitig, so CAT=LM
-				ranval = rand() % 6;
-				cout<<" simplitig_it "<<simplitig_it<<" ranval "<<ranval;
+
 				simplitig_start_id = it_kmer;
 				skip = 0;
 
@@ -978,7 +978,7 @@ public:
 					optout.fs << "every: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<<" space:"<<per_simplitig_space_needed<<" optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] <<" sum_huff:"<<sum_length_huff_uniq_nonrun<<" sum_dlc: "<<sum_dlc_space<<"sum_skip_space: "<<sum_skip_space << endl;
 
 				//if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
-				if(ranval == big_d_local_combo)
+				if(per_simplitig_optimal_space[simplitig_it] == big_d_local_combo)
 				{
 					if(useLocal==1){
 						optimal_ht = local_hash_table.get_array();
