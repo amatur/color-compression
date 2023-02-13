@@ -539,6 +539,9 @@ public:
 		delete per_simplitig_optimal_bigD;
 		delete per_simplitig_optimal_useLocal;
 		delete per_simplitig_optimal_space;
+		delete global_table;
+		delete cc_ids;
+		delete hds;
 	}
 
 	// template <typename T> void dump_to_disk(T& vec, uint64_t last_written_pos, fstream fs)
@@ -829,7 +832,7 @@ public:
 		int ranval = rand() % 6;
 		int optimal_bigD = 0;
 		// int optimal_space = 999999999;
-		Hashtable optimal_ht;
+		vector<uint32_t> optimal_ht;
 		int lmaxrun = ceil(log2(max_run));
 
 		// per simplitig values
@@ -976,8 +979,8 @@ public:
 				if(ranval == big_d_local_combo)
 				{
 					if(useLocal==1){
-						optimal_ht.copyFrom(local_hash_table);
-						per_simplitig_l[simplitig_it] = optimal_ht.curr_id;
+						optimal_ht = local_hash_table.get_array();
+						per_simplitig_l[simplitig_it] = local_hash_table.curr_id;
 					}else{
 						per_simplitig_l[simplitig_it] = 0;
 					}
@@ -1009,28 +1012,27 @@ public:
 						write_one(positions_local_table, b_it_local_table);
 						//
 						write_number_at_loc(positions_local_table, l, lm, b_it_local_table);
-						vector<uint32_t> local_ht_arr = optimal_ht.get_array();
-						for (uint32_t ii = 0; ii < optimal_ht.curr_id; ii++)
+						
+						for (uint32_t ii = 0; ii < optimal_ht.size(); ii++)
 						{
-							uint32_t uniq_col_class_id = local_ht_arr[ii];
+							uint32_t uniq_col_class_id = optimal_ht[ii];
 							write_binary_vector_at_loc(positions_local_table, huff_code_map[uniq_col_class_id], b_it_local_table);
 						}
-						local_ht_arr.clear();
+						optimal_ht.clear();
 					}
 					else
 					{
 						write_zero(positions_local_table, b_it_local_table);
 					}
 
-					b_it_local_table = 0;
-					positions_local_table.clear();
+					
 
 					if(DEBUG_MODE)
 						optout.fs << "curr: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<< " optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
 
 					// re-init for new simplitig
-					optimal_ht.clear();
-					local_hash_table.clear();
+					if(useLocal==1)
+						local_hash_table.clear();
 					simplitig_it += 1;
 
 					if (it_kmer != num_kmers)
