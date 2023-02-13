@@ -882,10 +882,10 @@ public:
 				{ // CAT=NRUN
 
 					if(skip!=0){
-						if(bigD==2){
-							sum_skip_space += 2; 
-						}else{
+						if(bigD==0){
 							sum_skip_space += 1; 
+						}else{
+							sum_skip_space += 2; 
 						}
 						sum_skip_space += floor(skip / max_run) + 1 + lmaxrun ;
 					}
@@ -952,10 +952,10 @@ public:
 
 				
 				if(skip!=0){
-					if(bigD!=0){
-						sum_skip_space += 2; 
-					}else{
+					if(bigD==0){
 						sum_skip_space += 1; 
+					}else{
+						sum_skip_space += 2; 
 					}
 					sum_skip_space += floor(skip / max_run) + 1 + lmaxrun ;
 				}
