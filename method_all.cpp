@@ -1022,6 +1022,9 @@ public:
 						write_zero(positions_local_table, b_it_local_table);
 					}
 
+					b_it_local_table = 0;
+					positions_local_table.clear();
+
 					if(DEBUG_MODE)
 						optout.fs << "curr: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<< " optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
 
