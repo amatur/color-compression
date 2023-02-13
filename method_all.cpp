@@ -600,7 +600,7 @@ public:
 		}
 
 		if(DEBUG_MODE) debug1.fs<<-j<<" "<<block_sz<<endl;
-		if (-j > block_sz){
+		if (j > block_sz){
 			cout<<"error in block"<<endl;
 		}
 
