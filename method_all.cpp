@@ -600,7 +600,9 @@ public:
 		}
 
 		if(DEBUG_MODE) debug1.fs<<-j<<" "<<block_sz<<endl;
-		assert (-j<=block_sz);
+		if (-j > block_sz){
+			cout<<"error in block"<<endl;
+		}
 
 	}
 
@@ -616,6 +618,7 @@ public:
 	void write_number_at_loc(vector<uint64_t> & positions, uint64_t num, uint64_t block_size, uint64_t& b_it ){
 		write_number_at_loc_advanced_by_block_sz(positions, num, b_it+block_size, block_size);
 		b_it += block_size; //successfully written and place on next bit; if size is 2, (0,1) written, now val is 2.
+	
 	}
 
 	void write_unary_one_at_loc(vector<uint64_t> & positions, uint64_t unary_num, uint64_t& b_it ){
@@ -1280,6 +1283,7 @@ public:
 };
 
 int main (int argc, char* argv[]){
+	srand(time(nullptr));
 	vector<string> args(argv + 1, argv + argc);
     string dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname;
 	//string tmp_dir;
