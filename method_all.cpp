@@ -577,7 +577,7 @@ public:
 		return summ/1.0/v.size();
 	}
 	void write_number_at_loc_advanced_by_block_sz(vector<uint64_t> & positions, uint64_t num, uint64_t loc_advanced_by_block_sz, uint64_t block_sz){ //requires loc_advanced_by_block_sz += block_size; 
-		uint64_t j=0;
+		int64_t j=0;
 		uint64_t begin = loc_advanced_by_block_sz;
 		stack<uint64_t> qpositions;
 		if(num!=0){
