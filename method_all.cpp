@@ -30,7 +30,7 @@ using namespace sdsl;
 
 #include <unordered_map>
 
-const bool DEBUG_MODE = false;
+const bool DEBUG_MODE = true;
 
 namespace TimeMeasure
 {
