@@ -829,7 +829,8 @@ public:
 	{ // decide whether to use local hash table, can skip
 
 		DebugFile optout("optout");
-		int ranval = rand() % 6;
+		int ranval = 0;
+		
 		int optimal_bigD = 0;
 		// int optimal_space = 999999999;
 		vector<uint32_t> optimal_ht;
@@ -927,6 +928,7 @@ public:
 			else
 			{ // start of simplitig, so CAT=LM
 				ranval = rand() % 6;
+				cout<<" simplitig_it "<<simplitig_it<<" ranval "<<ranval;
 				simplitig_start_id = it_kmer;
 				skip = 0;
 
