@@ -30,7 +30,7 @@ using namespace sdsl;
 
 #include <unordered_map>
 
-const bool DEBUG_MODE = true;
+const bool DEBUG_MODE = false;
 
 namespace TimeMeasure
 {
@@ -144,6 +144,9 @@ class Hashtable {
 	}
 
 	void copyFrom(Hashtable & h){
+		if(htmap.size()!=0){
+			htmap.clear();
+		}
 		for(const auto& entry:  h.htmap)
 		{
 			this->htmap[entry.first] = entry.second;
@@ -822,6 +825,8 @@ public:
 	void method1_pass1()
 	{ // decide whether to use local hash table, can skip
 
+		DebugFile optout("optout");
+		int ranval = rand() % 6;
 		int optimal_bigD = 0;
 		// int optimal_space = 999999999;
 		Hashtable optimal_ht;
@@ -859,7 +864,7 @@ public:
 		uint64_t it_kmer = 0;
 		while (true)
 		{
-			cout<<"kmer"<<it_kmer<<" simp"<<simplitig_it<<" bigdlocal"<<big_d_local_combo<<endl;
+			
 			if (DEBUG_MODE)
 				all_ls.fs << "Start_bigd"
 						  << " " << big_d_local_combo <<it_kmer<<" "<<simplitig_it<<" " << endl;
@@ -918,6 +923,7 @@ public:
 			}
 			else
 			{ // start of simplitig, so CAT=LM
+				ranval = rand() % 6;
 				simplitig_start_id = it_kmer;
 				skip = 0;
 
@@ -963,10 +969,11 @@ public:
 
 				int per_simplitig_space_needed = useLocal * (2 + 1 + lm + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
 				
+				if(DEBUG_MODE)
+					optout.fs << "every: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<<" space:"<<per_simplitig_space_needed<<" optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] <<" sum_huff:"<<sum_length_huff_uniq_nonrun<<" sum_dlc: "<<sum_dlc_space<<"sum_skip_space: "<<sum_skip_space << endl;
 
-				cout << "every: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<<" space:"<<per_simplitig_space_needed<<" optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] <<" sum_huff:"<<sum_length_huff_uniq_nonrun<<" sum_dlc: "<<sum_dlc_space<<"sum_skip_space: "<<sum_skip_space << endl;
-
-				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
+				//if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
+				if(ranval == big_d_local_combo)
 				{
 					if(useLocal==1){
 						optimal_ht.copyFrom(local_hash_table);
@@ -1015,7 +1022,8 @@ public:
 						write_zero(positions_local_table, b_it_local_table);
 					}
 
-					cout << "curr: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<< " optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
+					if(DEBUG_MODE)
+						optout.fs << "curr: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<< " optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
 
 					// re-init for new simplitig
 					optimal_ht.clear();
