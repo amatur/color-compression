@@ -961,7 +961,7 @@ public:
 				}
 				skip = 0;
 
-				int per_simplitig_space_needed = useLocal * ((ll+1) * case_lm + sum_dlc_space + lm + sum_length_huff_uniq_nonrun + sum_skip_space) + (1 - useLocal) * (sum_length_huff_nonrun + sum_dlc_space + (1) * case_lm + sum_skip_space);
+				int per_simplitig_space_needed = useLocal * (2 + 1 + lm + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
 				
 
 				cout << "every: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<<" space:"<<per_simplitig_space_needed<<" optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
