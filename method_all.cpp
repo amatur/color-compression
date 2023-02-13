@@ -1284,8 +1284,8 @@ public:
 };
 
 int main (int argc, char* argv[]){
-	//srand(time(nullptr));
-	srand(0);
+	srand(time(nullptr));
+	//srand(0);
 	vector<string> args(argv + 1, argv + argc);
     string dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname;
 	//string tmp_dir;
