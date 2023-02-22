@@ -298,7 +298,7 @@ HuffCodeMap huff_code_map;
 
 class COLESS_Decompress{
 public:
-    long num_kmers;
+    uint64_t num_kmers;
     int max_run = 16;
     int lmaxrun = 4;
     
@@ -332,7 +332,7 @@ public:
 
  
 
-    COLESS_Decompress(long num_kmers, int M, int C, string spss_boundary_fname, int max_run)
+    COLESS_Decompress(uint64_t num_kmers, int M, int C, string spss_boundary_fname, int max_run)
     {
         this->num_kmers = num_kmers;
         this->C = C;
@@ -481,7 +481,7 @@ public:
     void read_local_hash_table_per_simplitig(string str_local, u_int64_t& b_it){
         per_simplitig_bigD = read_uint(str_local, b_it, 2); //0, 1, 2
         per_simplitig_use_local_id = read_one_bit(str_local, b_it);
-        cout<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id;
+        cout<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
         
         if(per_simplitig_use_local_id == '1'){
             l_of_curr_simplitig = read_uint(str_local, b_it, lm);
@@ -660,7 +660,7 @@ int main (int argc, char* argv[]){
     string dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname; //string tmp_dir;
     int M, C;
     int max_run = 16;
-	long num_kmers=0;
+	uint64_t num_kmers=0;
     for (auto i = args.begin(); i != args.end(); ++i) {
         if (*i == "-h" || *i == "--help") {
             cout << "Syntax: tool -i <DE-DUP-bitmatrix> -d <dup-bitmatrix> -c <num-colors> -m <M> -k <num-kmers> -s <spss-bound> -x <max-run>" << endl;

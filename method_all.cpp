@@ -467,7 +467,7 @@ public:
 	DebugFile debug1;
 	DebugFile debug2;
 	DebugFile all_ls;
-	long num_kmers;
+	uint64_t num_kmers;
 	int num_simplitig;
 	int M;
 	int C;
@@ -510,7 +510,7 @@ public:
     bool USE_HUFFMAN = true;
 	bool ALWAYS_LOCAL_OR_GLOBAL = false;
 
-	COLESS(long num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname, int max_run){
+	COLESS(uint64_t num_kmers, int M, int C, string dedup_bitmatrix_fname, string dup_bitmatrix_fname, string spss_boundary_fname, int max_run){
 		dedup_bitmatrix_file.init(dedup_bitmatrix_fname);
 		spss_boundary_file.init(spss_boundary_fname);
 		dup_bitmatrix_file.init(dup_bitmatrix_fname);
@@ -1292,7 +1292,7 @@ int main (int argc, char* argv[]){
 	//string tmp_dir;
     int M, C;
 	int max_run = 16;
-	long num_kmers=0;
+	uint64_t num_kmers=0;
 	cout<<"Version: Feb 10"<<endl;
     for (auto i = args.begin(); i != args.end(); ++i) {
         if (*i == "-h" || *i == "--help") {
