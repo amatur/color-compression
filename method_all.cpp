@@ -495,9 +495,6 @@ public:
 	//bool* per_simplitig_use_local;
 	//int* per_simplitig_bigD;
 
-	unsigned int* cc_ids;
-	int* hds;
-
 	
 	//per_simplitig_d
 	//per simplitig use_local_hash
@@ -540,8 +537,6 @@ public:
 		delete per_simplitig_optimal_useLocal;
 		delete per_simplitig_optimal_space;
 		//delete global_table;
-		delete cc_ids;
-		delete hds;
 	}
 
 	// template <typename T> void dump_to_disk(T& vec, uint64_t last_written_pos, fstream fs)
@@ -755,26 +750,19 @@ public:
 		delete array_lo;
 	}
 
-
-	void method1_pass0(){ //load_huffman_table();//int M -> variable string   //writehuffman[in
+	void method1_pass1()
+	{ 
 		time_start();
 		create_table(dedup_bitmatrix_file.filename, M );
 		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
 
 		time_start();
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
-		
-		cc_ids = new unsigned int[num_kmers];
-		hds = new int[num_kmers];
-		uint64_t prev_bv_lo = 0;
-		uint64_t prev_bv_hi = 0;
+
+		// uint64_t prev_bv_lo = 0;
+		// uint64_t prev_bv_hi = 0;
 
 		for (uint64_t i=0; i < num_kmers; i+=1){  // read two files of length num_kmers 
-			string bv_line;
-			getline (dup_bitmatrix_file.fs,bv_line);
-			cc_ids[i] = lookup(bv_line);
-			cmp_keys.fs << cc_ids[i] << endl;
-
 			string spss_line;
 			getline (spss_boundary_file.fs,spss_line); 
 			spss_boundary.push_back(spss_line[0]); //this kmer starts a simplitig
@@ -782,19 +770,21 @@ public:
 				num_simplitig += 1;
 			}
 
-			uint64_t curr_bv_lo = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
-			uint64_t curr_bv_hi = 0;
-			if(C >= 64){
-				curr_bv_hi = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
-			} 
-			hds[i] = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
+			// uint64_t curr_bv_lo = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
+			// uint64_t curr_bv_hi = 0;
+			// if(C >= 64){
+			// 	curr_bv_hi = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
+			// } 
+			//hds[i] = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
 
-			prev_bv_hi = curr_bv_hi;
-			prev_bv_lo = curr_bv_lo;
+			// prev_bv_hi = curr_bv_hi;
+			// prev_bv_lo = curr_bv_lo;
 
 		}
 		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
 		cmp_keys.close();
+
+
 
 		time_start();
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frequency_sorted");
@@ -826,16 +816,11 @@ public:
 		time_start();
 		store_global_color_class_table();
 		time_end("Written global table for "+to_string(M)+" values.");
-	}
 
-	void method1_pass1()
-	{ // decide whether to use local hash table, can skip
 
+		string bv_line;
 		DebugFile optout("optout");
 
-		
-		int optimal_bigD = 0;
-		// int optimal_space = 999999999;
 		vector<uint32_t> optimal_ht;
 		int lmaxrun = ceil(log2(max_run));
 
@@ -858,6 +843,9 @@ public:
 		int simplitig_start_id = 0;
 		int simplitig_it = 0;
 
+		vector<int> per_simplitig_hd;
+
+		vector<unsigned int> per_simplitig_curr_kmer_cc_id;
 		per_simplitig_l = new int[num_simplitig];
 		per_simplitig_optimal_useLocal = new int[num_simplitig];
 		per_simplitig_optimal_bigD = new int[num_simplitig];
@@ -870,18 +858,48 @@ public:
 		//	cout<<"U B C S "<<useLocal<<" "<<bigD<<" "<<curr_kmer_cc_id<<" "<<simplitig_it<<endl;		for (; big_d_local_combo < 6; big_d_local_combo++)
 		int big_d_local_combo = 0;
 		uint64_t it_kmer = 0;
+		int local_it = 0;
 		while (true)
 		{
-			
 			if (DEBUG_MODE)
 				all_ls.fs << "Start_bigd"
 						  << " " << big_d_local_combo <<it_kmer<<" "<<simplitig_it<<" " << endl;
 
-			int hd = hds[it_kmer];
-			unsigned int curr_kmer_cc_id = cc_ids[it_kmer]; // uint64_t num = bphf->lookup(curr_bv);
+			if( big_d_local_combo == 0 && spss_boundary[it_kmer] == '1'){ //start of simp
+				local_it = 0;
+				per_simplitig_hd.clear();
+				per_simplitig_curr_kmer_cc_id.clear();
 
+				while(true){
+					getline (dup_bitmatrix_file.fs,bv_line);
+					uint64_t curr_bv_lo = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
+					uint64_t curr_bv_hi = 0;
+					if(C >= 64){
+						curr_bv_hi = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
+					} 
+					if(it_kmer+local_it!=0){
+						int hd = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
+						per_simplitig_hd.push_back(hd);
+					}
+					unsigned int curr_kmer_cc_id = lookup(bv_line); // uint64_t num = bphf->lookup(curr_bv);
+					per_simplitig_curr_kmer_cc_id.push_back(curr_kmer_cc_id);
+
+					prev_bv_hi = curr_bv_hi;
+					prev_bv_lo = curr_bv_lo;
+					
+					if(spss_boundary[(it_kmer+local_it+1)%num_simplitig]=='1'){
+						local_it = 0;
+						break;
+					}
+						
+					local_it++;
+				}	
+			}
+			
 			int useLocal = (big_d_local_combo / 3);
 			int bigD = big_d_local_combo % 3;
+			int hd = per_simplitig_hd[local_it++];
+			unsigned int curr_kmer_cc_id = per_simplitig_curr_kmer_cc_id[local_it++];
 
 			//cout << "U B C S " << useLocal << " " << bigD << " " << curr_kmer_cc_id << " " << simplitig_it << endl;
 			if (spss_boundary[it_kmer] == '0')
@@ -949,6 +967,7 @@ public:
 			if (spss_boundary[(it_kmer + 1) % num_kmers] == '1')
 			{ // end k-mer of simplitig
 
+				local_it = 0; 
 				int l = -1;
 				int ll = -1;
 
@@ -1012,6 +1031,8 @@ public:
 				}
 				else
 				{
+					
+
 					//it_kmer++;
 					write_number_at_loc(positions_local_table, per_simplitig_optimal_bigD[simplitig_it], 2, b_it_local_table);
 					if (per_simplitig_optimal_useLocal[simplitig_it] == 1)
@@ -1109,14 +1130,14 @@ public:
 				curr_bv_hi = std::stoull(bv_line.substr(64, bv_line.length() - 64), nullptr, 2);
 			}
 
-			unsigned int curr_kmer_cc_id = cc_ids[i]; //uint64_t num = bphf->lookup(curr_bv);
+			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
 			// string curr_kmer_cc_id_str;
 			// getline(cmp_keys.fs, curr_kmer_cc_id_str);
 			// unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10);
 
 			if (spss_boundary[i] == '0')
 			{ // non-start
-				int hd = hds[i];
+				int hd = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
 
 				if (hd == 0)
 				{ // CATEGORY=RUN
@@ -1157,11 +1178,8 @@ public:
 						// if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
 						if(DEBUG_MODE) cases_smc.fs << "d" << endl;
 
-
 						//category colvec = 100, 101 //cAT COLVEC = 10 HD = 1 
-						
 						//write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
-
 
 						write_category(positions, b_it, CATEGORY_COLVEC, bigD, hd);
 						for (int i_bit = 0; i_bit < 64 && i_bit < C; i_bit += 1)
@@ -1212,8 +1230,6 @@ public:
 			}
 			else
 			{ // start of simplitig, so CAT=LM
-				
-
 				l = per_simplitig_l[simplitig_it];
 				ll = ceil(log2(l));
 				lm_or_ll = ll;
@@ -1239,8 +1255,7 @@ public:
 						write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 					}else{
 						write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
-					}
-						
+					}	
 					// assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 				}
 			}
@@ -1320,7 +1335,6 @@ int main (int argc, char* argv[]){
 
 	COLESS coless(num_kmers, M, C, dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname, max_run);
 	
-	coless.method1_pass0();
 	time_start();
 	coless.method1_pass1();
 	time_end("pass1.");
