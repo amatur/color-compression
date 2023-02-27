@@ -759,8 +759,7 @@ public:
 		time_start();
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
 
-		// uint64_t prev_bv_lo = 0;
-		// uint64_t prev_bv_hi = 0;
+
 
 		for (uint64_t i=0; i < num_kmers; i+=1){  // read two files of length num_kmers 
 			string spss_line;
@@ -843,6 +842,10 @@ public:
 		int simplitig_start_id = 0;
 		int simplitig_it = 0;
 
+
+				uint64_t prev_bv_lo = 0;
+		uint64_t prev_bv_hi = 0;
+		
 		vector<int> per_simplitig_hd;
 
 		vector<unsigned int> per_simplitig_curr_kmer_cc_id;
