@@ -115,7 +115,7 @@ class OutputFile{
 		fs.close();
 	}
 };
-
+OutputFile cases_smc;
 class InputFile{
 	public:
 	string filename;
@@ -523,7 +523,7 @@ public:
 
     void run()
     {   
-        OutputFile cases_smc("cases_smc");
+        
         huff_root = build_huff_tree();
         load_bb_into_string("bb_map", str_map);
         b_it = 0;
@@ -693,6 +693,7 @@ int main (int argc, char* argv[]){
 		// }
     }
 
+    cases_smc.init("cases_smc");
 	COLESS_Decompress cdec(num_kmers, M, C,  spss_boundary_fname, max_run);
     cdec.run();
 	return EXIT_SUCCESS;
