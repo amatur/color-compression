@@ -510,7 +510,7 @@ public:
                 flip_bit(last_col_vector, d);
             }
             dec_ess_color.fs << last_col_vector << endl;
-            cases_smc<<"d"<<endl;
+            cases_smc.fs<<"d"<<endl;
 
             // if(start_of_simplitig(written_kmer)){ 
             //     read_local_hash_table_per_simplitig(str_local, b_it_local);
@@ -576,7 +576,7 @@ public:
                     int col_class = local_hash_table[local_id]; 
                     last_col_vector = global_table[col_class];
                     dec_ess_color.fs << last_col_vector << endl;
-                    cases_smc<<"l"<<endl;
+                    cases_smc.fs<<"l"<<endl;
                     written_kmer+=1;
                 }else{
                     if(USE_HUFFMAN==false){
@@ -589,7 +589,7 @@ public:
                         uint64_t col_class = read_l_huff_codes(1, str_map, b_it, huff_root)[0];
                         last_col_vector = global_table[col_class];
                         dec_ess_color.fs << last_col_vector << endl;
-                        cases_smc<<"m"<<endl;
+                        cases_smc.fs<<"m"<<endl;
 
                         written_kmer+=1;
                     }
@@ -615,7 +615,7 @@ public:
                         while (skip)
                         {
                             dec_ess_color.fs << last_col_vector << endl;
-                            cases_smc<<"r"<<endl;
+                            cases_smc.fs<<"r"<<endl;
 
                             written_kmer+=1;
                             skip--;
