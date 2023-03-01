@@ -1,5 +1,6 @@
-//version: feb 6:pausing the combo
-#include<cmph.h> //#include "BooPHF.h"
+//version: mar 1: trying to fix gut
+#define VERSION_NAME "MAR1,FIXING_GUT"
+#include <cmph.h> 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -24,7 +25,7 @@
 #include <algorithm>
 #include <iostream>
 #include<sstream>
-#include "BooPHF.h"
+
 using namespace std;
 using namespace sdsl;
 
@@ -235,51 +236,51 @@ namespace CMPH{
 using namespace CMPH;
 
 
-namespace BPHF{
+// namespace BPHF{
 
-    typedef boomphf::SingleHashFunctor<uint64_t>  hasher_t;
-    typedef boomphf::mphf<  uint64_t, hasher_t  > boophf_t;
-		 boophf_t * bphf; 
-    // void construct_bphf_table( int *& data, int nelem, boophf_t * &bphf ){
-    //     int nthreads = 8;
-    //     double t_begin,t_end; struct timeval timet;
-    //     printf("Construct a BooPHF with  %lli elements  \n",nelem);
-    //     gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-    //     auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
-    //     double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
-    //     bphf = new boomphf::mphf<int,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
-    //     gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
-    //     printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
-    // }
+//     typedef boomphf::SingleHashFunctor<uint64_t>  hasher_t;
+//     typedef boomphf::mphf<  uint64_t, hasher_t  > boophf_t;
+// 		 boophf_t * bphf; 
+//     // void construct_bphf_table( int *& data, int nelem, boophf_t * &bphf ){
+//     //     int nthreads = 8;
+//     //     double t_begin,t_end; struct timeval timet;
+//     //     printf("Construct a BooPHF with  %lli elements  \n",nelem);
+//     //     gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+//     //     auto data_iterator = boomphf::range(static_cast<const int*>(data), static_cast<const int*>(data+nelem));
+//     //     double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
+//     //     bphf = new boomphf::mphf<int,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
+//     //     gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
+//     //     printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
+//     // }
 
-	void create_table(string filename, int nelem ){
-		InputFile infile(filename);
-		uint64_t* data = (uint64_t * ) calloc(nelem,sizeof(uint64_t));
-		string bv_line;
-		int i = 0;
-		while (getline(infile.fs,bv_line )){
-			data[i++] = std::stoull(bv_line, nullptr, 2) ;
-		}
-		int nthreads = 8;
-        //double t_begin,t_end; struct timeval timet;
-        printf("Construct a BooPHF with  %lli elements  \n",nelem);
-        //gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
-        auto data_iterator = boomphf::range(static_cast<const uint64_t*>(data), static_cast<const uint64_t*>(data+nelem));
-        double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
-        bphf = new boomphf::mphf<uint64_t,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
+// 	void create_table(string filename, int nelem ){
+// 		InputFile infile(filename);
+// 		uint64_t* data = (uint64_t * ) calloc(nelem,sizeof(uint64_t));
+// 		string bv_line;
+// 		int i = 0;
+// 		while (getline(infile.fs,bv_line )){
+// 			data[i++] = std::stoull(bv_line, nullptr, 2) ;
+// 		}
+// 		int nthreads = 8;
+//         //double t_begin,t_end; struct timeval timet;
+//         printf("Construct a BooPHF with  %lli elements  \n",nelem);
+//         //gettimeofday(&timet, NULL); t_begin = timet.tv_sec +(timet.tv_usec/1000000.0);
+//         auto data_iterator = boomphf::range(static_cast<const uint64_t*>(data), static_cast<const uint64_t*>(data+nelem));
+//         double gammaFactor = 7.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
+//         bphf = new boomphf::mphf<uint64_t,hasher_t>(nelem,data_iterator,nthreads,gammaFactor);
         
-		//gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
-        //printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
-	}
+// 		//gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
+//         //printf("BooPHF constructed perfect hash for %llu keys in %.2fs\n", nelem,t_end - t_begin);
+// 	}
 
-	unsigned int lookup(string str){	
-		return bphf->lookup(std::stoull(str, nullptr, 2));
-	}
+// 	unsigned int lookup(string str){	
+// 		return bphf->lookup(std::stoull(str, nullptr, 2));
+// 	}
 
-	void mphf_destroy(){
-		delete bphf;
-	}
-}   
+// 	void mphf_destroy(){
+// 		delete bphf;
+// 	}
+// }   
 //using namespace BPHF; 
 
 //sort -T=~/s/tmp/ export TMPDIR=/tmp
@@ -759,8 +760,6 @@ public:
 		time_start();
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
 
-
-
 		for (uint64_t i=0; i < num_kmers; i+=1){  // read two files of length num_kmers 
 			string spss_line;
 			getline (spss_boundary_file.fs,spss_line); 
@@ -768,7 +767,7 @@ public:
 			if(spss_line[0]=='1'){
 				num_simplitig += 1;
 			}
-
+			cmp_keys.fs << lookup(bv_line);
 			// uint64_t curr_bv_lo = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
 			// uint64_t curr_bv_hi = 0;
 			// if(C >= 64){
@@ -816,7 +815,6 @@ public:
 		store_global_color_class_table();
 		time_end("Written global table for "+to_string(M)+" values.");
 
-
 		string bv_line;
 		DebugFile optout("optout");
 
@@ -843,11 +841,10 @@ public:
 		int simplitig_it = 0;
 
 
-				uint64_t prev_bv_lo = 0;
+		uint64_t prev_bv_lo = 0;
 		uint64_t prev_bv_hi = 0;
 		
 		vector<int> per_simplitig_hd;
-
 		vector<unsigned int> per_simplitig_curr_kmer_cc_id;
 		per_simplitig_l = new int[num_simplitig];
 		per_simplitig_optimal_useLocal = new int[num_simplitig];
@@ -1064,6 +1061,7 @@ public:
 					// re-init for new simplitig
 					if(useLocal==1)
 						local_hash_table.clear();
+					
 					simplitig_it += 1;
 
 					if (it_kmer != num_kmers)
@@ -1073,7 +1071,6 @@ public:
 				
 			}
 
-			
 			it_kmer++;			
 			if (it_kmer == num_kmers)
 				break;
@@ -1303,6 +1300,7 @@ public:
 };
 
 int main (int argc, char* argv[]){
+	cout<<"Version: "<<VERSION_NAME<<endl;
 	//srand(time(nullptr));
 	//srand(0);
 	vector<string> args(argv + 1, argv + argc);
@@ -1311,7 +1309,7 @@ int main (int argc, char* argv[]){
     int M, C;
 	int max_run = 16;
 	uint64_t num_kmers=0;
-	cout<<"Version: Feb 10"<<endl;
+	
     for (auto i = args.begin(); i != args.end(); ++i) {
         if (*i == "-h" || *i == "--help") {
             cout << "Syntax: tool -i <DE-DUP-bitmatrix> -d <dup-bitmatrix> -c <num-colors> -m <M> -k <num-kmers> -s <spss-bound> -x <max-run>" << endl;

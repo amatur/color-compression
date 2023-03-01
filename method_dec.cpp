@@ -1,4 +1,5 @@
-//version: feb 6:pausing the combo
+//version: mar 1: trying to fix gut
+#define VERSION_NAME "MAR1,FIXING_GUT"
 #include<cmph.h> //#include "BooPHF.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +21,7 @@
 #include <algorithm>
 #include <iostream>
 #include<sstream>
-#include "BooPHF.h"
+
 using namespace std;
 using namespace sdsl;
 
@@ -664,6 +665,8 @@ public:
 
 
 int main (int argc, char* argv[]){
+	cout<<"Version: "<<VERSION_NAME<<endl;
+
 	vector<string> args(argv + 1, argv + argc);
     string dedup_bitmatrix_fname, dup_bitmatrix_fname, spss_boundary_fname; //string tmp_dir;
     int M, C;
