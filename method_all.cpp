@@ -761,12 +761,13 @@ public:
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
 
 		for (uint64_t i=0; i < num_kmers; i+=1){  // read two files of length num_kmers 
-			string spss_line;
+			string spss_line, bv_line;
 			getline (spss_boundary_file.fs,spss_line); 
 			spss_boundary.push_back(spss_line[0]); //this kmer starts a simplitig
 			if(spss_line[0]=='1'){
 				num_simplitig += 1;
 			}
+			getline (dup_bitmatrix_file.fs,bv_line);
 			cmp_keys.fs << lookup(bv_line);
 			// uint64_t curr_bv_lo = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
 			// uint64_t curr_bv_hi = 0;
@@ -781,8 +782,6 @@ public:
 		}
 		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
 		cmp_keys.close();
-
-
 
 		time_start();
 		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frequency_sorted");
@@ -859,6 +858,8 @@ public:
 		int big_d_local_combo = 0;
 		uint64_t it_kmer = 0;
 		int local_it = 0;
+
+		dup_bitmatrix_file.rewind();
 		while (true)
 		{
 			if (DEBUG_MODE)
