@@ -880,7 +880,7 @@ public:
 					prev_bv_hi = curr_bv_hi;
 					prev_bv_lo = curr_bv_lo;
 					
-					if(spss_boundary[(it_kmer+local_it+1)%num_simplitig]=='1'){
+					if(spss_boundary[(it_kmer+local_it+1)%num_kmers]=='1'){
 						local_it = 0;
 						break;
 					}
