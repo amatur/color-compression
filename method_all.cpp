@@ -853,6 +853,7 @@ public:
 	
 		while (true)
 		{
+			//start with it-kmer 0
 			if (DEBUG_MODE)
 				all_ls.fs << "Start_bigd"
 						  << " " << big_d_local_combo <<it_kmer<<" "<<simplitig_it<<" " << endl;
