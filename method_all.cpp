@@ -891,12 +891,13 @@ public:
 			
 			int useLocal = (big_d_local_combo / 3);
 			int bigD = big_d_local_combo % 3;
-			int hd = per_simplitig_hd[local_it++];
+			int hd = 0;
 			unsigned int curr_kmer_cc_id = per_simplitig_curr_kmer_cc_id[local_it++];
 
 			//cout << "U B C S " << useLocal << " " << bigD << " " << curr_kmer_cc_id << " " << simplitig_it << endl;
 			if (spss_boundary[it_kmer] == '0')
 			{ // non-start
+				hd = per_simplitig_hd[local_it-2];
 				if (hd == 0)
 				{ // CAT=RUN
 					skip += 1;
