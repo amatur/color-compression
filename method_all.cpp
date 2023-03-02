@@ -870,7 +870,7 @@ public:
 					if(C >= 64){
 						curr_bv_hi = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
 					} 
-					if(spss_boundary[it_kmer+local_it]!='0'){ //non-start
+					if(spss_boundary[it_kmer+local_it]=='0'){ //non-start
 						int hd = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
 						per_simplitig_hd.push_back(hd);
 					}
