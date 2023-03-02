@@ -850,13 +850,7 @@ public:
 
 		dup_bitmatrix_file.rewind();
 
-		while(true){
-			//loop through all simplitig
-
-
-
-		}
-
+	
 		while (true)
 		{
 			if (DEBUG_MODE)
