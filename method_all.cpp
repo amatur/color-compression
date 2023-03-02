@@ -1017,6 +1017,7 @@ public:
 				if (big_d_local_combo < 5)
 				{
 					it_kmer = simplitig_start_id;
+					local_it = 0;
 					if(useLocal == 1)
 						local_hash_table.clear();
 					big_d_local_combo++;
