@@ -31,7 +31,7 @@ using namespace sdsl;
 
 #include <unordered_map>
 
-const bool DEBUG_MODE = false;
+const bool DEBUG_MODE = true;
 
 namespace TimeMeasure
 {
@@ -759,7 +759,6 @@ public:
 
 		time_start();
 		OutputFile cmp_keys("cmp_keys");  // get frequency count
-
 		for (uint64_t i=0; i < num_kmers; i+=1){  // read two files of length num_kmers 
 			string spss_line, bv_line;
 			getline (spss_boundary_file.fs,spss_line); 
@@ -769,16 +768,6 @@ public:
 			}
 			getline (dup_bitmatrix_file.fs,bv_line);
 			cmp_keys.fs << lookup(bv_line);
-			// uint64_t curr_bv_lo = std::stoull(bv_line.substr(0,std::min(64, C)), nullptr, 2);
-			// uint64_t curr_bv_hi = 0;
-			// if(C >= 64){
-			// 	curr_bv_hi = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
-			// } 
-			//hds[i] = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
-
-			// prev_bv_hi = curr_bv_hi;
-			// prev_bv_lo = curr_bv_lo;
-
 		}
 		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
 		cmp_keys.close();
@@ -860,6 +849,14 @@ public:
 		int local_it = 0;
 
 		dup_bitmatrix_file.rewind();
+
+		while(true){
+			//loop through all simplitig
+
+
+
+		}
+
 		while (true)
 		{
 			if (DEBUG_MODE)
@@ -878,7 +875,7 @@ public:
 					if(C >= 64){
 						curr_bv_hi = std::stoull(bv_line.substr(64,bv_line.length()-64), nullptr, 2);
 					} 
-					if(it_kmer+local_it!=0){
+					if(spss_boundary[it_kmer+local_it]!='0'){ //non-start
 						int hd = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
 						per_simplitig_hd.push_back(hd);
 					}
@@ -1032,8 +1029,6 @@ public:
 				}
 				else
 				{
-					
-
 					//it_kmer++;
 					write_number_at_loc(positions_local_table, per_simplitig_optimal_bigD[simplitig_it], 2, b_it_local_table);
 					if (per_simplitig_optimal_useLocal[simplitig_it] == 1)
@@ -1132,10 +1127,7 @@ public:
 			}
 
 			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
-			// string curr_kmer_cc_id_str;
-			// getline(cmp_keys.fs, curr_kmer_cc_id_str);
-			// unsigned int curr_kmer_cc_id = std::stoull(curr_kmer_cc_id_str, nullptr, 10);
-
+		
 			if (spss_boundary[i] == '0')
 			{ // non-start
 				int hd = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
