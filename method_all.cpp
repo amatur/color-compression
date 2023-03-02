@@ -767,7 +767,7 @@ public:
 				num_simplitig += 1;
 			}
 			getline (dup_bitmatrix_file.fs,bv_line);
-			cmp_keys.fs << lookup(bv_line);
+			cmp_keys.fs << lookup(bv_line) <<endl;
 		}
 		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
 		cmp_keys.close();
