@@ -762,7 +762,7 @@ public:
 		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
 
 		time_start();
-		bool skip_global_load=true;
+		bool skip_global_load=false;
 		
 
 		OutputFile cmp_keys;
@@ -777,7 +777,7 @@ public:
 			if(spss_line[0]=='1'){
 				num_simplitig += 1;
 			}
-			getline (dup_bitmatrix_file.fs,bv_line);
+			if(skip_global_load==false) getline (dup_bitmatrix_file.fs,bv_line);
 			if(skip_global_load==false) cmp_keys.fs << lookup(bv_line) <<endl;
 		}
 		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
