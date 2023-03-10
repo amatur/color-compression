@@ -751,6 +751,10 @@ public:
 		delete array_lo;
 	}
 
+	void method1_pass1_new(){
+
+	}
+
 	void method1_pass1()
 	{ 
 		time_start();
@@ -758,7 +762,14 @@ public:
 		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
 
 		time_start();
-		OutputFile cmp_keys("cmp_keys");  // get frequency count
+		bool skip_global_load=true;
+		
+
+		OutputFile cmp_keys;
+		if(skip_global_load==false){
+			cmp_keys.init("cmp_keys");  // get frequency count
+
+		}
 		for (uint64_t i=0; i < num_kmers; i+=1){  // read two files of length num_kmers 
 			string spss_line, bv_line;
 			getline (spss_boundary_file.fs,spss_line); 
@@ -767,15 +778,16 @@ public:
 				num_simplitig += 1;
 			}
 			getline (dup_bitmatrix_file.fs,bv_line);
-			cmp_keys.fs << lookup(bv_line) <<endl;
+			if(skip_global_load==false) cmp_keys.fs << lookup(bv_line) <<endl;
 		}
 		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
-		cmp_keys.close();
+		if(skip_global_load==false) cmp_keys.close();
 
-		time_start();
-		system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frequency_sorted");
-		time_end("Sorting and getting freq for "+to_string(num_kmers)+" keys.");
-		
+		if(skip_global_load==false){
+			time_start();
+			system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frequency_sorted");
+			time_end("Sorting and getting freq for "+to_string(num_kmers)+" keys.");
+		}
 		time_start();
 		InputFile infile_freq("frequency_sorted");
 		string line;
