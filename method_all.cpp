@@ -762,7 +762,7 @@ public:
 		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
 
 		time_start();
-		bool skip_global_load=false;
+		bool skip_global_load=true;
 		
 
 		OutputFile cmp_keys;
@@ -858,7 +858,7 @@ public:
 		//	cout<<"U B C S "<<useLocal<<" "<<bigD<<" "<<curr_kmer_cc_id<<" "<<simplitig_it<<endl;		for (; big_d_local_combo < 6; big_d_local_combo++)
 		int big_d_local_combo = 0;
 		uint64_t it_kmer = 0;
-		int local_it = 0;
+		uint64_t local_it = 0;
 
 		dup_bitmatrix_file.rewind();
 
