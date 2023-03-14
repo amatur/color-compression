@@ -31,7 +31,7 @@ using namespace sdsl;
 
 #include <unordered_map>
 
-const bool DEBUG_MODE = true;
+const bool DEBUG_MODE = false;
 
 namespace TimeMeasure
 {
@@ -835,7 +835,7 @@ public:
 		vector<uint64_t> positions_local_table;
 		uint64_t b_it_local_table = 0;
 		// per kmer values
-		int simplitig_start_id = 0;
+		uint64_t simplitig_start_id = 0;
 		int simplitig_it = 0;
 
 
