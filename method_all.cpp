@@ -762,13 +762,11 @@ public:
 		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
 
 		time_start();
-		bool skip_global_load=true;
+		bool skip_global_load=false;
 		
-
 		OutputFile cmp_keys;
 		if(skip_global_load==false){
 			cmp_keys.init("cmp_keys");  // get frequency count
-
 		}
 		for (uint64_t i=0; i < num_kmers; i+=1){  // read two files of length num_kmers 
 			string spss_line, bv_line;
