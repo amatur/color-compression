@@ -1,5 +1,5 @@
 //version: mar 1: trying to fix gut
-#define VERSION_NAME "MAR1,FIXING_GUT"
+#define VERSION_NAME "MAR14,FIXING_GUT, simplitig_start_id change"
 #include <cmph.h> 
 #include <stdio.h>
 #include <stdlib.h>
