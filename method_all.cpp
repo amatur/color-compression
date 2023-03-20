@@ -1,5 +1,5 @@
 //version: mar 1: trying to fix gut
-#define VERSION_NAME "MAR14,FIXING_GUT, simplitig_start_id change"
+#define VERSION_NAME "MAR20, Testing max run"
 #include <cmph.h> 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,6 +31,7 @@ using namespace sdsl;
 
 #include <unordered_map>
 
+const bool USE_TEST_METHOD = true;
 const bool DEBUG_MODE = false;
 
 namespace TimeMeasure
@@ -473,6 +474,8 @@ public:
 	int M;
 	int C;
 	int max_run = 16;
+	int lmaxrun;
+	int max_run_choice = 1;
 	vector<uint64_t> positions;
 	HuffCodeMap huff_code_map;
 	uint64_t CATEGORY_RUN=(uint64_t) 3;
@@ -762,7 +765,7 @@ public:
 		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
 
 		time_start();
-		bool skip_global_load=false;
+		bool skip_global_load=true;
 		
 		OutputFile cmp_keys;
 		if(skip_global_load==false){
@@ -817,7 +820,7 @@ public:
 		DebugFile optout("optout");
 
 		vector<uint32_t> optimal_ht;
-		int lmaxrun = ceil(log2(max_run));
+		lmaxrun = ceil(log2(max_run));
 
 		// per simplitig values
 		Hashtable local_hash_table;
@@ -922,7 +925,25 @@ public:
 						}else{
 							sum_skip_space += 2; 
 						}
+						if(USE_TEST_METHOD){
+							if(skip <=8){
+								max_run_choice = 0;
+								max_run =   8;
+							}else if(skip <= 16 ){
+								max_run_choice = 1;
+								max_run = 16;
+							} else if (skip <= 128){
+								max_run_choice = 2;
+								max_run = 128;
+							} else{
+								max_run_choice = 3;
+								max_run = 256;
+							}
+							lmaxrun = ceil(log2(max_run));
+							sum_skip_space += 2;
+						}
 						sum_skip_space += floor(skip / max_run) + 1 + lmaxrun ;
+
 					}
 					skip = 0;
 
@@ -994,6 +1015,23 @@ public:
 					}else{
 						sum_skip_space += 2; 
 					}
+					if(USE_TEST_METHOD){
+						if(skip <=8){
+							max_run_choice = 0;
+							max_run =   8;
+						}else if(skip <= 16 ){
+							max_run_choice = 1;
+							max_run = 16;
+						} else if (skip <= 128){
+							max_run_choice = 2;
+							max_run = 128;
+						} else{
+							max_run_choice = 3;
+							max_run = 256;
+						}
+						lmaxrun = ceil(log2(max_run));
+						sum_skip_space += 2;
+					}
 					sum_skip_space += floor(skip / max_run) + 1 + lmaxrun ;
 				}
 				skip = 0;
@@ -1017,9 +1055,7 @@ public:
 					per_simplitig_optimal_space[simplitig_it] = per_simplitig_space_needed;
 					per_simplitig_optimal_bigD[simplitig_it] = bigD;
 					per_simplitig_optimal_useLocal[simplitig_it] = useLocal;
-					
 				}
-
 				
 				case_run = case_lm = case_dlc = 0;
 				sum_length_huff_nonrun = sum_length_huff_uniq_nonrun = sum_dlc_space = sum_skip_space = 0;
@@ -1102,7 +1138,7 @@ public:
 		int lm_or_ll;
 		
 		Hashtable local_ht;
-		int lmaxrun = ceil(log2(max_run));
+		lmaxrun = ceil(log2(max_run));
 		for (uint64_t i = 0; i < num_kmers; i += 1)
 		{
 			int bigD = per_simplitig_optimal_bigD[simplitig_it];
@@ -1151,6 +1187,24 @@ public:
 					{ // not skipped, run break, write lm
 						// paul method
 						{
+							if(USE_TEST_METHOD){
+								if(skip <=8){
+									max_run_choice = 0;
+									max_run =   8
+								}else if(skip <= 16 ){
+									max_run_choice = 1;
+									max_run = 16;
+								} else if (skip <= 128){
+									max_run_choice = 2;
+									max_run = 128;
+								} else{
+									max_run_choice = 3;
+									max_run = 256;
+								}
+								lmaxrun = ceil(log2(max_run));
+								write_number_at_loc(positions, (uint64_t)max_run_choice, (uint64_t)2, b_it);
+
+							}
 							int q, rem;
 							q = floor(skip / max_run);
 							rem = skip % max_run;
@@ -1308,6 +1362,7 @@ int main (int argc, char* argv[]){
 	//string tmp_dir;
     int M, C;
 	int max_run = 16;
+	
 	uint64_t num_kmers=0;
 	
     for (auto i = args.begin(); i != args.end(); ++i) {
