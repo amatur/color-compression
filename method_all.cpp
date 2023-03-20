@@ -1125,6 +1125,8 @@ public:
 		uint64_t b_it = 0;
 		dup_bitmatrix_file.rewind();
 		DebugFile cases_smc("cases_smc");
+		DebugFile cases_skip("cases_skip");
+
 		uint64_t curr_bv_hi = 0;
 		uint64_t curr_bv_lo = 0;
 		uint64_t prev_bv_hi = 0;
@@ -1188,6 +1190,7 @@ public:
 						// paul method
 						{
 							if(USE_TEST_METHOD){
+								if(DEBUG_MODE) cases_skip.fs << skip << endl;
 								if(skip <= 4){
 									max_run_choice = 0;
 									max_run =   4;
@@ -1325,6 +1328,25 @@ public:
 				}
 				if (skip != 0)
 				{ // not skipped, run break, write lm
+					if(USE_TEST_METHOD){
+						if(DEBUG_MODE) cases_skip.fs << skip << endl;
+						if(skip <= 4){
+							max_run_choice = 0;
+							max_run =   4;
+						}else if(skip <= 16 ){
+							max_run_choice = 1;
+							max_run = 16;
+						} else if (skip <= 128){
+							max_run_choice = 2;
+							max_run = 128;
+						} else{
+							max_run_choice = 3;
+							max_run = 256;
+						}
+						lmaxrun = ceil(log2(max_run));
+						write_number_at_loc(positions, (uint64_t)max_run_choice, (uint64_t)2, b_it);
+
+					}
 					int q, rem;
 					q = floor(skip / max_run);
 					rem = skip % max_run;
