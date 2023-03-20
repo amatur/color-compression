@@ -32,7 +32,9 @@ using namespace sdsl;
 #include <unordered_map>
 
 const bool USE_TEST_METHOD = true;
+bool NEW_DEBUG_MODE = false;
 bool DEBUG_MODE = false;
+
 
 namespace TimeMeasure
 {
@@ -598,7 +600,7 @@ public:
 			qpositions.pop();
 		}
 
-		if(DEBUG_MODE) debug1.fs<<-j<<" "<<block_sz<<endl;
+		// if(DEBUG_MODE) debug1.fs<<-j<<" "<<block_sz<<endl;
 		if (j > block_sz){
 			cout<<"error in block"<<endl;
 		}
@@ -682,7 +684,7 @@ public:
 			bv[p] = 1;
 		}
 		if(filename=="rrr_main"){
-			if(DEBUG_MODE) debug2.fs<<bv;
+			//if(DEBUG_MODE) debug2.fs<<bv;
 		}
 		rrr_vector<256> rrr_bv(bv);
 		//cout << "rrr_MB_bv_mapping="<<size_in_bytes(rrr_bv_mapping)/1024.0/1024.0 << endl;
@@ -760,6 +762,7 @@ public:
 
 	void method1_pass1()
 	{ 
+		DebugFile debuglll("lll");
 		time_start();
 		create_table(dedup_bitmatrix_file.filename, M );
 		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
@@ -867,9 +870,9 @@ public:
 		while (true)
 		{
 			//start with it-kmer 0
-			if (DEBUG_MODE)
-				all_ls.fs << "Start_bigd"
-						  << " " << big_d_local_combo <<it_kmer<<" "<<simplitig_it<<" " << endl;
+			// if (DEBUG_MODE)
+			// 	all_ls.fs << "Start_bigd"
+			// 			  << " " << big_d_local_combo <<it_kmer<<" "<<simplitig_it<<" " << endl;
 
 			if( big_d_local_combo == 0 && spss_boundary[it_kmer] == '1'){ //start of simp
 				local_it = 0;
@@ -998,8 +1001,13 @@ public:
 
 				if (useLocal == 1)
 				{
+
 					l = local_hash_table.curr_id;
 					ll = ceil(log2(l) * 1.0);
+
+					if(bigD == 0){
+						debuglll.fs<<simplitig_it<<" "<< l<<endl;
+					}
 					vector<uint32_t> local_ht_arr = local_hash_table.get_array();
 					for (uint32_t i = 0; i < local_hash_table.curr_id; i++)
 					{
@@ -1094,8 +1102,8 @@ public:
 
 					
 
-					if(DEBUG_MODE)
-						optout.fs << "curr: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<< " optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
+					// if(DEBUG_MODE)
+					// 	optout.fs << "curr: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<< " optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
 
 					// re-init for new simplitig
 					if(useLocal==1)
@@ -1149,8 +1157,8 @@ public:
 			l = per_simplitig_l[simplitig_it];
 			ll = ceil(log2(l));
 
-			if(DEBUG_MODE)
-				all_ls.fs<<bigD<<" "<<useLocal<<" "<<l<<" "<<ll<<endl;
+			// if(DEBUG_MODE)
+			// 	all_ls.fs<<bigD<<" "<<useLocal<<" "<<l<<" "<<ll<<endl;
 			if (useLocal == 1)
 			{
 				lm_or_ll = ll;
@@ -1181,7 +1189,7 @@ public:
 				{ // CATEGORY=RUN
 					skip += 1;
 					// case_run+=1;
-					if(DEBUG_MODE) cases_smc.fs << "r" << endl;
+					// if(DEBUG_MODE) cases_smc.fs << "r" << endl;
 				}
 				else
 				{ // CATEGORY=NOT_RUN
@@ -1190,7 +1198,7 @@ public:
 						// paul method
 						{
 							if(USE_TEST_METHOD){
-								if(DEBUG_MODE) cases_skip.fs << skip << endl;
+								// if(DEBUG_MODE) cases_skip.fs << skip << endl;
 								if(skip <= 4){
 									max_run_choice = 0;
 									max_run =   4;
@@ -1233,7 +1241,7 @@ public:
 					{ // CATEGORY=LC
 						// if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
 						// if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
-						if(DEBUG_MODE) cases_smc.fs << "d" << endl;
+						// if(DEBUG_MODE) cases_smc.fs << "d" << endl;
 
 						//category colvec = 100, 101 //cAT COLVEC = 10 HD = 1 
 						//write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
@@ -1262,7 +1270,7 @@ public:
 						write_category(positions, b_it, CATEGORY_COLCLASS, bigD, hd);
 						if (useLocal==1)
 						{
-							if(DEBUG_MODE) cases_smc.fs << "l" << endl;
+							// if(DEBUG_MODE) cases_smc.fs << "l" << endl;
 							uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
 							if (ll == 0 && localid == 1)
 							{
@@ -1272,7 +1280,7 @@ public:
 						}
 						else
 						{
-							if(DEBUG_MODE) cases_smc.fs << "m" << endl;
+							// if(DEBUG_MODE) cases_smc.fs << "m" << endl;
 							if (USE_HUFFMAN)
 							{
 								write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
@@ -1297,7 +1305,7 @@ public:
 				write_category(positions, b_it, CATEGORY_COLCLASS, bigD, 0);
 				if (useLocal == 1)
 				{
-					if(DEBUG_MODE) cases_smc.fs << "l" << endl;
+					// if(DEBUG_MODE) cases_smc.fs << "l" << endl;
 					uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
 					if (ll == 0)
 					{
@@ -1307,7 +1315,7 @@ public:
 				}
 				else
 				{
-					if(DEBUG_MODE) cases_smc.fs << "m" << endl;
+					// if(DEBUG_MODE) cases_smc.fs << "m" << endl;
 					if (USE_HUFFMAN==true){
 						write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 					}else{
@@ -1329,7 +1337,7 @@ public:
 				if (skip != 0)
 				{ // not skipped, run break, write lm
 					if(USE_TEST_METHOD){
-						if(DEBUG_MODE) cases_skip.fs << skip << endl;
+						// if(DEBUG_MODE) cases_skip.fs << skip << endl;
 						if(skip <= 4){
 							max_run_choice = 0;
 							max_run =   4;
@@ -1364,11 +1372,13 @@ public:
 			prev_bv_lo = curr_bv_lo;
 		}
 
-		DebugFile positions_out("positions_out");
-		for (uint64_t tt : positions)
-		{
-			if(DEBUG_MODE) positions_out.fs << tt << endl;
-		}
+		// DebugFile positions_out("positions_out");
+		// for (uint64_t tt : positions)
+		// {
+		// 	if(DEBUG_MODE) positions_out.fs << tt << endl;
+		// }
+
+
 		cout << "b_it_size: " << b_it << endl;
 		store_as_sdsl(positions, b_it, "rrr_main");
 		store_as_binarystring(positions, b_it, "bb_main");
@@ -1406,7 +1416,7 @@ int main (int argc, char* argv[]){
 		}else if (*i == "-x") {
             max_run = std::stoi(*++i);
 		}else if (*i == "-p") {
-            DEBUG_MODE = true;
+            NEW_DEBUG_MODE = true;
 		}
 		// else if (*i == "-t") {
         //     tmp_dir  = *++i;
@@ -1419,9 +1429,11 @@ int main (int argc, char* argv[]){
 	coless.method1_pass1();
 	time_end("pass1.");
 
-	time_start();
-	coless.method1_pass2();
-	time_end("pass2.");
+	if(NEW_DEBUG_MODE==false){
+		time_start();
+		coless.method1_pass2();
+		time_end("pass2.");
+	}
 
 
 	//COLESS_Decompress cdec(num_kmers, M, C);
