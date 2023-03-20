@@ -1367,7 +1367,7 @@ int main (int argc, char* argv[]){
 	
     for (auto i = args.begin(); i != args.end(); ++i) {
         if (*i == "-h" || *i == "--help") {
-            cout << "Syntax: tool -i <DE-DUP-bitmatrix> -d <dup-bitmatrix> -c <num-colors> -m <M> -k <num-kmers> -s <spss-bound> -x <max-run>" << endl;
+            cout << "Syntax: tool -p debug -i <DE-DUP-bitmatrix> -d <dup-bitmatrix> -c <num-colors> -m <M> -k <num-kmers> -s <spss-bound> -x <max-run>" << endl;
             return 0;
         } else if (*i == "-i") {
             dedup_bitmatrix_fname = *++i;
@@ -1383,6 +1383,8 @@ int main (int argc, char* argv[]){
             spss_boundary_fname = *++i;
 		}else if (*i == "-x") {
             max_run = std::stoi(*++i);
+		}else if (*i == "-p") {
+            DEBUG_MODE = true;
 		}
 		// else if (*i == "-t") {
         //     tmp_dir  = *++i;
