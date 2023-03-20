@@ -763,6 +763,7 @@ public:
 	void method1_pass1()
 	{ 
 		DebugFile debuglll("lll");
+		DebugFile skipper("skipper");
 		time_start();
 		create_table(dedup_bitmatrix_file.filename, M );
 		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
@@ -923,12 +924,14 @@ public:
 				{ // CAT=NRUN
 
 					if(skip!=0){
+						skipper.fs<<skip<<endl;
 						if(bigD==0){
 							sum_skip_space += 1; 
 						}else{
 							sum_skip_space += 2; 
 						}
 						if(USE_TEST_METHOD){
+
 							if(skip <= 4){
 								max_run_choice = 0;
 								max_run =  4;
@@ -1018,6 +1021,8 @@ public:
 
 				
 				if(skip!=0){
+					skipper.fs<<skip<<endl;
+
 					if(bigD==0){
 						sum_skip_space += 1; 
 					}else{
@@ -1352,7 +1357,7 @@ public:
 							max_run = 256;
 						}
 						lmaxrun = ceil(log2(max_run));
-						write_number_at_loc(positions, (uint64_t)max_run_choice, (uint64_t)2, b_it);
+						write_number_at_loc(positions, (uint64_t)max_run_choice, (uint64_t)1, b_it);
 
 					}
 					int q, rem;
