@@ -926,9 +926,9 @@ public:
 							sum_skip_space += 2; 
 						}
 						if(USE_TEST_METHOD){
-							if(skip <=8){
+							if(skip <= 4){
 								max_run_choice = 0;
-								max_run =   8;
+								max_run =  4;
 							}else if(skip <= 16 ){
 								max_run_choice = 1;
 								max_run = 16;
@@ -1016,9 +1016,9 @@ public:
 						sum_skip_space += 2; 
 					}
 					if(USE_TEST_METHOD){
-						if(skip <=8){
+						if(skip <= 4){
 							max_run_choice = 0;
-							max_run =   8;
+							max_run =   4;
 						}else if(skip <= 16 ){
 							max_run_choice = 1;
 							max_run = 16;
@@ -1188,9 +1188,9 @@ public:
 						// paul method
 						{
 							if(USE_TEST_METHOD){
-								if(skip <=8){
+								if(skip <= 4){
 									max_run_choice = 0;
-									max_run =   8
+									max_run =   4;
 								}else if(skip <= 16 ){
 									max_run_choice = 1;
 									max_run = 16;
