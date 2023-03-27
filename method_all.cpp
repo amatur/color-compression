@@ -762,6 +762,7 @@ public:
 
 	void method1_pass1()
 	{ 
+		string combo_string = "";
 		//DebugFile cases_smc("cases_smc");
 		//DebugFile debuglll("lll");
 		//DebugFile skipper("skipper");
@@ -1088,7 +1089,7 @@ public:
 				else
 				{
 					//it_kmer++;
-					debug_combo.fs<<per_simplitig_optimal_bigD[simplitig_it]<<" "<<per_simplitig_optimal_useLocal[simplitig_it]<<endl;
+					combo_string+=to_string(per_simplitig_optimal_bigD[simplitig_it])+" "+to_string(per_simplitig_optimal_useLocal[simplitig_it])+"\n";
 					write_number_at_loc(positions_local_table, per_simplitig_optimal_bigD[simplitig_it], 2, b_it_local_table);
 					if (per_simplitig_optimal_useLocal[simplitig_it] == 1)
 					{
@@ -1133,6 +1134,8 @@ public:
 		cout << "b_it_local_table_size: " << b_it_local_table << endl;
 		store_as_binarystring(positions_local_table, b_it_local_table, "bb_local_table");
 		store_as_sdsl(positions_local_table, b_it_local_table, "rrr_local_table");
+		debug_combo.fs<<combo_string;
+
 	}
 
 	void method1_pass2()
