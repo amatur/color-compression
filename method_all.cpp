@@ -762,8 +762,10 @@ public:
 
 	void method1_pass1()
 	{ 
-		DebugFile debuglll("lll");
-		DebugFile skipper("skipper");
+		//DebugFile cases_smc("cases_smc");
+		//DebugFile debuglll("lll");
+		//DebugFile skipper("skipper");
+		DebugFile debug_combo("combo");
 		time_start();
 		create_table(dedup_bitmatrix_file.filename, M );
 		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
@@ -924,7 +926,7 @@ public:
 				{ // CAT=NRUN
 
 					if(skip!=0){
-						skipper.fs<<skip<<endl;
+						//skipper.fs<<skip<<endl;
 						if(bigD==0){
 							sum_skip_space += 1; 
 						}else{
@@ -1009,7 +1011,7 @@ public:
 					ll = ceil(log2(l) * 1.0);
 
 					if(bigD == 0){
-						debuglll.fs<<simplitig_it<<" "<< l<<endl;
+						//debuglll.fs<<simplitig_it<<" "<< l<<endl;
 					}
 					vector<uint32_t> local_ht_arr = local_hash_table.get_array();
 					for (uint32_t i = 0; i < local_hash_table.curr_id; i++)
@@ -1021,7 +1023,7 @@ public:
 
 				
 				if(skip!=0){
-					skipper.fs<<skip<<endl;
+					//skipper.fs<<skip<<endl;
 
 					if(bigD==0){
 						sum_skip_space += 1; 
@@ -1086,6 +1088,7 @@ public:
 				else
 				{
 					//it_kmer++;
+					debug_combo.fs<<per_simplitig_optimal_bigD[simplitig_it]<<" "<<per_simplitig_optimal_useLocal[simplitig_it]<<endl;
 					write_number_at_loc(positions_local_table, per_simplitig_optimal_bigD[simplitig_it], 2, b_it_local_table);
 					if (per_simplitig_optimal_useLocal[simplitig_it] == 1)
 					{
@@ -1137,8 +1140,8 @@ public:
 		vector<uint64_t> positions;
 		uint64_t b_it = 0;
 		dup_bitmatrix_file.rewind();
-		DebugFile cases_smc("cases_smc");
-		DebugFile cases_skip("cases_skip");
+		//DebugFile cases_smc("cases_smc");
+		//DebugFile cases_skip("cases_skip");
 
 		uint64_t curr_bv_hi = 0;
 		uint64_t curr_bv_lo = 0;
