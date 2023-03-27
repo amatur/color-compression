@@ -1089,7 +1089,7 @@ public:
 				else
 				{
 					//it_kmer++;
-					combo_string+=to_string(per_simplitig_optimal_bigD[simplitig_it])+" "+to_string(per_simplitig_optimal_useLocal[simplitig_it])+"\n";
+					combo_string+=to_string(simplitig_it)+" "+to_string(per_simplitig_optimal_bigD[simplitig_it])+" "+to_string(per_simplitig_optimal_useLocal[simplitig_it])+"\n";
 					write_number_at_loc(positions_local_table, per_simplitig_optimal_bigD[simplitig_it], 2, b_it_local_table);
 					if (per_simplitig_optimal_useLocal[simplitig_it] == 1)
 					{
@@ -1153,7 +1153,7 @@ public:
 		uint64_t skip = 0;
 
 		//InputFile cmp_keys("cmp_keys");
-		int simplitig_it = 0;
+		uint64_t simplitig_it = 0;
 		int l = per_simplitig_l[0];
 		int ll = ceil(log2(l));
 		int lm_or_ll;
