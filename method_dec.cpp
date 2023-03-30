@@ -451,7 +451,7 @@ public:
         return col_vec;
     }
 
-    void read_color_vector_binary(bitvector bv, uint64_t& b_it){
+    void read_color_vector_binary(rrr_vector<256> bv, uint64_t& b_it){
         for(int i = 0; i< C; i++){
             cout<<bv[b_it];
         }
@@ -538,10 +538,10 @@ public:
         rrr_vector<256> rrr_bv; 
         time_start();     
         load_from_file(rrr_bv, "rrr_map");  //sdsl namespace
-
+        b_it = 0;
          for (int i = 0; i < M; i++)
         {
-            read_color_vector_binary(str_map, b_it);
+            read_color_vector_binary(rrr_bv, b_it);
         }
         time_end("binary read");
     }
@@ -722,7 +722,8 @@ int main (int argc, char* argv[]){
 
     COLESS_Decompress cdec(num_kmers, M, C,  spss_boundary_fname, max_run);
     
-    cdec.run();
+    cdec.test_run();
+    //cdec.run();
     
 	return EXIT_SUCCESS;
 }
