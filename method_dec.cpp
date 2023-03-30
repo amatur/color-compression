@@ -51,7 +51,7 @@ namespace TimeMeasure
 	void time_end(string msg){
 		gettimeofday(&timet, NULL); t_end = timet.tv_sec +(timet.tv_usec/1000000.0);	
 		cout<<msg<<" time = ";
-		printf("%.2fs\n",t_end - t_begin);
+		printf("%.8fs\n",t_end - t_begin);
 	}
 } using namespace TimeMeasure;
 
@@ -451,6 +451,16 @@ public:
         return col_vec;
     }
 
+    void read_color_vector_binary(bitvector bv, uint64_t& b_it){
+        for(int i = 0; i< C; i++){
+            cout<<bv[b_it];
+        }
+        cout<<"done"<<endl;
+        
+        // string col_vec = str.substr(b_it, C);
+        b_it+=C;
+    }
+
     void flip_bit(string& s, int pos){
         if(s[C-pos-1] == '1')  {
             s[C-pos-1]='0';
@@ -522,6 +532,18 @@ public:
             
             differ_run.clear();
         }         
+    }
+
+    void test_run(){
+        rrr_vector<256> rrr_bv; 
+        time_start();     
+        load_from_file(rrr_bv, "rrr_map");  //sdsl namespace
+
+         for (int i = 0; i < M; i++)
+        {
+            read_color_vector_binary(str_map, b_it);
+        }
+        time_end("binary read");
     }
 
     void run()
