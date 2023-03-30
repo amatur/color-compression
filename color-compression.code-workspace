@@ -88,7 +88,14 @@
 			"memory_resource": "cpp",
 			"utility": "cpp",
 			"stop_token": "cpp",
-			"__memory": "cpp"
+			"__memory": "cpp",
+			"forward_list": "cpp",
+			"list": "cpp",
+			"unordered_set": "cpp",
+			"ranges": "cpp",
+			"span": "cpp",
+			"regex": "cpp",
+			"valarray": "cpp"
 		}
 	}
 }

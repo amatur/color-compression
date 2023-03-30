@@ -38,6 +38,8 @@ uint64_t CATEGORY_COLVEC=(uint64_t) 2;
 uint64_t CATEGORY_COLVEC_ONE = (uint64_t) 4; //100
 uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
 
+
+bool TESTING_SPEED=true;
 bool DEBUG_MODE = false;
 
 namespace TimeMeasure
@@ -116,7 +118,7 @@ class OutputFile{
 		fs.close();
 	}
 };
-OutputFile cases_smc;
+
 class InputFile{
 	public:
 	string filename;
@@ -510,8 +512,8 @@ public:
             {
                 flip_bit(last_col_vector, d);
             }
-            dec_ess_color.fs << last_col_vector << endl;
-            cases_smc.fs<<"d"<<endl;
+            if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
+            
 
             // if(start_of_simplitig(written_kmer)){ 
             //     read_local_hash_table_per_simplitig(str_local, b_it_local);
@@ -524,7 +526,7 @@ public:
 
     void run()
     {   
-        
+        time_start();
         huff_root = build_huff_tree();
         load_bb_into_string("bb_map", str_map);
         b_it = 0;
@@ -576,22 +578,20 @@ public:
                      
                     int col_class = local_hash_table[local_id]; 
                     last_col_vector = global_table[col_class];
-                    dec_ess_color.fs << last_col_vector << endl;
-                    cases_smc.fs<<"l"<<endl;
+                    if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                     written_kmer+=1;
                 }else{
                     if(USE_HUFFMAN==false){
                         uint64_t col_class = read_uint(str_map, b_it, lm);
                         last_col_vector = global_table[col_class];
-                        dec_ess_color.fs << last_col_vector << endl;
+                        if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                         written_kmer+=1;
                     }else{
                         //TODO -- untested
                         uint64_t col_class = read_l_huff_codes(1, str_map, b_it, huff_root)[0];
                         last_col_vector = global_table[col_class];
-                        dec_ess_color.fs << last_col_vector << endl;
-                        cases_smc.fs<<"m"<<endl;
-
+                        if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
+                        
                         written_kmer+=1;
                     }
 
@@ -615,9 +615,8 @@ public:
                         int skip = q * max_run + rem;
                         while (skip)
                         {
-                            dec_ess_color.fs << last_col_vector << endl;
-                            cases_smc.fs<<"r"<<endl;
-
+                            if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
+                            
                             written_kmer+=1;
                             skip--;
                         }
@@ -660,7 +659,10 @@ public:
             }
         } 
         flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
+        time_end("Total run of decompression");
+
     }
+    
 };
 
 
@@ -696,8 +698,9 @@ int main (int argc, char* argv[]){
 		// }
     }
 
-    cases_smc.init("cases_smc");
-	COLESS_Decompress cdec(num_kmers, M, C,  spss_boundary_fname, max_run);
+    COLESS_Decompress cdec(num_kmers, M, C,  spss_boundary_fname, max_run);
+    
     cdec.run();
+    
 	return EXIT_SUCCESS;
 }
