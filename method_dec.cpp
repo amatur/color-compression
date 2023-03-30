@@ -453,9 +453,9 @@ public:
 
     void read_color_vector_binary(rrr_vector<256> bv, uint64_t& b_it){
         for(int i = 0; i< C; i++){
-            cout<<bv[i+b_it];
+            //cout<<bv[i+b_it];
         }
-        cout<<endl;
+        //cout<<endl;
         
         // string col_vec = str.substr(b_it, C);
         b_it+=C;
