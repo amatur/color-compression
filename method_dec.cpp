@@ -537,7 +537,7 @@ public:
     void test_run(){
         rrr_vector<256> rrr_bv; 
         time_start();     
-        load_from_file(rrr_bv, "rrr_map");  //sdsl namespace
+        load_from_file(rrr_bv, "rrr_main");  //sdsl namespace
         b_it = 0;
          for (int i = 0; i < M; i++)
         {
