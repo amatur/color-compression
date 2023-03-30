@@ -1,4 +1,6 @@
 //version: mar 1: trying to fix gut
+#include<bit>
+
 #define VERSION_NAME "MAR20, Testing max run"
 #include <cmph.h> 
 #include <stdio.h>
@@ -35,6 +37,77 @@ const bool USE_TEST_METHOD = true;
 bool NEW_DEBUG_MODE = false;
 bool DEBUG_MODE = false;
 
+
+// namespace BinaryIO
+// {
+// 	if constexpr (std::endian::native == std::endian::big)
+// 	{
+// 		// Big-endian system
+// 	}
+// 	else if constexpr (std::endian::native == std::endian::little)
+// 	{
+// 		// Little-endian system
+// 	}
+// 	else
+// 	{
+// 		// Something else
+// 	}
+
+// 	void write_binary_from_pos(uint8_t* bitvector, vector<uint64_t>& positions, uint64_t &b_it);
+// 		int num_blocks_req = ceil(b_it/8);
+
+// 		//little endian (lo=0,hi=num_blocks_req-1)
+// 		for(int i = 0; i<num_blocks_req; i++){
+// 			bitvector[i] = 0x00;
+// 		}
+// 	}
+	
+
+// 	void to_kmer_binary_file(const std::string& outfile, vector<uint64_t> his, vector<uint64_t> los)
+// 	{
+// 		ofstream out(outfile, ios::out | ios::binary);
+
+// 		uint8_t array[8];
+
+// 		// k value
+// 		array[0] =  this->k        & 0xFF;
+// 		array[1] = (this->k >>  8) & 0xFF;
+// 		array[2] = (this->k >> 16) & 0xFF;
+// 		array[3] = (this->k >> 24) & 0xFF;
+// 		array[4] = (this->k >> 32) & 0xFF;
+// 		array[5] = (this->k >> 40) & 0xFF;
+// 		array[6] = (this->k >> 48) & 0xFF;
+// 		array[7] = (this->k >> 56) & 0xFF;
+// 		out.write((char *)array, 8);
+
+// 		// number of kmers
+// 		array[0] =  this->kmers.size()        & 0xFF;
+// 		array[1] = (this->kmers.size() >>  8) & 0xFF;
+// 		array[2] = (this->kmers.size() >> 16) & 0xFF;
+// 		array[3] = (this->kmers.size() >> 24) & 0xFF;
+// 		array[4] = (this->kmers.size() >> 32) & 0xFF;
+// 		array[5] = (this->kmers.size() >> 40) & 0xFF;
+// 		array[6] = (this->kmers.size() >> 48) & 0xFF;
+// 		array[7] = (this->kmers.size() >> 56) & 0xFF;
+// 		out.write((char *)array, 8);
+
+// 		for (const uint64_t kmer : this->kmers)
+// 		{
+// 			array[0] =  kmer        & 0xFF;
+// 			array[1] = (kmer >>  8) & 0xFF;
+// 			array[2] = (kmer >> 16) & 0xFF;
+// 			array[3] = (kmer >> 24) & 0xFF;
+// 			array[4] = (kmer >> 32) & 0xFF;
+// 			array[5] = (kmer >> 40) & 0xFF;
+// 			array[6] = (kmer >> 48) & 0xFF;
+// 			array[7] = (kmer >> 56) & 0xFF;
+// 			out.write((char *)array, 8);
+// 		}
+
+// 		out.close();
+// 	}
+	
+// } using namespace BinaryIO;
 
 namespace TimeMeasure
 {

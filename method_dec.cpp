@@ -722,8 +722,8 @@ int main (int argc, char* argv[]){
 
     COLESS_Decompress cdec(num_kmers, M, C,  spss_boundary_fname, max_run);
     
-    cdec.test_run();
-    //cdec.run();
+    //cdec.test_run();
+    cdec.run();
     
 	return EXIT_SUCCESS;
 }
