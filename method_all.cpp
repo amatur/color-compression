@@ -792,7 +792,7 @@ public:
 
 		//LogFile log_num_color_in_class;
 		//log_num_color_in_class.init("log_num_color_in_class"); 
-		
+		store_global_color_class_table.rewind();
 		global_table = new string[M];
 		for(int x=0; x<M; x++){
 			string bv_line;
