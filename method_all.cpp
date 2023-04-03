@@ -32,7 +32,7 @@ using namespace sdsl;
 
 #include <unordered_map>
 
-const bool USE_TEST_METHOD = true;
+const bool USE_TEST_METHOD = false;
 bool NEW_DEBUG_MODE = false;
 bool DEBUG_MODE = false;
 
@@ -792,7 +792,7 @@ public:
 
 		//LogFile log_num_color_in_class;
 		//log_num_color_in_class.init("log_num_color_in_class"); 
-		dedup_bitmatrix_file.rewind();
+		
 		global_table = new string[M];
 		for(int x=0; x<M; x++){
 			string bv_line;
@@ -837,7 +837,7 @@ public:
 		string combo_string = "";
 		//DebugFile cases_smc("cases_smc");
 		//DebugFile debuglll("lll");
-		//DebugFile skipper("skipper");
+		DebugFile skipper("skipper");
 		DebugFile debug_combo("combo");
 		time_start();
 		create_table(dedup_bitmatrix_file.filename, M );
@@ -999,7 +999,7 @@ public:
 				{ // CAT=NRUN
 
 					if(skip!=0){
-						//skipper.fs<<skip<<endl;
+						skipper.fs<<skip<<endl;
 						if(bigD==0){
 							sum_skip_space += 1; 
 						}else{
@@ -1096,7 +1096,7 @@ public:
 
 				
 				if(skip!=0){
-					//skipper.fs<<skip<<endl;
+					skipper.fs<<skip<<endl;
 
 					if(bigD==0){
 						sum_skip_space += 1; 
