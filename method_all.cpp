@@ -1,6 +1,6 @@
 //version: mar 1: trying to fix gut
 
-#define VERSION_NAME "MAR20, Testing max run"
+#define VERSION_NAME "APR4, k=23"
 #include <cmph.h> 
 #include <stdio.h>
 #include <stdlib.h>
