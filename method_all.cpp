@@ -844,7 +844,10 @@ public:
 		time_end("CMPH constructed perfect hash for "+to_string(M)+" keys.");
 
 		time_start();
-		bool skip_global_load=true;
+		bool skip_global_load=false;
+		if(NEW_DEBUG_MODE==true){
+			skip_global_load=true;
+		}
 		
 		OutputFile cmp_keys;
 		if(skip_global_load==false){
@@ -869,6 +872,8 @@ public:
 			time_end("Sorting and getting freq for "+to_string(num_kmers)+" keys.");
 		}
 		time_start();
+
+		
 		InputFile infile_freq("frequency_sorted");
 		string line;
 		// Build frequency table
