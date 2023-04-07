@@ -730,52 +730,6 @@ public:
 			}	
 		}
 	}
-
-	void store_global_color_class_table(){
-		vector<uint64_t> positions;  //wasteful
-		uint64_t b_it = 0;
-
-		uint64_t* array_hi = new uint64_t[M];	// maintaing upto C/2 bits
-		uint64_t* array_lo = new uint64_t[M];	// maintaing upto C/2 bits
-
-		//LogFile log_num_color_in_class;
-		//log_num_color_in_class.init("log_num_color_in_class"); 
-		dedup_bitmatrix_file.rewind();
-		global_table = new string[M];
-		for(int x=0; x<M; x++){
-			string bv_line;
-			getline(dedup_bitmatrix_file.fs, bv_line);
-			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1) 
-			assert(idx < M);
-			global_table[idx] = bv_line;
-			assert(x==idx);
-
-			array_lo[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ; 
-			write_number_at_loc(positions, array_lo[idx], min(64, C), b_it ); //array_hi[x] higher uint64_t
-			array_hi[idx]=0;
-			if(C > 64){
-				string ss=bv_line.substr(64,(C-64));
-				array_hi[idx]=std::stoull(ss, nullptr, 2);
-				write_number_at_loc(positions, array_hi[idx], C-64, b_it ); //array_lo[x] lower uint64_t
-			}
-
-			// if(DEBUG_MODE) {
-			// 	int num_ones_in_color = __builtin_popcountll(array_hi[idx]) + __builtin_popcountll(array_lo[idx]) ;
-			// 	log_num_color_in_class.fs << num_ones_in_color <<endl;
-			// }
-
-		}
-		dedup_bitmatrix_file.fs.close();
-
-		store_as_binarystring(positions, b_it, "bb_map" );
-		store_as_sdsl(positions, b_it, "rrr_map" );
-
-		cout << "expected_MB_bv_mapping="<<(C*M)/8.0/1024.0/1024.0 << endl;
-		cout << "rrr_MB_bv_mapping="<<size_in_bytes(store_as_sdsl(positions, b_it, "rrr_bv_mapping.sdsl" ))/1024.0/1024.0 << endl;
-		delete array_hi;
-		delete array_lo;
-	}
-
 	void method1_pass1()
 	{ 
 		DebugFile skipper("skipper");
