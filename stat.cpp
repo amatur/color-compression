@@ -970,7 +970,7 @@ public:
 				
 				case_run = case_lm = case_dlc = 0;
                 sum_skip_space = 0;
-
+            }
 				
 			it_kmer++;			
 			if (it_kmer == num_kmers)
