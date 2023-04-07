@@ -524,13 +524,6 @@ public:
 
 	int lm = 0;
 	int lc = 0;
-	string* global_table;
-
-
-	int* per_simplitig_l;
-	int* per_simplitig_optimal_bigD; 
-	int* per_simplitig_optimal_useLocal;
-	int* per_simplitig_optimal_space;
 
 
 	//bool* per_simplitig_use_local;
@@ -540,9 +533,6 @@ public:
 	//per_simplitig_d
 	//per simplitig use_local_hash
 	vector<char> spss_boundary; 
-
-	//run param
-	int d_class_diff = 1; //0,1,2
 
 	bool USE_LOCAL_TABLE = true;
     bool USE_HUFFMAN = true;
@@ -572,11 +562,6 @@ public:
 
 
 	~COLESS(){
-		mphf_destroy();
-		delete per_simplitig_l;
-		delete per_simplitig_optimal_bigD;
-		delete per_simplitig_optimal_useLocal;
-		delete per_simplitig_optimal_space;
 		//delete global_table;
 	}
 
