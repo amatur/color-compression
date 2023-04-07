@@ -877,7 +877,7 @@ public:
 
 			if (spss_boundary[it_kmer] == '0')
 			{ // non-start
-                hd = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
+                int hd = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
 				if (hd == 0)
 				{ // CAT=RUN
 					skip += 1;
