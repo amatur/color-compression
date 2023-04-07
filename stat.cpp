@@ -733,6 +733,7 @@ public:
 	void method1_pass1()
 	{ 
 		DebugFile skipper("skipper");
+        DebugFile single_color("single_color");
         
 		
 		for (uint64_t i=0; i < num_kmers; i+=1){  // read two files of length num_kmers 
@@ -761,6 +762,7 @@ public:
 		// per kmer values
 		uint64_t simplitig_start_id = 0;
 		int simplitig_it = 0;
+        bool is_single_color = true;
 
 		uint64_t prev_bv_lo = 0;
 		uint64_t prev_bv_hi = 0;
@@ -780,6 +782,7 @@ public:
 			if (spss_boundary[it_kmer] == '0')
 			{ // non-start
                 int hd = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
+                
 				if (hd == 0)
 				{ // CAT=RUN
 					skip += 1;
@@ -787,7 +790,7 @@ public:
 				}
 				else
 				{ // CAT=NRUN
-
+                    is_single_color = false;
 					if(skip!=0){
 						skipper.fs<<skip<<endl;
 						if(bigD==0){
@@ -872,6 +875,10 @@ public:
 				
 				case_run = case_lm = case_dlc = 0;
                 sum_skip_space = 0;
+
+                single_color.fs<<simplitig_it<<" "<<int(is_single_color)<<endl;
+                simplitig_it++;
+                is_single_color = true;
             }
 				
 			it_kmer++;			
