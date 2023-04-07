@@ -272,43 +272,6 @@ class Hashtable {
 	// }
 };
 
-namespace CMPH{
-	cmph_t *hash_cmph = NULL;
-	void create_table(string filename, int nelem ){
-		FILE * keys_fd = fopen(filename.c_str(), "r");
-		
-		if (keys_fd == NULL) 
-		{
-		fprintf(stderr, "File not found\n");
-		exit(1);
-		}	
-		// Source of keys
-		cmph_io_adapter_t *source = cmph_io_nlfile_adapter(keys_fd);
-	
-		cmph_config_t *config = cmph_config_new(source);
-		cmph_config_set_algo(config, CMPH_CHM);
-		hash_cmph = cmph_new(config);
-		cmph_config_destroy(config);
-		
-		cmph_io_nlfile_adapter_destroy(source);   
-		fclose(keys_fd);
-	}
-
-	unsigned int lookup(string str){	
-		const char *key = str.c_str(); 
-		//Find key
-		unsigned int id = cmph_search(hash_cmph, key, (cmph_uint32)strlen(key));
-		// fprintf(stderr, "Id:%u\n", id);
-		//Destroy hash
-		//cmph_destroy(hash);
-		return id;
-	}
-
-	void mphf_destroy(){
-		cmph_destroy(hash_cmph);
-	}
-}
-using namespace CMPH;
 
 
 // namespace BPHF{
