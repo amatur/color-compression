@@ -462,7 +462,9 @@ public:
         string col_vec = str.substr(b_it, C);
         b_it+=C;
         cout<<b_it<<endl;
-        if(b_it==4599) std::raise(SIGABRT);
+        if(b_it==4599) {
+           // std::raise(SIGABRT);
+        }
         return col_vec;
     }
 
