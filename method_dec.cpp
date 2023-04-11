@@ -39,7 +39,7 @@ uint64_t CATEGORY_COLVEC_ONE = (uint64_t) 4; //100
 uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
 
 
-bool TESTING_SPEED=true;
+bool TESTING_SPEED=false;
 bool DEBUG_MODE = false;
 
 namespace TimeMeasure
