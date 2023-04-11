@@ -463,7 +463,7 @@ public:
         b_it+=C;
         cout<<b_it<<endl;
         if(b_it==4599) {
-           cout<<"hey"<<endl;s
+           cout<<"hey"<<endl;
         }
         return col_vec;
     }
