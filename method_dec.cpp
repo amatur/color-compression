@@ -588,6 +588,7 @@ public:
 
         int num_simplitig = 0;
         // Load SPSS boundary file
+        time_start();
         for (uint64_t i=0; i < num_kmers; i+=1){ //load spss_boundary vector in memory from disk
 			string spss_line;
 			getline (spss_boundary_file.fs,spss_line); 
@@ -596,6 +597,7 @@ public:
                 num_simplitig+=1;
             }
 		}
+        time_end("SPSS boundary read "+to_string(num_kmers)+" bits.");
 
         //read local table, 
         load_bb_into_string("bb_local_table", str_local);
