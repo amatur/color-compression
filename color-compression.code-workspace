@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../ESSColor"
+		},
+		{
+			"path": "../sshash"
 		}
 	],
 	"settings": {
