@@ -427,6 +427,9 @@ public:
 
     char read_one_bit(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
         cout<<b_it<<endl;
+        if(b_it==4599){
+            std::raise(SIGINT);
+        }
         return str[b_it++];
     }
 
@@ -435,6 +438,9 @@ public:
         while(str[b_it++]=='0'){
             length+=1;
             cout<<b_it<<endl;
+                    if(b_it==4599){
+                        std::raise(SIGINT);
+             }
         }
         return length;
     }
@@ -443,6 +449,9 @@ public:
         while(str[b_it++]=='1'){
             length+=1;
             cout<<b_it<<endl;
+                    if(b_it==4599){
+                        std::raise(SIGINT);
+             }
         }
         return length;
     }
@@ -452,6 +461,7 @@ public:
         string col_vec = str.substr(b_it, C);
         b_it+=C;
         cout<<b_it<<endl;
+        if(b_it==4599) std::raise(SIGINT);
         return col_vec;
     }
 
@@ -464,6 +474,9 @@ public:
         // string col_vec = str.substr(b_it, C);
         b_it+=C;
         cout<<b_it<<endl;
+        if(b_it==4599){
+            std::raise(SIGINT);
+        }
     }
 
     void flip_bit(string& s, int pos){
@@ -494,6 +507,9 @@ public:
         }
         b_it += block_sz;
         cout<<b_it<<endl;
+                if(b_it==4599){
+                    std::raise(SIGINT);
+        }
         return res;
     }
 
