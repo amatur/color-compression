@@ -463,7 +463,7 @@ public:
         b_it+=C;
         cout<<b_it<<endl;
         if(b_it==4599) {
-           // std::raise(SIGABRT);
+           cout<<"hey"<<endl;s
         }
         return col_vec;
     }
