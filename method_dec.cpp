@@ -428,7 +428,7 @@ public:
     char read_one_bit(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
         cout<<b_it<<endl;
         if(b_it==4599){
-            std::raise(SIGINT);
+            std::raise(SIGABRT);
         }
         return str[b_it++];
     }
@@ -439,7 +439,7 @@ public:
             length+=1;
             cout<<b_it<<endl;
                     if(b_it==4599){
-                        std::raise(SIGINT);
+                        std::raise(SIGABRT);
              }
         }
         return length;
@@ -450,7 +450,7 @@ public:
             length+=1;
             cout<<b_it<<endl;
                     if(b_it==4599){
-                        std::raise(SIGINT);
+                        std::raise(SIGABRT);
              }
         }
         return length;
@@ -461,7 +461,7 @@ public:
         string col_vec = str.substr(b_it, C);
         b_it+=C;
         cout<<b_it<<endl;
-        if(b_it==4599) std::raise(SIGINT);
+        if(b_it==4599) std::raise(SIGABRT);
         return col_vec;
     }
 
@@ -475,7 +475,7 @@ public:
         b_it+=C;
         cout<<b_it<<endl;
         if(b_it==4599){
-            std::raise(SIGINT);
+            std::raise(SIGABRT);
         }
     }
 
@@ -508,7 +508,7 @@ public:
         b_it += block_sz;
         cout<<b_it<<endl;
                 if(b_it==4599){
-                    std::raise(SIGINT);
+                    std::raise(SIGABRT);
         }
         return res;
     }
