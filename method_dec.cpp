@@ -426,6 +426,7 @@ public:
     }
 
     char read_one_bit(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
+        cout<<b_it<<endl;
         return str[b_it++];
     }
 
@@ -433,6 +434,7 @@ public:
         int length = 0;
         while(str[b_it++]=='0'){
             length+=1;
+            cout<<b_it<<endl;
         }
         return length;
     }
@@ -440,6 +442,7 @@ public:
         int length = 0;
         while(str[b_it++]=='1'){
             length+=1;
+            cout<<b_it<<endl;
         }
         return length;
     }
@@ -448,6 +451,7 @@ public:
     string read_color_vector(string& str, uint64_t& b_it){
         string col_vec = str.substr(b_it, C);
         b_it+=C;
+        cout<<b_it<<endl;
         return col_vec;
     }
 
@@ -459,6 +463,7 @@ public:
         
         // string col_vec = str.substr(b_it, C);
         b_it+=C;
+        cout<<b_it<<endl;
     }
 
     void flip_bit(string& s, int pos){
@@ -488,6 +493,7 @@ public:
             }
         }
         b_it += block_sz;
+        cout<<b_it<<endl;
         return res;
     }
 
