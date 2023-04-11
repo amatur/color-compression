@@ -1,6 +1,7 @@
 //version: mar 1: trying to fix gut
 #define VERSION_NAME "APR11,FIXING_GUT DECOM"
 #include<cmph.h> //#include "BooPHF.h"
+#include<csignal>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
