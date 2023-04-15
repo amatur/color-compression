@@ -691,7 +691,7 @@ public:
                         written_kmer+=1;
                     }else{
                         //TODO -- untested
-                        read_from_stream(fs_main, 2*lm, str_map, b_it);
+                        read_from_stream(fs_main, 10*lm, str_map, b_it);
                         uint64_t col_class = read_l_huff_codes(1, str_map, b_it, huff_root)[0];
                         remainder_str = str_map.substr(b_it, str_map.length()-b_it);
 
