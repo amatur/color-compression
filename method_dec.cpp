@@ -447,15 +447,14 @@ public:
     //     // read a block of 1 MB str
     // }
 
-    char read_one_bit(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
-        cout<<b_it<<endl;
+    char read_one_bit(string& str, uint64_t b_it){ //convert_binary_string_to_uint
         if(b_it==4599){
             std::raise(SIGABRT);
         }
         return str[b_it++];
     }
 
-    int read_number_encoded_in_unary_zero(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
+    int read_number_encoded_in_unary_zero(string& str, uint64_t b_it){ //convert_binary_string_to_uint
         int length = 0;
         while(str[b_it++]=='0'){
             length+=1;
@@ -466,7 +465,7 @@ public:
         }
         return length;
     }
-    int read_number_encoded_in_unary_one(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
+    int read_number_encoded_in_unary_one(string& str, uint64_t b_it){ //convert_binary_string_to_uint
         int length = 0;
         while(str[b_it++]=='1'){
             length+=1;
@@ -511,7 +510,7 @@ public:
         }
     }
 
-    uint64_t read_uint(string& str, uint64_t& b_it, int block_sz){ //convert_binary_string_to_uint
+    uint64_t read_uint(string& str, uint64_t b_it, int block_sz){ //convert_binary_string_to_uint
 
         uint64_t res = 0;
         //int block_sz = end - start + 1;
@@ -677,6 +676,7 @@ public:
                     if(ceil(log2(l_of_curr_simplitig)) != 0){
                         read_from_stream(fs_main, ceil(log2(l_of_curr_simplitig)), str_map, b_it);
                         local_id = read_uint(str_map, b_it, ceil(log2(l_of_curr_simplitig)));
+                        
                     }
                      
                     int col_class = local_hash_table[local_id]; 
