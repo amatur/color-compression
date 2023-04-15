@@ -1,5 +1,5 @@
 //version: mar 1: trying to fix gut
-#define VERSION_NAME "APR11,FIXING_GUT DECOM"
+#define VERSION_NAME "APR11,FIXING_GUT DECOM; stream read"
 #include<cmph.h> //#include "BooPHF.h"
 #include<csignal>
 #include <stdio.h>
@@ -28,7 +28,9 @@ using namespace sdsl;
 
 uint64_t written_kmer = 0;
 #include <unordered_map>
-
+uint64_t read_bit_max = 0;
+char string_block[1048577];
+string remainder_str="";
 
 void dbg(){
 
@@ -364,6 +366,14 @@ public:
         // out << rrr_map;
         // out.close();
         stringstream buffer;
+
+        std::string result(50, '\0');
+
+        if (!inss.read(&result[0], result.size()))
+        throw std::runtime_error("Could not read enough characters.\n");
+
+
+
         buffer << rrr_bv;
         where_to_load = buffer.str();
     }
@@ -426,6 +436,17 @@ public:
         return res;
     }
 
+    // void read_lo_level(filename, b_it, block_size){
+    //     if(b_it<read_bit_max || read_bit_max!=0){
+
+    //     }else{
+    //         read_bit_max = read_bit_max+1024;
+    //     }
+        
+
+    //     // read a block of 1 MB str
+    // }
+
     char read_one_bit(string& str, uint64_t& b_it){ //convert_binary_string_to_uint
         cout<<b_it<<endl;
         if(b_it==4599){
@@ -461,10 +482,10 @@ public:
     string read_color_vector(string& str, uint64_t& b_it){
         string col_vec = str.substr(b_it, C);
         b_it+=C;
-        cout<<b_it<<endl;
-        if(b_it==4599) {
-           cout<<"hey"<<endl;
-        }
+        // cout<<b_it<<endl;
+        // if(b_it==4599) {
+        //    cout<<"hey"<<endl;
+        // }
         return col_vec;
     }
 
@@ -476,10 +497,10 @@ public:
         
         // string col_vec = str.substr(b_it, C);
         b_it+=C;
-        cout<<b_it<<endl;
-        if(b_it==4599){
-            std::raise(SIGABRT);
-        }
+        //cout<<b_it<<endl;
+        // if(b_it==4599){
+        //     std::raise(SIGABRT);
+        // }
     }
 
     void flip_bit(string& s, int pos){
@@ -489,7 +510,9 @@ public:
             s[C-pos-1]='1';
         }
     }
+
     uint64_t read_uint(string& str, uint64_t& b_it, int block_sz){ //convert_binary_string_to_uint
+
         uint64_t res = 0;
         //int block_sz = end - start + 1;
         uint64_t end = block_sz + b_it - 1;
@@ -571,6 +594,29 @@ public:
         time_end("binary read");
     }
 
+    void read_from_stream(std::fstream& fs, int block_sz, string& str, uint64_t& b_it){
+        if(b_it==0){
+            fs >> setw(block_sz) >> str;
+        }else{
+            string str1, str2;
+            if(remainder_str.length()-b_it > block_sz){//remainder str is large enough
+               // read fully from remainder, update b_it, remainder_str
+               str = remainder_str.substr(b_it, block_sz);
+               remainder_str = remainder_str.substr(b_it+block_sz, remainder_str.length()-b_it-block_sz);
+               b_it += block_sz;
+               
+            }else{
+                //read first part from remainder
+                str1 = remainder_str.substr(b_it, remainder_str.length()-b_it);
+               
+                //read second part from fs 
+                fs >> setw(block_sz - remainder_str.length() + b_it ) >> str2;
+                str = str1+str2;
+                b_it=0;
+            }
+        }
+    }
+
     void run()
     {   
         time_start();
@@ -585,6 +631,7 @@ public:
             global_table[i] = col_vector;
         }
         color_global.fs.close();
+        cout<<"Globbal table done."<<endl;
 
         int num_simplitig = 0;
         // Load SPSS boundary file
@@ -606,13 +653,17 @@ public:
         // create_table(color_global.filename, M);
         // time_end("CMPH table create for "+to_string(M)+" keys.");
 
-        load_bb_into_string("bb_main", str_map);
+        //load_bb_into_string("bb_main", str_map);
+        std::fstream fs_main;
+        fs_main.open("bb_main", std::fstream::in);
         b_it = 0;
         vector<int> differ_run;
         string last_col_vector = "";
         while (b_it < str_map.length())
         {
+            read_from_stream(fs_main, 1, str_map, b_it);
             char c = read_one_bit(str_map, b_it);
+
             if (c == '0')
             {
                 flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
@@ -622,6 +673,7 @@ public:
                 if(per_simplitig_use_local_id == '1'){//using local table
                     int local_id = 0;
                     if(ceil(log2(l_of_curr_simplitig)) != 0){
+                        read_from_stream(fs_main, ceil(log2(l_of_curr_simplitig)), str_map, b_it);
                         local_id = read_uint(str_map, b_it, ceil(log2(l_of_curr_simplitig)));
                     }
                      
@@ -637,7 +689,11 @@ public:
                         written_kmer+=1;
                     }else{
                         //TODO -- untested
+                        read_from_stream(fs_main, 2*lm, str_map, b_it);
                         uint64_t col_class = read_l_huff_codes(1, str_map, b_it, huff_root)[0];
+                        remainder_str = str_map.substr(b_it, str_map.length()-b_it);
+
+
                         last_col_vector = global_table[col_class];
                         if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                         
@@ -650,6 +706,7 @@ public:
             {
                 char c2 = '1';
                 if(per_simplitig_bigD != 0){
+                    read_from_stream(fs_main, 1, str_map, b_it);
                     c2 = read_one_bit(str_map, b_it);;
                 }
                 
@@ -687,9 +744,12 @@ public:
                 { // lc 10
                     flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
                     if(per_simplitig_bigD == 1){
+                        read_from_stream(fs_main, lc, str_map, b_it);
                         int differing_bit = read_uint(str_map, b_it, lc);
                         differ_run.push_back(differing_bit);
                     }else if(per_simplitig_bigD == 2){
+                        read_from_stream(fs_main, 1, str_map, b_it);
+
                         char c3 = read_one_bit(str_map, b_it);;
                         if(c3 == '1'){ // 101 // read two
                             int differing_bit = read_uint(str_map, b_it, lc);
