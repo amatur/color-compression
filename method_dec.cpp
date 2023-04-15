@@ -283,7 +283,7 @@ namespace Huffman{
         return ansint;
     }
 
-    vector<int> read_l_huff_codes(int l, string s, uint64_t& b_it, INode* root){
+    vector<int> read_l_huff_codes(int l, string s, uint64_t b_it, INode* root){
         DebugFile logfile_huff_decode("logfile_huff_decode");
 		 vector<int> v ;
         int loc  = b_it;
@@ -692,9 +692,9 @@ public:
                     }else{
                         //TODO -- untested
                         read_from_stream(fs_main, 10*lm, str_map, b_it);
+                        uint64_t prev_b_it = b_it;
                         uint64_t col_class = read_l_huff_codes(1, str_map, b_it, huff_root)[0];
-                        remainder_str = str_map.substr(b_it, str_map.length()-b_it);
-
+                    
 
                         last_col_vector = global_table[col_class];
                         if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
