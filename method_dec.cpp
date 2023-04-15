@@ -367,7 +367,7 @@ public:
         // out.close();
 
 
-        // stringstream buffer;
+        stringstream buffer;
         // std::string result(50, '\0');
         // if (!inss.read(&result[0], result.size()))
         // throw std::runtime_error("Could not read enough characters.\n");
