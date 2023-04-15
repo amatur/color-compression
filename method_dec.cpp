@@ -600,7 +600,7 @@ public:
             fs >> setw(block_sz) >> str;
         }else{
             string str1, str2;
-            if(remainder_str.length()-b_it > block_sz){//remainder str is large enough
+            if(remainder_str.length()-b_it >= block_sz){//remainder str is large enough
                // read fully from remainder, update b_it, remainder_str
                str = remainder_str.substr(b_it, block_sz);
                remainder_str = remainder_str.substr(b_it+block_sz, remainder_str.length()-b_it-block_sz);
