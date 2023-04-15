@@ -365,12 +365,12 @@ public:
         // std::ofstream out("str_bv_mapping.txt");
         // out << rrr_map;
         // out.close();
-        stringstream buffer;
 
-        std::string result(50, '\0');
 
-        if (!inss.read(&result[0], result.size()))
-        throw std::runtime_error("Could not read enough characters.\n");
+        // stringstream buffer;
+        // std::string result(50, '\0');
+        // if (!inss.read(&result[0], result.size()))
+        // throw std::runtime_error("Could not read enough characters.\n");
 
 
 
