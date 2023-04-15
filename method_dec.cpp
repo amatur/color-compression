@@ -595,6 +595,7 @@ public:
     }
 
     void read_from_stream(std::fstream& fs, int block_sz, string& str, uint64_t& b_it){
+        
         if(b_it==0){
             fs >> setw(block_sz) >> str;
         }else{
@@ -659,7 +660,8 @@ public:
         b_it = 0;
         vector<int> differ_run;
         string last_col_vector = "";
-        while (b_it < str_map.length())
+        //while (b_it < str_map.length())
+        while(!fs_main.eof())
         {
             read_from_stream(fs_main, 1, str_map, b_it);
             char c = read_one_bit(str_map, b_it);
