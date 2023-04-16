@@ -291,7 +291,7 @@ class BlockStream{
         //char str_c[MAX_BUFFER_STRING] = "";
 
         if(b_it >= MAX_BUFFER_STRING){
-            string str = "";
+            str = "";
             fs.read(str_c, sizeof(str_c)); // Read one less that sizeof(b) to ensure null
             string s2(str_c);
             str = s2;
@@ -311,7 +311,7 @@ class BlockStream{
         string str_copy (block_sz,'0');
         uint64_t b_it_copy = b_it;
         for(int i = 0 ; i<block_sz; i++){
-            str_copy[i] = str[b_it++];
+            str_copy[i] = str_c[b_it++];
             load_string_if_max_exceeds();
         }
         uint64_t res = 0;
@@ -323,7 +323,7 @@ class BlockStream{
 
 
         while(true){
-            if (str[j]=='1') {
+            if (str_c[j]=='1') {
                 res |= 1 << i;
             }
             i+=1;
@@ -339,8 +339,8 @@ class BlockStream{
 
     char peek(){
         if(b_it < str.length()){
-            cout<<"peeking str"<< str[b_it]<<endl;
-            return str[b_it];
+            cout<<"peeking str"<< str_c[b_it]<<endl;
+            return str_c[b_it];
         }else if(b_it == str.length() ){
             cout<<"peeking fs"<< fs.peek()<<endl;
             return fs.peek();
@@ -352,7 +352,7 @@ class BlockStream{
     }
 
     char read_one_bit(){ //convert_binary_string_to_uint
-        char toreturn = str[b_it];
+        char toreturn = str_c[b_it];
         b_it++;
         load_string_if_max_exceeds();
         return toreturn;
@@ -373,7 +373,7 @@ class BlockStream{
             }
             else if (const InternalNode *internal = dynamic_cast<const InternalNode *>(curr))
             {
-                if (str[b_it] == '0')
+                if (str_c[b_it] == '0')
                     curr = internal->left;
                 else
                     curr = internal->right;
@@ -409,7 +409,7 @@ class BlockStream{
     int read_number_encoded_in_unary_zero(){ 
         int length = 0;
         while(true){
-            if(str[b_it]=='0'){
+            if(str_c[b_it]=='0'){
                 length+=1;
                 b_it+=1;
                 load_string_if_max_exceeds();
@@ -423,7 +423,7 @@ class BlockStream{
     int read_number_encoded_in_unary_one(){ 
         int length = 0;
         while(true){
-            if(str[b_it]=='1'){
+            if(str_c[b_it]=='1'){
                 length+=1;
                 b_it+=1;
                 load_string_if_max_exceeds();
@@ -436,7 +436,6 @@ class BlockStream{
 
     
     void read_string_of_length(char* col_vec, int C){
-        
         int i = 0;
         while(C){
             col_vec[i++] = str_c[b_it];
