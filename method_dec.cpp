@@ -433,8 +433,8 @@ class BlockStream{
     }
 
     
-    string read_string_of_length(int C){
-        std::string col_vec (C, '0');
+    void read_string_of_length(char* col_vec, int C){
+        char* col_vec = new char[C];
         int i = 0;
         while(C){
             col_vec[i++] = str[b_it];
@@ -442,7 +442,7 @@ class BlockStream{
             load_string_if_max_exceeds();
             C--;
         }
-        return col_vec;
+        return;
     }
 };
 
@@ -682,8 +682,15 @@ public:
         DebugFile color_global("color_global"); //M color vectors //DEBUGFILE
         for (int i = 0; i < M; i++)
         {
-            string col_vector = bs_map.read_string_of_length(C);
-            if(DEBUG_MODE) color_global.fs << col_vector << endl;
+            char* col_vector;
+            bs_map.read_string_of_length(col_vector, C);
+            if(DEBUG_MODE) {
+            //    color_global.fs << col_vector << endl;
+             color_global.fs.write(reinterpret_cast<char*>(&col_vector), sizeof(col_vector));
+            
+            }
+            delete col_vector;
+                
             global_table[i] = col_vector;
         }
         color_global.fs.close();
