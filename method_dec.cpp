@@ -370,7 +370,7 @@ class BlockStream{
         u_int32_t ansint = 0;
         const INode *curr = root;
 
-        for (; b_it < str.size() + 1; b_it++)
+        while(true)
         {
             if (const LeafNode *lf = dynamic_cast<const LeafNode *>(curr))
             {
