@@ -253,6 +253,8 @@ class BlockStream{
         string filename;
     
     BlockStream(string filename){
+        str = "";
+        b_it = 0;
         //fs as file input
         this->filename = filename;
         fs.open(filename, std::fstream::in);
