@@ -440,6 +440,7 @@ class BlockStream{
                 break;
             }
         }
+        cout<<length<<":l"<<endl;
         return length;
     }
 
