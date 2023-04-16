@@ -325,7 +325,7 @@ class BlockStream{
             return fs.peek();
         }else{
             cout<<"ERROR"<<endl;
-            exit();
+            exit(5);
         }
         
     }
