@@ -345,10 +345,10 @@ class BlockStream{
     }
 
     char peek(){
-        if(b_it < sizeof(str_c)){
+        if(b_it < str.length()){
             cout<<"peeking str:"<< str_c[b_it]<<endl;
             return str_c[b_it];
-        }else if(b_it == sizeof(str_c) ){
+        }else if(b_it == str.length() ){
             cout<<"peeking fs:"<< fs.peek()<<endl;
             return fs.peek();
         }else{
@@ -738,7 +738,7 @@ public:
 
         vector<int> differ_run;
         string last_col_vector = "";
-        while(bs_main.peek() == '1' || bs_main.peek() == '0' || bs_main.fs.peek() != EOF )
+        while(bs_main.peek() == '1' || bs_main.peek() == '0' || bs_main.peek() != EOF )
         {
             char c = bs_main.read_one_bit();
             if (c == '0')
