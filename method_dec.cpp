@@ -329,7 +329,7 @@ class BlockStream{
 
 
         while(true){
-            if (str_c[j]=='1') {
+            if (str_copy[j]=='1') {
                 res |= 1 << i;
             }
             i+=1;
