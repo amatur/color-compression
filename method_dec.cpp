@@ -688,8 +688,8 @@ public:
             col_vector[C] = '\0';
             bs_map.read_string_of_length(col_vector, C);
             if(DEBUG_MODE) {
-            //    color_global.fs << col_vector << endl;
-             color_global.fs.write(reinterpret_cast<char*>(&col_vector), sizeof(col_vector));
+              color_global.fs << col_vector << endl;
+             //color_global.fs.write(reinterpret_cast<char*>(&col_vector), sizeof(col_vector));
             
             }
             delete col_vector;
