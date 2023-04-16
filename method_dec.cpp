@@ -390,7 +390,7 @@ class BlockStream{
                 {
                     ansint = (u_int32_t)(lf->c);
                      cout<<"huf:"<<ansint<<" ";
-                     if(ansint== "1010"){
+                     if(ansint==8){
                         cout<<ansint<<endl;
                      }
 
