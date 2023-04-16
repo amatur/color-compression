@@ -784,6 +784,7 @@ public:
                         int q = bs_main.read_number_encoded_in_unary_one();
                         assert(bs_main.read_one_bit() == '0');
                         int rem = bs_main.read_uint(lmaxrun);
+                        cout<<"rem"<<rem<<endl;
                         int skip = q * max_run + rem;
                         while (skip)
                         {
