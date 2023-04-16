@@ -434,7 +434,7 @@ class BlockStream{
 
     
     void read_string_of_length(char* col_vec, int C){
-        char* col_vec = new char[C];
+        col_vec = new char[C];
         int i = 0;
         while(C){
             col_vec[i++] = str[b_it];
