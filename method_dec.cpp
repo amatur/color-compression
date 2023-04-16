@@ -269,7 +269,8 @@ class BlockStream{
         // istream& get (char* s, streamsize n );
         string s2(str_c);
         str = s2;
-        cout<<str<<endl;
+        //cout<<str<<endl;
+        std::cout.write(reinterpret_cast<char*>(&str_c), sizeof(str_c));
     }
 
     ~BlockStream(){
@@ -297,7 +298,9 @@ class BlockStream{
             //     end_reached = true;
             // }
             b_it = 0;
-            cout<<str<<endl;
+            //cout<<str<<endl;
+             std::cout.write(reinterpret_cast<char*>(&str_c), sizeof(str_c));
+
         }
     }
     
@@ -685,7 +688,7 @@ public:
         }
         color_global.fs.close();
         cout<<"Globbal table done."<<endl;
-
+        exit(0);
         int num_simplitig = 0;
         // Load SPSS boundary file
         time_start();
