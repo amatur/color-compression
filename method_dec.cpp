@@ -316,7 +316,7 @@ class BlockStream{
             str_copy[i] = str_c[b_it++];
             load_string_if_max_exceeds();
         }
-        cout<<str_copy<<" ";
+        cout<<"uint"<<str_copy<<" ";
         //cout<<"uint:";
        //      std::cout.write(reinterpret_cast<char*>(&str_copy), sizeof(str_copy));
 
