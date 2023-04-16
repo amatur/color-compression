@@ -269,6 +269,7 @@ class BlockStream{
         // istream& get (char* s, streamsize n );
         string s2(str_c);
         str = s2;
+        cout<<str<<endl;
     }
 
     ~BlockStream(){
@@ -296,6 +297,7 @@ class BlockStream{
             //     end_reached = true;
             // }
             b_it = 0;
+            cout<<str<<endl;
         }
     }
     
