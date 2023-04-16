@@ -399,7 +399,7 @@ class BlockStream{
             load_string_if_max_exceeds();
         }
         // cout<<ans<<endl;
-        cout<<ansint<<" ";
+        cout<<"huf:"<<ansint<<" ";
         return ansint;
     }
 
