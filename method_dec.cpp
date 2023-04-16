@@ -389,6 +389,8 @@ class BlockStream{
                 if (const LeafNode *lf = dynamic_cast<const LeafNode *>(curr))
                 {
                     ansint = (u_int32_t)(lf->c);
+                     cout<<"huf:"<<ansint<<" ";
+
                     // cout<< ansint;
                 }
             }
