@@ -682,7 +682,8 @@ public:
         DebugFile color_global("color_global"); //M color vectors //DEBUGFILE
         for (int i = 0; i < M; i++)
         {
-            char* col_vector = new char[C];
+            char* col_vector = new char[C+1];
+            col_vector[C] = '\0';
             bs_map.read_string_of_length(col_vector, C);
             if(DEBUG_MODE) {
             //    color_global.fs << col_vector << endl;
