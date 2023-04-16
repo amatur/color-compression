@@ -344,10 +344,10 @@ class BlockStream{
     }
 
     char peek(){
-        if(b_it < str_c.length()){
+        if(b_it < sizeof(str_c)){
             cout<<"peeking str:"<< str_c[b_it]<<endl;
             return str_c[b_it];
-        }else if(b_it == str_c.length() ){
+        }else if(b_it == sizeof(str_c) ){
             cout<<"peeking fs:"<< fs.peek()<<endl;
             return fs.peek();
         }else{
