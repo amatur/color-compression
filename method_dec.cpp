@@ -395,6 +395,7 @@ class BlockStream{
             {
                 cout << "FAIL" << endl;
             }
+            b_it++;
             load_string_if_max_exceeds();
         }
         // cout<<ans<<endl;
