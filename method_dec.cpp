@@ -398,7 +398,7 @@ class BlockStream{
 
     
     string read_string_of_length(int C){
-        std::string col_vec (C, "0");
+        std::string col_vec (C, '0');
         int i = 0;
         while(C){
             col_vec[i] = str[b_it];
