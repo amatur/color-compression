@@ -692,13 +692,14 @@ public:
              //color_global.fs.write(reinterpret_cast<char*>(&col_vector), sizeof(col_vector));
             
             }
-            delete col_vector;
+            
                 
-            global_table[i] = col_vector;
+            global_table[i] = string(col_vector);
+            delete col_vector;
         }
         color_global.fs.close();
         cout<<"Globbal table done."<<endl;
-        exit(0);
+        //exit(0);
         int num_simplitig = 0;
         // Load SPSS boundary file
         time_start();
