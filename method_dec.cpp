@@ -782,7 +782,7 @@ public:
 
                     {//paul method
                         int q = bs_main.read_number_encoded_in_unary_one();
-                        int asst = bs_main.read_one_bit(); //should be  == '0');
+                        char asst = bs_main.read_one_bit(); //should be  == '0');
                         int rem = bs_main.read_uint(lmaxrun);
                         cout<<"rem"<<rem<<endl;
                         int skip = q * max_run + rem;
