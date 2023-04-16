@@ -316,6 +316,20 @@ class BlockStream{
         return res;
     }
 
+    char peek(){
+        if(b_it < str.length()){
+            cout<<"peeking str"<< str[b_it]<<endl;
+            return str[b_it];
+        }else if(b_it == str.length() ){
+            cout<<"peeking fs"<< fs.peek()<<endl;
+            return fs.peek();
+        }else{
+            cout<<"ERROR"<<endl;
+            exit();
+        }
+        
+    }
+
     char read_one_bit(){ //convert_binary_string_to_uint
         char toreturn = str[b_it];
         b_it++;
@@ -678,7 +692,7 @@ public:
 
         vector<int> differ_run;
         string last_col_vector = "";
-        while(!bs_main.end_reached())
+        while(bs_main.peek() == 1 || bs_main.peek() == 0 )
         {
             char c = bs_main.read_one_bit();
             if (c == '0')
