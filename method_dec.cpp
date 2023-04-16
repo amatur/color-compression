@@ -284,7 +284,7 @@ class BlockStream{
     
 
     uint64_t read_uint(int block_sz){ //convert_binary_string_to_uint
-        string str_copy;
+        string str_copy (block_sz,"0");
         uint64_t b_it_copy = b_it;
         for(int i = 0 ; i<block_sz; i++){
             str_copy[i] = str[b_it++];
