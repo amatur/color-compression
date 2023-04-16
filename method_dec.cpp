@@ -313,7 +313,7 @@ class BlockStream{
         str_copy[block_sz]='\0';
         uint64_t b_it_copy = b_it;
         for(int i = 0 ; i<block_sz; i++){
-            str_copy[i] = str_c[b_it++];
+            str_copy[block_sz-i-1] = str_c[b_it++];
             load_string_if_max_exceeds();
         }
         cout<<"uint"<<str_copy<<" ";
