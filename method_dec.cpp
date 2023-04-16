@@ -380,10 +380,11 @@ class BlockStream{
             }
             else if (const InternalNode *internal = dynamic_cast<const InternalNode *>(curr))
             {
-                if (str_c[b_it] == '0')
+                if (str_c[b_it++] == '0')
                     curr = internal->left;
                 else
                     curr = internal->right;
+                load_string_if_max_exceeds();
 
                 if (const LeafNode *lf = dynamic_cast<const LeafNode *>(curr))
                 {
@@ -395,8 +396,6 @@ class BlockStream{
             {
                 cout << "FAIL" << endl;
             }
-            b_it++;
-            load_string_if_max_exceeds();
         }
         // cout<<ans<<endl;
         cout<<"huf:"<<ansint<<" ";
@@ -759,7 +758,7 @@ public:
                         written_kmer+=1;
                     }else{
                         //TODO -- untested
-                        uint64_t col_class = bs_main.HuffDecode(huff_root);
+                        uint32_t col_class = bs_main.HuffDecode(huff_root);
                         cout<<"col_class "<<col_class;
                         last_col_vector = global_table[col_class];
                         if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
