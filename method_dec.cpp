@@ -275,19 +275,13 @@ class BlockStream{
         if(b_it >= MAX_BUFFER_STRING){
             string str = "";
             fs >> setw(MAX_BUFFER_STRING) >> str;
-            if(str.length()< MAX_BUFFER_STRING){
-                end_reached = true;
-            }
+            // if(str.length()< MAX_BUFFER_STRING){
+            //     end_reached = true;
+            // }
             b_it = 0;
         }
     }
-    void flip_bit(string& s, int pos){
-        if(s[C-pos-1] == '1')  {
-            s[C-pos-1]='0';
-        } else{
-            s[C-pos-1]='1';
-        }
-    }
+    
 
     uint64_t read_uint(int block_sz){ //convert_binary_string_to_uint
         string str_copy;
@@ -596,18 +590,25 @@ public:
         }         
     }
 
-    void test_run(){
-        rrr_vector<256> rrr_bv; 
-        time_start();     
-        load_from_file(rrr_bv, "rrr_main");  //sdsl namespace
-        b_it = 0;
-         for (int i = 0; i < M; i++)
-        {
-            read_color_vector_binary(rrr_bv, b_it);
-        }
-        time_end("binary read");
-    }
+    // void test_run(){
+    //     rrr_vector<256> rrr_bv; 
+    //     time_start();     
+    //     load_from_file(rrr_bv, "rrr_main");  //sdsl namespace
+    //     b_it = 0;
+    //      for (int i = 0; i < M; i++)
+    //     {
+    //         read_color_vector_binary(rrr_bv, b_it);
+    //     }
+    //     time_end("binary read");
+    // }
 
+    void flip_bit(string& s, int pos){
+        if(s[C-pos-1] == '1')  {
+            s[C-pos-1]='0';
+        } else{
+            s[C-pos-1]='1';
+        }
+    }
     
     // void read_from_stream(std::fstream& fs, int block_sz, string& str, uint64_t& b_it){
     //     //str is always a string of length bsz
@@ -681,7 +682,7 @@ public:
             {
                 flush_skip_and_del(differ_run, last_col_vector,dec_ess_color);
                 if(start_of_simplitig(written_kmer)){ 
-                    bs_local.read_local_hash_table_per_simplitig(); //changes l_of_curr_simplitig
+                    read_local_hash_table_per_simplitig(bs_local); //changes l_of_curr_simplitig
                 }
                 if(per_simplitig_use_local_id == '1'){//using local table
                     int local_id = 0;
