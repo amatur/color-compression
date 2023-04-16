@@ -434,7 +434,7 @@ class BlockStream{
 
     
     void read_string_of_length(char* col_vec, int C){
-        col_vec = new char[C];
+        
         int i = 0;
         while(C){
             col_vec[i++] = str[b_it];
@@ -682,7 +682,7 @@ public:
         DebugFile color_global("color_global"); //M color vectors //DEBUGFILE
         for (int i = 0; i < M; i++)
         {
-            char* col_vector;
+            char* col_vector = new char[C];
             bs_map.read_string_of_length(col_vector, C);
             if(DEBUG_MODE) {
             //    color_global.fs << col_vector << endl;
