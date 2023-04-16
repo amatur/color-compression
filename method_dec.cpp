@@ -301,21 +301,24 @@ class BlockStream{
             // }
             b_it = 0;
             //cout<<str<<endl;
-             std::cout.write(reinterpret_cast<char*>(&str_c), sizeof(str_c));
+             
+             //std::cout.write(reinterpret_cast<char*>(&str_c), sizeof(str_c));
 
         }
     }
     
 
     uint64_t read_uint(int block_sz){ //convert_binary_string_to_uint
-        string str_copy (block_sz,'0');
+        char* str_copy = new char[block_sz+1];
+        str_copy[block_sz]='\0';
         uint64_t b_it_copy = b_it;
         for(int i = 0 ; i<block_sz; i++){
             str_copy[i] = str_c[b_it++];
             load_string_if_max_exceeds();
         }
-        cout<<"uint:";
-             std::cout.write(reinterpret_cast<char*>(&str_copy), sizeof(str_copy));
+        cout<<str_copy<<" ";
+        //cout<<"uint:";
+       //      std::cout.write(reinterpret_cast<char*>(&str_copy), sizeof(str_copy));
 
         uint64_t res = 0;
         //int block_sz = end - start + 1;
@@ -358,6 +361,7 @@ class BlockStream{
         char toreturn = str_c[b_it];
         b_it++;
         load_string_if_max_exceeds();
+        cout<<toreturn<<" ";
         return toreturn;
     }
     u_int32_t HuffDecode(const INode *root)
@@ -394,7 +398,7 @@ class BlockStream{
             load_string_if_max_exceeds();
         }
         // cout<<ans<<endl;
-
+        cout<<ansint<<" ";
         return ansint;
     }
 
