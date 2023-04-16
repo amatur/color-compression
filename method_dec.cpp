@@ -37,7 +37,7 @@ uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
 
 
 bool TESTING_SPEED=false;
-bool DEBUG_MODE = false;
+bool DEBUG_MODE = true;
 
 namespace TimeMeasure
 {
