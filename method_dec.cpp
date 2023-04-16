@@ -246,7 +246,7 @@ HuffCodeMap huff_code_map;
 
 class BlockStream{
     public:
-        int MAX_BUFFER_STRING=2048;
+        int MAX_BUFFER_STRING=2;
         std::fstream fs;
         uint64_t b_it;
         string str;
