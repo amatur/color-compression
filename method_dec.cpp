@@ -255,7 +255,7 @@ class BlockStream{
          char str_c[MAX_BUFFER_STRING] = "";
     
     BlockStream(string filename){
-        char str_c[MAX_BUFFER_STRING] = "";
+       
         str = "";
         b_it = 0;
         //fs as file input
@@ -439,7 +439,7 @@ class BlockStream{
         
         int i = 0;
         while(C){
-            col_vec[i++] = str[b_it];
+            col_vec[i++] = str_c[b_it];
             b_it++;
             load_string_if_max_exceeds();
             C--;
