@@ -245,7 +245,7 @@ HuffCodeMap huff_code_map;
 
 
 class BlockStream{
-    public::
+    public:
         int MAX_BUFFER_STRING=2048;
         std::fstream fs;
         uint64_t b_it;
@@ -398,7 +398,7 @@ class BlockStream{
 
     
     string read_string_of_length(int C){
-        std::string col_vec (C, '');
+        std::string col_vec (C, "0");
         int i = 0;
         while(C){
             col_vec[i] = str[b_it];
