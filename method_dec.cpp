@@ -258,6 +258,7 @@ class BlockStream{
         //fs as file input
         this->filename = filename;
         fs.open(filename, std::fstream::in);
+        fs >> setw(MAX_BUFFER_STRING) >> str;
     }
 
     ~BlockStream(){
