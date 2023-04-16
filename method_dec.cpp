@@ -26,6 +26,7 @@
 using namespace std;
 using namespace sdsl;
 
+const int MAX_BUFFER_STRING=2;
 uint64_t written_kmer = 0;
 #include <unordered_map>
 
@@ -246,19 +247,28 @@ HuffCodeMap huff_code_map;
 
 class BlockStream{
     public:
-        int MAX_BUFFER_STRING=2;
+
         std::fstream fs;
         uint64_t b_it;
         string str;
         string filename;
     
     BlockStream(string filename){
+        char str_c[MAX_BUFFER_STRING] = "";
         str = "";
         b_it = 0;
         //fs as file input
         this->filename = filename;
         fs.open(filename, std::fstream::in);
-        fs >> setw(MAX_BUFFER_STRING) >> str;
+        //fs >> setw(MAX_BUFFER_STRING) >> str;
+
+        //         char b[3] = "";
+        // ifstream f("prad.txt");
+
+        fs.read(str_c, sizeof(str_c)); // Read one less that sizeof(b) to ensure null
+        // istream& get (char* s, streamsize n );
+        string s2(str_c);
+        str = s2;
     }
 
     ~BlockStream(){
@@ -275,9 +285,13 @@ class BlockStream{
         }
     }
     void load_string_if_max_exceeds(){
+        char str_c[MAX_BUFFER_STRING] = "";
         if(b_it >= MAX_BUFFER_STRING){
             string str = "";
-            fs >> setw(MAX_BUFFER_STRING) >> str;
+            fs.read(str_c, sizeof(str_c)); // Read one less that sizeof(b) to ensure null
+            string s2(str_c);
+            str = s2;
+            //fs >> setw(MAX_BUFFER_STRING) >> str;
             // if(str.length()< MAX_BUFFER_STRING){
             //     end_reached = true;
             // }
