@@ -252,6 +252,7 @@ class BlockStream{
         uint64_t b_it;
         string str;
         string filename;
+         char str_c[MAX_BUFFER_STRING] = "";
     
     BlockStream(string filename){
         char str_c[MAX_BUFFER_STRING] = "";
@@ -287,7 +288,8 @@ class BlockStream{
         }
     }
     void load_string_if_max_exceeds(){
-        char str_c[MAX_BUFFER_STRING] = "";
+        //char str_c[MAX_BUFFER_STRING] = "";
+
         if(b_it >= MAX_BUFFER_STRING){
             string str = "";
             fs.read(str_c, sizeof(str_c)); // Read one less that sizeof(b) to ensure null
