@@ -404,7 +404,7 @@ class BlockStream{
         std::string col_vec (C, '0');
         int i = 0;
         while(C){
-            col_vec[i] = str[b_it];
+            col_vec[i++] = str[b_it];
             b_it++;
             load_string_if_max_exceeds();
             C--;
