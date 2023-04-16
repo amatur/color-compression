@@ -724,7 +724,7 @@ public:
 
         vector<int> differ_run;
         string last_col_vector = "";
-        while(bs_main.peek() == 1 || bs_main.peek() == 0 )
+        while(bs_main.peek() == '1' || bs_main.peek() == '0' )
         {
             char c = bs_main.read_one_bit();
             if (c == '0')
