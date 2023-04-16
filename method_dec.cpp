@@ -266,6 +266,7 @@ class BlockStream{
         //         char b[3] = "";
         // ifstream f("prad.txt");
 
+        str_c[0] = '\0';
         fs.read(str_c, sizeof(str_c)); // Read one less that sizeof(b) to ensure null
         // istream& get (char* s, streamsize n );
         string s2(str_c);
