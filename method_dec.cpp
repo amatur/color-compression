@@ -494,7 +494,7 @@ public:
     bool ALWAYS_LOCAL_OR_GLOBAL = false;
 
     OutputFile combodebug;
- 
+    OutputFile errordebug;
 
     COLESS_Decompress(uint64_t num_kmers, int M, int C, string spss_boundary_fname, int max_run)
     {
@@ -513,6 +513,7 @@ public:
         spss_boundary_file.init(spss_boundary_fname);
 
         if(DEBUG_MODE) combodebug.init("combodebug");
+        if(DEBUG_MODE) errordebug.init("errordebug");
 
     }
 
@@ -636,7 +637,7 @@ public:
             //     read_local_hash_table_per_simplitig(str_local, b_it_local);
             // }
             written_kmer+=1;
-            if(DEBUG_MODE) debug_error.fs << "d"<<endl;
+            if(DEBUG_MODE) errordebug.fs << "d"<<endl;
             differ_run.clear();
         }         
     }
@@ -733,7 +734,7 @@ public:
         // create_table(color_global.filename, M);
         // time_end("CMPH table create for "+to_string(M)+" keys.");
 
-        OutputFile debug_error("debug_error");
+        
 
         vector<int> differ_run;
         string last_col_vector = "";
@@ -757,7 +758,7 @@ public:
                     if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                     written_kmer+=1;
 
-                    if(DEBUG_MODE) debug_error.fs << "l"<<endl;
+                    if(DEBUG_MODE) errordebug.fs << "l"<<endl;
                 }else{
                     if(USE_HUFFMAN==false){
                         uint64_t col_class = bs_main.read_uint(lm);
@@ -770,7 +771,7 @@ public:
                         last_col_vector = global_table[col_class];
                         if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                         written_kmer+=1;
-                        if(DEBUG_MODE) debug_error.fs << "m"<<endl;
+                        if(DEBUG_MODE) errordebug.fs << "m"<<endl;
                     }
                 }
             }
@@ -795,7 +796,7 @@ public:
                         {
                             if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                             written_kmer+=1;
-                            if(DEBUG_MODE) debug_error.fs << "r"<<endl;
+                            if(DEBUG_MODE) errordebug.fs << "r"<<endl;
                             skip--;
                         }
                     }
