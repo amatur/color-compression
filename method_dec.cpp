@@ -630,7 +630,7 @@ public:
             //     read_local_hash_table_per_simplitig(str_local, b_it_local);
             // }
             written_kmer+=1;
-            
+            if(DEBUG_MODE) debug_error.fs << "d"<<endl;
             differ_run.clear();
         }         
     }
@@ -727,6 +727,8 @@ public:
         // create_table(color_global.filename, M);
         // time_end("CMPH table create for "+to_string(M)+" keys.");
 
+        OutputFile debug_error("debug_error");
+
         vector<int> differ_run;
         string last_col_vector = "";
         while(written_kmer < num_kmers )
@@ -748,6 +750,8 @@ public:
                     last_col_vector = global_table[col_class];
                     if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                     written_kmer+=1;
+
+                    if(DEBUG_MODE) debug_error.fs << "l"<<endl;
                 }else{
                     if(USE_HUFFMAN==false){
                         uint64_t col_class = bs_main.read_uint(lm);
@@ -760,6 +764,7 @@ public:
                         last_col_vector = global_table[col_class];
                         if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                         written_kmer+=1;
+                        if(DEBUG_MODE) debug_error.fs << "m"<<endl;
                     }
                 }
             }
@@ -784,6 +789,7 @@ public:
                         {
                             if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                             written_kmer+=1;
+                            if(DEBUG_MODE) debug_error.fs << "r"<<endl;
                             skip--;
                         }
                     }
