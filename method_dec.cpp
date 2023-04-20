@@ -40,6 +40,8 @@ uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
 bool TESTING_SPEED=false;
 bool DEBUG_MODE = false;
 
+
+
 namespace TimeMeasure
 {
 	double t_begin,t_end; struct timeval timet;
@@ -491,6 +493,7 @@ public:
     bool USE_HUFFMAN = true;
     bool ALWAYS_LOCAL_OR_GLOBAL = false;
 
+    OutputFile combodebug;
  
 
     COLESS_Decompress(uint64_t num_kmers, int M, int C, string spss_boundary_fname, int max_run)
@@ -508,6 +511,9 @@ public:
 
         dec_ess_color.init("dec_ess_color");
         spss_boundary_file.init(spss_boundary_fname);
+
+        if(DEBUG_MODE) combodebug.init("combodebug");
+
     }
 
     void load_rrr_into_string(string rrr_filename, string &where_to_load){
@@ -595,7 +601,7 @@ public:
         per_simplitig_bigD = bs_local.read_uint(2); //0, 1, 2 
         per_simplitig_use_local_id = bs_local.read_one_bit();
         
-        if(DEBUG_MODE) cout<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
+        if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
         
         if(per_simplitig_use_local_id == '1'){
             l_of_curr_simplitig = bs_local.read_uint(lm);
@@ -605,7 +611,7 @@ public:
         }else{
             
         }
-        if(DEBUG_MODE)  cout<<endl;
+        if(DEBUG_MODE)  combodebug.fs<<endl;
     }
 
     bool start_of_simplitig(uint64_t written_kmer_idx){
