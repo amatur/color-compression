@@ -849,30 +849,49 @@ public:
 			skip_global_load=true;
 		}
 		
-		OutputFile cmp_keys;
+		//OutputFile cmp_keys;
 		if(skip_global_load==false){
-			cmp_keys.init("cmp_keys");  // get frequency count
+			//cmp_keys.init("cmp_keys");  // get frequency count
 		}
+
+		
+		vector<uint64_t> frequencies_colclass(M, 0);
+		uint32_t prev_col_class, curr_col_class;
+
 		for (uint64_t i=0; i < num_kmers; i+=1){  // read two files of length num_kmers 
 			string spss_line, bv_line;
 			getline (spss_boundary_file.fs,spss_line); 
 			spss_boundary.push_back(spss_line[0]); //this kmer starts a simplitig
-			if(spss_line[0]=='1'){
-				num_simplitig += 1;
-			}
 			if(skip_global_load==false) getline (dup_bitmatrix_file.fs,bv_line);
-			if(skip_global_load==false) cmp_keys.fs << lookup(bv_line) <<endl;
+			//if(skip_global_load==false) cmp_keys.fs << lookup(bv_line) <<endl;
+			curr_col_class = lookup(bv_line);
+			
+			if(spss_line[0]=='1'){	//start
+				num_simplitig += 1;
+			}else{
+				if(prev_col_class!=curr_col_class){
+					if(skip_global_load==false) frequencies_colclass[curr_col_class] +=1;
+				}
+			}
+			prev_col_class = curr_col_class;
 		}
-		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
-		if(skip_global_load==false) cmp_keys.close();
 
+		time_end("CMPH lookup for "+to_string(num_kmers)+"keys.");
+		//if(skip_global_load==false) cmp_keys.close();
+
+		OutputFile outfile_freq("frequency_sorted");
+		for (uint32_t i=0; i < M; i+=1){ 
+			frequency_sorted.fs<<frequencies_colclass[i]<<endl;
+		}
 		if(skip_global_load==false){
 			time_start();
-			system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frequency_sorted");
+			//system("cat cmp_keys | sort -n | uniq -c | rev | cut -f 2 -d\" \" | rev > frequency_sorted");
+			
+			
 			time_end("Sorting and getting freq for "+to_string(num_kmers)+" keys.");
 		}
 		time_start();
-
+		outfile_freq.close();
 		
 		InputFile infile_freq("frequency_sorted");
 		string line;
