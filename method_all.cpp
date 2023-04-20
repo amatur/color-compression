@@ -868,6 +868,7 @@ public:
 			
 			if(spss_line[0]=='1'){	//start
 				num_simplitig += 1;
+				if(skip_global_load==false) frequencies_colclass[curr_col_class] +=1;
 			}else{
 				if(prev_col_class!=curr_col_class){
 					if(skip_global_load==false) frequencies_colclass[curr_col_class] +=1;
