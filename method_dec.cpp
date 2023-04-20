@@ -637,7 +637,7 @@ public:
             //     read_local_hash_table_per_simplitig(str_local, b_it_local);
             // }
             written_kmer+=1;
-            if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
+            if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<endl;
             if(DEBUG_MODE) errordebug.fs << "d"<<endl;
             differ_run.clear();
         }         
@@ -759,7 +759,7 @@ public:
                     if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                     written_kmer+=1;
 
-                    if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
+                    if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<endl;
                     if(DEBUG_MODE) errordebug.fs << "l"<<endl;
                 }else{
                     if(USE_HUFFMAN==false){
@@ -773,7 +773,7 @@ public:
                         last_col_vector = global_table[col_class];
                         if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                         written_kmer+=1;
-                        if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
+                        if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<endl;
 
                         if(DEBUG_MODE) errordebug.fs << "m"<<endl;
                     }
@@ -800,7 +800,7 @@ public:
                         {
                             if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                             written_kmer+=1;
-                            if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
+                            if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<endl;
                             if(DEBUG_MODE) errordebug.fs << "r"<<endl;
                             skip--;
                         }
