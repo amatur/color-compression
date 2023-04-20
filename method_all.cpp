@@ -1151,14 +1151,16 @@ public:
 				}
 				skip = 0;
 
-				int per_simplitig_space_needed = useLocal * (2 + 1 + lm + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
-				
+				//int per_simplitig_space_needed = useLocal * (2 + 1 + lm + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
+				int per_simplitig_space_needed = useLocal * (2 + 1 + ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)) + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
+				if(l > MAX_UNIQ_CLASS_PER_SIMP && useLocal==1){
+					per_simplitig_space_needed=99999999;
+				}
+
 				if(DEBUG_MODE)
 					optout.fs << "every: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<<" space:"<<per_simplitig_space_needed<<" optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] <<" sum_huff:"<<sum_length_huff_uniq_nonrun<<" sum_dlc: "<<sum_dlc_space<<"sum_skip_space: "<<sum_skip_space << endl;
 
-				if(per_simplitig_l[simplitig_it] > MAX_UNIQ_CLASS_PER_SIMP){
-					per_simplitig_space_needed = 99999999;
-				}
+				
 				//if(per_simplitig_optimal_space[simplitig_it] == big_d_local_combo)//random
 				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
 				{
