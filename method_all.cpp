@@ -881,7 +881,7 @@ public:
 
 		OutputFile outfile_freq("frequency_sorted");
 		for (uint32_t i=0; i < M; i+=1){ 
-			frequency_sorted.fs<<frequencies_colclass[i]<<endl;
+			outfile_freq.fs<<frequencies_colclass[i]<<endl;
 		}
 		if(skip_global_load==false){
 			time_start();
