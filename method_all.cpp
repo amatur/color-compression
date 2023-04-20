@@ -1153,8 +1153,8 @@ public:
 
 				//int per_simplitig_space_needed = useLocal * (2 + 1 + lm + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
 				int per_simplitig_space_needed = useLocal * (2 + 1 + ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)) + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
-				if(l > MAX_UNIQ_CLASS_PER_SIMP && useLocal==1){
-					per_simplitig_space_needed=99999999;
+				if(l >= MAX_UNIQ_CLASS_PER_SIMP && useLocal==1){
+					per_simplitig_space_needed=9999999;
 				}
 
 				if(DEBUG_MODE)
