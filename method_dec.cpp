@@ -1,5 +1,5 @@
 //version: mar 1: trying to fix gut
-#define VERSION_NAME "APR11,FIXING_GUT DECOM; stream read"
+#define VERSION_NAME "APR20,1:30"
 #include<cmph.h> //#include "BooPHF.h"
 #include<csignal>
 #include <stdio.h>
