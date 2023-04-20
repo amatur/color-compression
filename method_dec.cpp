@@ -272,7 +272,8 @@ class BlockStream{
         string s2(str_c);
         str = s2;
         //cout<<str<<endl;
-        std::cout.write(reinterpret_cast<char*>(&str_c), sizeof(str_c));
+        //std::cout.write(reinterpret_cast<char*>(&str_c), sizeof(str_c));
+        cout<<"Block size: "<<MAX_BUFFER_STRING<<endl;
     }
 
     ~BlockStream(){
