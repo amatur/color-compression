@@ -602,7 +602,7 @@ public:
         per_simplitig_bigD = bs_local.read_uint(2); //0, 1, 2 
         per_simplitig_use_local_id = bs_local.read_one_bit();
         
-        if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
+        //if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
         
         if(per_simplitig_use_local_id == '1'){
             l_of_curr_simplitig = bs_local.read_uint(lm);
@@ -612,7 +612,7 @@ public:
         }else{
             
         }
-        if(DEBUG_MODE)  combodebug.fs<<endl;
+        //if(DEBUG_MODE)  combodebug.fs<<endl;
     }
 
     bool start_of_simplitig(uint64_t written_kmer_idx){
@@ -637,6 +637,7 @@ public:
             //     read_local_hash_table_per_simplitig(str_local, b_it_local);
             // }
             written_kmer+=1;
+            if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
             if(DEBUG_MODE) errordebug.fs << "d"<<endl;
             differ_run.clear();
         }         
@@ -758,6 +759,7 @@ public:
                     if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                     written_kmer+=1;
 
+                    if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
                     if(DEBUG_MODE) errordebug.fs << "l"<<endl;
                 }else{
                     if(USE_HUFFMAN==false){
@@ -771,6 +773,8 @@ public:
                         last_col_vector = global_table[col_class];
                         if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                         written_kmer+=1;
+                        if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
+
                         if(DEBUG_MODE) errordebug.fs << "m"<<endl;
                     }
                 }
@@ -796,6 +800,7 @@ public:
                         {
                             if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                             written_kmer+=1;
+                            if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
                             if(DEBUG_MODE) errordebug.fs << "r"<<endl;
                             skip--;
                         }
