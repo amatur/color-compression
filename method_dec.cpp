@@ -608,11 +608,11 @@ public:
         if(DEBUG_MODE)  cout<<endl;
     }
 
-    bool start_of_simplitig(int written_kmer_idx){
+    bool start_of_simplitig(uint64_t written_kmer_idx){
         return spss_boundary[written_kmer_idx] == '1';
     }
 
-    bool end_of_simplitig(int written_kmer_idx){
+    bool end_of_simplitig(uint64_t written_kmer_idx){
         return spss_boundary[(written_kmer_idx+1)%num_kmers] == '1';
     }
 
