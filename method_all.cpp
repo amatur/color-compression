@@ -1359,8 +1359,14 @@ public:
 						{
 							if (((prev_bv_lo >> i_bit) & 1) != ((curr_bv_lo >> i_bit) & 1))
 							{
-								
-								write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+
+								if(C<64){
+									write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+
+								}else{
+									write_number_at_loc(positions, C-64+i_bit, lc, b_it); // i_bit is the different bit loc
+
+								}
 							}
 						}
 						for (int i_bit = 64; i_bit < C; i_bit += 1)
@@ -1368,7 +1374,7 @@ public:
 							int actual_i_bit = i_bit - 64;
 							if (((prev_bv_hi >> actual_i_bit) & 1) != ((curr_bv_hi >> actual_i_bit) & 1))
 							{
-								write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+								write_number_at_loc(positions, actual_i_bit, lc, b_it); // i_bit is the different bit loc
 							}
 						}
 					}
