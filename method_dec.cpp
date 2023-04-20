@@ -756,7 +756,6 @@ public:
                     }else{
                         //TODO -- untested
                         uint32_t col_class = bs_main.HuffDecode(huff_root);
-                        cout<<"col_class "<<col_class;
                         last_col_vector = global_table[col_class];
                         if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
                         written_kmer+=1;
@@ -778,7 +777,7 @@ public:
                         int q = bs_main.read_number_encoded_in_unary_one();
                         char asst = bs_main.read_one_bit(); //should be  == '0');
                         int rem = bs_main.read_uint(lmaxrun);
-                        cout<<"rem"<<rem<<endl;
+
                         int skip = q * max_run + rem;
                         while (skip)
                         {
