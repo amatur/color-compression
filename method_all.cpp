@@ -1157,7 +1157,7 @@ public:
 					optout.fs << "every: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<<" space:"<<per_simplitig_space_needed<<" optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] <<" sum_huff:"<<sum_length_huff_uniq_nonrun<<" sum_dlc: "<<sum_dlc_space<<"sum_skip_space: "<<sum_skip_space << endl;
 
 				if(per_simplitig_l[simplitig_it] > MAX_UNIQ_CLASS_PER_SIMP){
-					per_simplitig_space_needed = 9999999999;
+					per_simplitig_space_needed = 99999999;
 				}
 				//if(per_simplitig_optimal_space[simplitig_it] == big_d_local_combo)//random
 				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
