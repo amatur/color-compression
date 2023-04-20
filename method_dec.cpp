@@ -26,7 +26,7 @@
 using namespace std;
 using namespace sdsl;
 
-const int MAX_BUFFER_STRING=2;
+const int MAX_BUFFER_STRING=2048;
 uint64_t written_kmer = 0;
 #include <unordered_map>
 
