@@ -38,7 +38,7 @@ uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
 
 
 bool TESTING_SPEED=false;
-bool DEBUG_MODE = true;
+bool DEBUG_MODE = false;
 
 namespace TimeMeasure
 {
@@ -600,10 +600,8 @@ public:
 
     void read_local_hash_table_per_simplitig(BlockStream& bs_local){
         per_simplitig_bigD = bs_local.read_uint(2); //0, 1, 2 
-        cout<<per_simplitig_bigD<<"per_simplitig_bigD"<<endl;
         per_simplitig_use_local_id = bs_local.read_one_bit();
-        cout<<per_simplitig_use_local_id<<"per_simplitig_use_local_id"<<endl;
-
+        
         if(DEBUG_MODE) cout<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
         
         if(per_simplitig_use_local_id == '1'){
