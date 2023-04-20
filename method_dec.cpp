@@ -361,7 +361,6 @@ class BlockStream{
         char toreturn = str_c[b_it];
         b_it++;
         load_string_if_max_exceeds();
-        cout<<toreturn<<" ";
         return toreturn;
     }
     u_int32_t HuffDecode(const INode *root)
@@ -389,10 +388,6 @@ class BlockStream{
                 if (const LeafNode *lf = dynamic_cast<const LeafNode *>(curr))
                 {
                     ansint = (u_int32_t)(lf->c);
-                     cout<<"huf:"<<ansint<<" ";
-                     if(ansint==8){
-                        cout<<ansint<<endl;
-                     }
 
                     // cout<< ansint;
                 }
@@ -403,7 +398,6 @@ class BlockStream{
             }
         }
         // cout<<ans<<endl;
-        cout<<"huf:"<<ansint<<" ";
         return ansint;
     }
 
@@ -443,7 +437,6 @@ class BlockStream{
                 break;
             }
         }
-        cout<<length<<":l"<<endl;
         return length;
     }
 
