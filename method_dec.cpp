@@ -1,5 +1,5 @@
 //version: mar 1: trying to fix gut
-#define VERSION_NAME "APR20,1:30"
+#define VERSION_NAME "APR20,LIMITBITS_FOR_LOCAL"
 #include<cmph.h> //#include "BooPHF.h"
 #include<csignal>
 #include <stdio.h>
@@ -27,6 +27,8 @@ using namespace std;
 using namespace sdsl;
 
 const int MAX_BUFFER_STRING=2048;
+const int MAX_UNIQ_CLASS_PER_SIMP=8;
+
 uint64_t written_kmer = 0;
 #include <unordered_map>
 
@@ -605,7 +607,8 @@ public:
         //if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
         
         if(per_simplitig_use_local_id == '1'){
-            l_of_curr_simplitig = bs_local.read_uint(lm);
+            //MAX_UNIQ_CLASS_PER_SIMP l_of_curr_simplitig = bs_local.read_uint(lm);
+            l_of_curr_simplitig = bs_local.read_uint(ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)));
             //int ll = ceil(log2(l));
             local_hash_table = bs_local.read_l_huff_codes(huff_root, l_of_curr_simplitig); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
             if(DEBUG_MODE)  cout<<l_of_curr_simplitig;

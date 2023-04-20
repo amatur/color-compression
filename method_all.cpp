@@ -1,6 +1,6 @@
 //version: mar 1: trying to fix gut
 
-#define VERSION_NAME "APR20,1:30"
+#define VERSION_NAME "APR20,LIMITBITS_FOR_LOCAL"
 #include <cmph.h> 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +35,8 @@ using namespace sdsl;
 const bool USE_TEST_METHOD = false;
 bool NEW_DEBUG_MODE = false;
 bool DEBUG_MODE = false;
+
+const int MAX_UNIQ_CLASS_PER_SIMP=8;
 
 
 // namespace BinaryIO
@@ -1154,7 +1156,9 @@ public:
 				if(DEBUG_MODE)
 					optout.fs << "every: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<<" space:"<<per_simplitig_space_needed<<" optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] <<" sum_huff:"<<sum_length_huff_uniq_nonrun<<" sum_dlc: "<<sum_dlc_space<<"sum_skip_space: "<<sum_skip_space << endl;
 
-
+				if(per_simplitig_l[simplitig_it] > MAX_UNIQ_CLASS_PER_SIMP){
+					per_simplitig_space_needed = 9999999999;
+				}
 				//if(per_simplitig_optimal_space[simplitig_it] == big_d_local_combo)//random
 				if (per_simplitig_space_needed < per_simplitig_optimal_space[simplitig_it])
 				{
@@ -1192,8 +1196,9 @@ public:
 					{
 						write_one(positions_local_table, b_it_local_table);
 						//
-						write_number_at_loc(positions_local_table, optimal_ht.size(), lm, b_it_local_table);
-						
+						//MAX_UNIQ_CLASS_PER_SIMP write_number_at_loc(positions_local_table, optimal_ht.size(), lm, b_it_local_table);
+						write_number_at_loc(positions_local_table, optimal_ht.size(), ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)), b_it_local_table);
+
 						for (uint32_t ii = 0; ii < optimal_ht.size(); ii++)
 						{
 							uint32_t uniq_col_class_id = optimal_ht[ii];
