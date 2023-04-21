@@ -1,5 +1,5 @@
 //version: mar 1: trying to fix gut
-#define VERSION_NAME "APR20,LIMITBITS_FOR_LOCAL"
+#define VERSION_NAME "APR21,LIMITBITS_FOR_LOCAL_PLUS_SINGLE"
 #include<cmph.h> //#include "BooPHF.h"
 #include<csignal>
 #include <stdio.h>
@@ -41,7 +41,7 @@ uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
 
 bool TESTING_SPEED=false;
 bool DEBUG_MODE = false;
-
+const bool SINGLE_COLOR_METABIT = true; //if persimplitig_L == 1, force bigD=1, skip=0
 
 
 namespace TimeMeasure
@@ -490,6 +490,8 @@ public:
     int l_of_curr_simplitig;
     char per_simplitig_use_local_id;
     uint64_t per_simplitig_bigD;
+    char singlecolor;
+
     
     bool USE_LOCAL_TABLE = true;
     bool USE_HUFFMAN = true;
@@ -601,21 +603,36 @@ public:
 
 
     void read_local_hash_table_per_simplitig(BlockStream& bs_local){
-        per_simplitig_bigD = bs_local.read_uint(2); //0, 1, 2 
-        per_simplitig_use_local_id = bs_local.read_one_bit();
-        
-        //if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
-        
-        if(per_simplitig_use_local_id == '1'){
-            //MAX_UNIQ_CLASS_PER_SIMP l_of_curr_simplitig = bs_local.read_uint(lm);
-            l_of_curr_simplitig = bs_local.read_uint(ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)));
-            //int ll = ceil(log2(l));
-            local_hash_table = bs_local.read_l_huff_codes(huff_root, l_of_curr_simplitig); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
-            if(DEBUG_MODE)  cout<<l_of_curr_simplitig;
-        }else{
+        per_simplitig_bigD = bs_local.read_uint(2); //0, 1, 2
+
+
+            singlecolor = '0';
+            if(SINGLE_COLOR_METABIT){
+                singlecolor = = bs_local.read_one_bit();
+            } else{
+               
+            }
+            if(singlecolor=='1'){
+                local_hash_table = bs_local.read_l_huff_codes(huff_root, 1); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
+            }else{
+                //if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
+                 per_simplitig_use_local_id = bs_local.read_one_bit();
+                if(per_simplitig_use_local_id == '1'){
+                
+                                    //MAX_UNIQ_CLASS_PER_SIMP l_of_curr_simplitig = bs_local.read_uint(lm);
+                        l_of_curr_simplitig = bs_local.read_uint(ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)));
+                        //int ll = ceil(log2(l));
+                        local_hash_table = bs_local.read_l_huff_codes(huff_root, l_of_curr_simplitig); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
+                        if(DEBUG_MODE)  cout<<l_of_curr_simplitig;
+
+                }
+                //if(DEBUG_MODE)  combodebug.fs<<endl;
+            }
             
         }
-        //if(DEBUG_MODE)  combodebug.fs<<endl;
+        
+        
+       
     }
 
     bool start_of_simplitig(uint64_t written_kmer_idx){
@@ -751,7 +768,14 @@ public:
                 if(start_of_simplitig(written_kmer)){ 
                     read_local_hash_table_per_simplitig(bs_local); //changes l_of_curr_simplitig
                 }
-                if(per_simplitig_use_local_id == '1'){//using local table
+                if(singlecolor=='1'){
+                    do{
+                        int col_class = local_hash_table[0]; 
+                        last_col_vector = global_table[col_class];
+                        if(!TESTING_SPEED) dec_ess_color.fs << last_col_vector << endl;
+                        written_kmer+=1;
+                    }while(!end_of_simplitig(written_kmer-1));
+                }else if(per_simplitig_use_local_id == '1'){//using local table
                     int local_id = 0;
                     if(ceil(log2(l_of_curr_simplitig)) != 0){
                        local_id = bs_main.read_uint(ceil(log2(l_of_curr_simplitig)));
