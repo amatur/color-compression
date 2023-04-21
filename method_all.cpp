@@ -1297,242 +1297,240 @@ public:
 			bool singlecolor = false;
 			if(SINGLE_COLOR_METABIT){
 				if( l==1 && useLocal==1 && bigD==0){
-					write_one(positions, b_it);
+					//write_one(positions, b_it);
 					singlecolor=true;
 				}else{
-					write_zero(positions, b_it);
+					//write_zero(positions, b_it);
 				}
 			}
 			
+			// if(DEBUG_MODE)
+			// 	all_ls.fs<<bigD<<" "<<useLocal<<" "<<l<<" "<<ll<<endl;
+			if (useLocal == 1)
 			{
-						// if(DEBUG_MODE)
-						// 	all_ls.fs<<bigD<<" "<<useLocal<<" "<<l<<" "<<ll<<endl;
-						if (useLocal == 1)
+				lm_or_ll = ll;
+			}
+			else
+			{
+				lm_or_ll = lm;
+			}
+			
+			// load the color vector of current k-mer from disk to "curr_bv_hi/lo"
+			string bv_line;
+			getline(dup_bitmatrix_file.fs, bv_line); // bv line = color vector C bits
+
+			curr_bv_lo = std::stoull(bv_line.substr(0, std::min(64, C)), nullptr, 2);
+			curr_bv_hi = 0;
+			if (C > 64)
+			{
+				curr_bv_hi = std::stoull(bv_line.substr(64, bv_line.length() - 64), nullptr, 2);
+			}
+
+			unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
+		
+			if (spss_boundary[i] == '0')
+			{ // non-start
+				int hd = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
+
+				if (hd == 0)
+				{ // CATEGORY=RUN
+					skip += 1;
+					// case_run+=1;
+					// if(DEBUG_MODE) cases_smc.fs << "r" << endl;
+				}
+				else
+				{ // CATEGORY=NOT_RUN
+					if (skip != 0)
+					{ // not skipped, run break, write lm
+						// paul method
 						{
-							lm_or_ll = ll;
-						}
-						else
-						{
-							lm_or_ll = lm;
-						}
-						
-						// load the color vector of current k-mer from disk to "curr_bv_hi/lo"
-						string bv_line;
-						getline(dup_bitmatrix_file.fs, bv_line); // bv line = color vector C bits
-
-						curr_bv_lo = std::stoull(bv_line.substr(0, std::min(64, C)), nullptr, 2);
-						curr_bv_hi = 0;
-						if (C > 64)
-						{
-							curr_bv_hi = std::stoull(bv_line.substr(64, bv_line.length() - 64), nullptr, 2);
-						}
-
-						unsigned int curr_kmer_cc_id = lookup(bv_line); //uint64_t num = bphf->lookup(curr_bv);
-					
-						if (spss_boundary[i] == '0')
-						{ // non-start
-							int hd = hammingDistance(prev_bv_hi, curr_bv_hi) + hammingDistance(prev_bv_lo, curr_bv_lo);
-
-							if (hd == 0)
-							{ // CATEGORY=RUN
-								skip += 1;
-								// case_run+=1;
-								// if(DEBUG_MODE) cases_smc.fs << "r" << endl;
-							}
-							else
-							{ // CATEGORY=NOT_RUN
-								if (skip != 0)
-								{ // not skipped, run break, write lm
-									// paul method
-									{
-										if(USE_TEST_METHOD){
-											// if(DEBUG_MODE) cases_skip.fs << skip << endl;
-											if(skip <= 4){
-												max_run_choice = 0;
-												max_run =   4;
-											}else if(skip <= 16 ){
-												max_run_choice = 1;
-												max_run = 16;
-											} else if (skip <= 128){
-												max_run_choice = 2;
-												max_run = 128;
-											} else{
-												max_run_choice = 3;
-												max_run = 256;
-											}
-											lmaxrun = ceil(log2(max_run));
-											write_number_at_loc(positions, (uint64_t)max_run_choice, (uint64_t)2, b_it);
-
-										}
-										int q, rem;
-										q = floor(skip / max_run);
-										rem = skip % max_run;
-										assert(skip == q * max_run + rem); // skip = q*max_run + rem
-										write_category(positions, b_it, CATEGORY_RUN, bigD, 0);
-										write_unary_one_at_loc(positions, (uint64_t)q, b_it);
-										write_zero(positions, b_it);
-										write_number_at_loc(positions, (uint64_t)rem, (uint64_t)lmaxrun, b_it);
-										
-									}
-
-									// my method
-									{
-										// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
-										// write_unary_one_at_loc(positions, (uint64_t) ceil(log2(skip)), b_it);
-										// write_zero(positions, b_it);
-										// write_number_at_loc(positions, (uint64_t) skip, (uint64_t) ceil(log2(skip)), b_it);
-									}
+							if(USE_TEST_METHOD){
+								// if(DEBUG_MODE) cases_skip.fs << skip << endl;
+								if(skip <= 4){
+									max_run_choice = 0;
+									max_run =   4;
+								}else if(skip <= 16 ){
+									max_run_choice = 1;
+									max_run = 16;
+								} else if (skip <= 128){
+									max_run_choice = 2;
+									max_run = 128;
+								} else{
+									max_run_choice = 3;
+									max_run = 256;
 								}
-								skip = 0;
+								lmaxrun = ceil(log2(max_run));
+								if(!singlecolor) write_number_at_loc(positions, (uint64_t)max_run_choice, (uint64_t)2, b_it);
 
-								if (hd <= bigD)
-								{ // CATEGORY=LC
-									// if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
-									// if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
-									// if(DEBUG_MODE) cases_smc.fs << "d" << endl;
-
-									//category colvec = 100, 101 //cAT COLVEC = 10 HD = 1 
-									//write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
-
-									write_category(positions, b_it, CATEGORY_COLVEC, bigD, hd);
-									for (int i_bit = 0; i_bit < 64 && i_bit < C; i_bit += 1)
-									{
-										if (((prev_bv_lo >> i_bit) & 1) != ((curr_bv_lo >> i_bit) & 1))
-										{
-
-											if(C<64){
-												write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
-
-											}else{
-												write_number_at_loc(positions, C-64+i_bit, lc, b_it); // i_bit is the different bit loc
-
-											}
-										}
-									}
-									for (int i_bit = 64; i_bit < C; i_bit += 1)
-									{
-										int actual_i_bit = i_bit - 64;
-										if (((prev_bv_hi >> actual_i_bit) & 1) != ((curr_bv_hi >> actual_i_bit) & 1))
-										{
-											write_number_at_loc(positions, actual_i_bit, lc, b_it); // i_bit is the different bit loc
-										}
-									}
-								}
-								else
-								{ // CATEGORY=LM
-									
-									write_category(positions, b_it, CATEGORY_COLCLASS, bigD, hd);
-									if (useLocal==1)
-									{
-										// if(DEBUG_MODE) cases_smc.fs << "l" << endl;
-										uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
-										if (ll == 0 && localid == 1)
-										{
-											cout << "trouble" << endl;
-										}
-										write_number_at_loc(positions, localid, ll, b_it);
-									}
-									else
-									{
-										// if(DEBUG_MODE) cases_smc.fs << "m" << endl;
-										if (USE_HUFFMAN)
-										{
-											write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
-										}
-										else
-										{
-											write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
-										}
-									}
-								}
 							}
-						}
-						else
-						{ // start of simplitig, so CAT=LM
-							l = per_simplitig_l[simplitig_it];
-							ll = ceil(log2(l));
-							lm_or_ll = ll;
-
-							// case_lm+=1;
-							if(SINGLE_COLOR_METABIT){
-								write_zero(positions, b_it);
-							}
-							//write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-							if(!singlecolor) write_category(positions, b_it, CATEGORY_COLCLASS, bigD, 0);
-							if (useLocal == 1)
-							{
-								// if(DEBUG_MODE) cases_smc.fs << "l" << endl;
-								uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
-								if (ll == 0)
-								{
-									assert(localid == 0);
-								}
-								if(!singlecolor) write_number_at_loc(positions, localid, ll, b_it);
-							}
-							else
-							{
-								// if(DEBUG_MODE) cases_smc.fs << "m" << endl;
-								if (USE_HUFFMAN==true){
-									if(!singlecolor) write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
-								}else{
-									if(!singlecolor) write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
-								}	
-								// assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
-							}
-						}
-
-						if (spss_boundary[(i + 1) % num_kmers] == '1')
-						{ // end k-mer of simplitig
-							local_ht.clear();
-							simplitig_it += 1;
-							if (useLocal){
-								lm_or_ll = ll;
-							}else{
-								lm_or_ll = lm;
-							}
-							if (skip != 0 && !singlecolor)
-							{ // not skipped, run break, write lm
-								if(USE_TEST_METHOD){
-									// if(DEBUG_MODE) cases_skip.fs << skip << endl;
-									if(skip <= 4){
-										max_run_choice = 0;
-										max_run =   4;
-									}else if(skip <= 16 ){
-										max_run_choice = 1;
-										max_run = 16;
-									} else if (skip <= 128){
-										max_run_choice = 2;
-										max_run = 128;
-									} else{
-										max_run_choice = 3;
-										max_run = 256;
-									}
-									lmaxrun = ceil(log2(max_run));
-									write_number_at_loc(positions, (uint64_t)max_run_choice, (uint64_t)1, b_it);
-
-								}
-								int q, rem;
-								q = floor(skip / max_run);
-								rem = skip % max_run;
-								assert(skip == q * max_run + rem); // skip = q*max_run + rem
-								// paul method
+							int q, rem;
+							q = floor(skip / max_run);
+							rem = skip % max_run;
+							assert(skip == q * max_run + rem); // skip = q*max_run + rem
+							if(!singlecolor) {
 								write_category(positions, b_it, CATEGORY_RUN, bigD, 0);
 								write_unary_one_at_loc(positions, (uint64_t)q, b_it);
 								write_zero(positions, b_it);
 								write_number_at_loc(positions, (uint64_t)rem, (uint64_t)lmaxrun, b_it);
-								// my method //100001
 							}
-							skip = 0;
+							
+							
 						}
-						prev_bv_hi = curr_bv_hi;
-						prev_bv_lo = curr_bv_lo;
-					}
 
-					// DebugFile positions_out("positions_out");
-					// for (uint64_t tt : positions)
-					// {
-					// 	if(DEBUG_MODE) positions_out.fs << tt << endl;
-					// }
+						// my method
+						{
+							// write_number_at_loc(positions, CATEGORY_RUN, (uint64_t) 2, b_it);
+							// write_unary_one_at_loc(positions, (uint64_t) ceil(log2(skip)), b_it);
+							// write_zero(positions, b_it);
+							// write_number_at_loc(positions, (uint64_t) skip, (uint64_t) ceil(log2(skip)), b_it);
+						}
+					}
+					skip = 0;
+
+					if (hd <= bigD)
+					{ // CATEGORY=LC
+						// if(hd*(lc + 1) < huff_code_map[curr_kmer_cc_id].size() && hd==1 ){ //CATEGORY=LC
+						// if(hd*(lc + 1) < lm && hd==1){ //CATEGORY=LC
+						// if(DEBUG_MODE) cases_smc.fs << "d" << endl;
+
+						//category colvec = 100, 101 //cAT COLVEC = 10 HD = 1 
+						//write_number_at_loc(positions, CATEGORY_COLVEC, 2, b_it);
+
+						if(!singlecolor) write_category(positions, b_it, CATEGORY_COLVEC, bigD, hd);
+						for (int i_bit = 0; i_bit < 64 && i_bit < C; i_bit += 1)
+						{
+							if (((prev_bv_lo >> i_bit) & 1) != ((curr_bv_lo >> i_bit) & 1))
+							{
+
+								if(C<64){
+									if(!singlecolor) write_number_at_loc(positions, i_bit, lc, b_it); // i_bit is the different bit loc
+
+								}else{
+									if(!singlecolor) write_number_at_loc(positions, C-64+i_bit, lc, b_it); // i_bit is the different bit loc
+
+								}
+							}
+						}
+						for (int i_bit = 64; i_bit < C; i_bit += 1)
+						{
+							int actual_i_bit = i_bit - 64;
+							if (((prev_bv_hi >> actual_i_bit) & 1) != ((curr_bv_hi >> actual_i_bit) & 1))
+							{
+								if(!singlecolor) write_number_at_loc(positions, actual_i_bit, lc, b_it); // i_bit is the different bit loc
+							}
+						}
+					}
+					else
+					{ // CATEGORY=LM
+						
+						if(!singlecolor) write_category(positions, b_it, CATEGORY_COLCLASS, bigD, hd);
+						if (useLocal==1)
+						{
+							// if(DEBUG_MODE) cases_smc.fs << "l" << endl;
+							uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
+							if (ll == 0 && localid == 1)
+							{
+								cout << "trouble" << endl;
+							}
+							if(!singlecolor) write_number_at_loc(positions, localid, ll, b_it);
+						}
+						else
+						{
+							// if(DEBUG_MODE) cases_smc.fs << "m" << endl;
+							if (USE_HUFFMAN)
+							{
+								if(!singlecolor) write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
+							}
+							else
+							{
+								if(!singlecolor) write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+							}
+						}
+					}
+				}
+			}
+			else
+			{ // start of simplitig, so CAT=LM
+				l = per_simplitig_l[simplitig_it];
+				ll = ceil(log2(l));
+				lm_or_ll = ll;
+
+				// case_lm+=1;
+				if(SINGLE_COLOR_METABIT){
+					write_zero(positions, b_it);
+				}
+				//write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
+				if(!singlecolor) write_category(positions, b_it, CATEGORY_COLCLASS, bigD, 0);
+				if (useLocal == 1)
+				{
+					// if(DEBUG_MODE) cases_smc.fs << "l" << endl;
+					uint64_t localid = local_ht.put_and_getid(curr_kmer_cc_id);
+					if (ll == 0)
+					{
+						assert(localid == 0);
+					}
+					if(!singlecolor) write_number_at_loc(positions, localid, ll, b_it);
+				}
+				else
+				{
+					// if(DEBUG_MODE) cases_smc.fs << "m" << endl;
+					if (USE_HUFFMAN==true){
+						if(!singlecolor) write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
+					}else{
+						if(!singlecolor) write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+					}	
+					// assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
+				}
+			}
+
+			if (spss_boundary[(i + 1) % num_kmers] == '1')
+			{ // end k-mer of simplitig
+				local_ht.clear();
+				simplitig_it += 1;
+				if (useLocal){
+					lm_or_ll = ll;
+				}else{
+					lm_or_ll = lm;
+				}
+				if (skip != 0)
+				{ // not skipped, run break, write lm
+					if(USE_TEST_METHOD){
+						// if(DEBUG_MODE) cases_skip.fs << skip << endl;
+						if(skip <= 4){
+							max_run_choice = 0;
+							max_run =   4;
+						}else if(skip <= 16 ){
+							max_run_choice = 1;
+							max_run = 16;
+						} else if (skip <= 128){
+							max_run_choice = 2;
+							max_run = 128;
+						} else{
+							max_run_choice = 3;
+							max_run = 256;
+						}
+						lmaxrun = ceil(log2(max_run));
+						if(!singlecolor) write_number_at_loc(positions, (uint64_t)max_run_choice, (uint64_t)1, b_it);
+
+					}
+					int q, rem;
+					q = floor(skip / max_run);
+					rem = skip % max_run;
+					assert(skip == q * max_run + rem); // skip = q*max_run + rem
+					// paul method
+
+					if(!singlecolor) {
+						write_category(positions, b_it, CATEGORY_RUN, bigD, 0);
+						write_unary_one_at_loc(positions, (uint64_t)q, b_it);
+						write_zero(positions, b_it);
+						write_number_at_loc(positions, (uint64_t)rem, (uint64_t)lmaxrun, b_it);
+					}
+					// my method //100001
+				}
+				skip = 0;
+			}
+			prev_bv_hi = curr_bv_hi;
+			prev_bv_lo = curr_bv_lo;
 		}
 
 		cout << "b_it_size: " << b_it << endl;
