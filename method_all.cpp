@@ -1157,7 +1157,7 @@ public:
 				if(l >= MAX_UNIQ_CLASS_PER_SIMP && useLocal==1){
 					per_simplitig_space_needed=9999999;
 				}
-				if(useLocal == 1 && bigD ==0){
+				if(useLocal == 1 && bigD ==0 && l == 1){
 					per_simplitig_space_needed=0;
 				}
 
