@@ -606,7 +606,7 @@ public:
         per_simplitig_bigD = bs_local.read_uint(2); //0, 1, 2
         singlecolor = '0';
         if(SINGLE_COLOR_METABIT){
-            singlecolor = = bs_local.read_one_bit();
+            singlecolor = bs_local.read_one_bit();
         } 
         if(singlecolor=='1'){
             local_hash_table = bs_local.read_l_huff_codes(huff_root, 1); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
