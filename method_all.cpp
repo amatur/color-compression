@@ -1294,11 +1294,17 @@ public:
 			l = per_simplitig_l[simplitig_it];
 			ll = ceil(log2(l));
 
-
-			if(SINGLE_COLOR_METABIT && l==1 && useLocal==1 && bigD==0){
+			bool singlecolor = false;
+			if(SINGLE_COLOR_METABIT){
+				if( l==1 && useLocal==1 && bigD==0){
+					write_one(positions, b_it);
+					singlecolor=true;
+				}else{
 					write_zero(positions, b_it);
+				}
 			}
-			if(!(SINGLE_COLOR_METABIT && l==1 && useLocal==1 && bigD==0)){
+			
+			{
 						// if(DEBUG_MODE)
 						// 	all_ls.fs<<bigD<<" "<<useLocal<<" "<<l<<" "<<ll<<endl;
 						if (useLocal == 1)
@@ -1448,9 +1454,11 @@ public:
 							lm_or_ll = ll;
 
 							// case_lm+=1;
-
+							if(SINGLE_COLOR_METABIT){
+								write_zero(positions, b_it);
+							}
 							//write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
-							write_category(positions, b_it, CATEGORY_COLCLASS, bigD, 0);
+							if(!singlecolor) write_category(positions, b_it, CATEGORY_COLCLASS, bigD, 0);
 							if (useLocal == 1)
 							{
 								// if(DEBUG_MODE) cases_smc.fs << "l" << endl;
@@ -1459,15 +1467,15 @@ public:
 								{
 									assert(localid == 0);
 								}
-								write_number_at_loc(positions, localid, ll, b_it);
+								if(!singlecolor) write_number_at_loc(positions, localid, ll, b_it);
 							}
 							else
 							{
 								// if(DEBUG_MODE) cases_smc.fs << "m" << endl;
 								if (USE_HUFFMAN==true){
-									write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
+									if(!singlecolor) write_binary_vector_at_loc(positions, huff_code_map[curr_kmer_cc_id], b_it);
 								}else{
-									write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
+									if(!singlecolor) write_number_at_loc(positions, curr_kmer_cc_id, lm, b_it);
 								}	
 								// assert(curr_kmer_cc_id<M && curr_kmer_cc_id>0);
 							}
@@ -1482,7 +1490,7 @@ public:
 							}else{
 								lm_or_ll = lm;
 							}
-							if (skip != 0)
+							if (skip != 0 && !singlecolor)
 							{ // not skipped, run break, write lm
 								if(USE_TEST_METHOD){
 									// if(DEBUG_MODE) cases_skip.fs << skip << endl;
