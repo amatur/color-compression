@@ -1456,7 +1456,7 @@ public:
 				lm_or_ll = ll;
 
 				// case_lm+=1;
-				if(SINGLE_COLOR_METABIT){
+				if(SINGLE_COLOR_METABIT && singlecolor){
 					write_zero(positions, b_it);
 				}
 				//write_number_at_loc(positions, CATEGORY_COLCLASS, 1, b_it);
