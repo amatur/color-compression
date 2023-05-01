@@ -734,9 +734,7 @@ public:
 	{ 
 		DebugFile skipper("skipper");
 		DebugFile avg_skip_simp("avg_skip_simp");
-		vector<int> total_run_length_per_s(num_simplitig,0);
-		vector<int> total_run_per_s(num_simplitig,0);
-
+		
         DebugFile single_color("single_color");
         
 		
@@ -748,7 +746,9 @@ public:
 				num_simplitig += 1;
 			}
 		}
-	
+		vector<int> total_run_length_per_s(num_simplitig,0);
+		vector<int> total_run_per_s(num_simplitig,0);
+
 		string bv_line;
 
 		vector<uint32_t> optimal_ht;
