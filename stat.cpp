@@ -885,7 +885,8 @@ public:
 				case_run = case_lm = case_dlc = 0;
                 sum_skip_space = 0;
 
-				avg_skip_simp.fs<<simplitig_it<<" "<<(total_run_length_per_s[simplitig_it]*1.0/total_run_per_s[simplitig_it])<<endl;
+				if(total_run_per_s[simplitig_it]!=0)
+					avg_skip_simp.fs<<simplitig_it<<" "<<(total_run_length_per_s[simplitig_it]*1.0/total_run_per_s[simplitig_it])<<endl;
                 single_color.fs<<simplitig_it<<" "<<int(is_single_color)<<endl;
                 simplitig_it++;
                 is_single_color = true;
