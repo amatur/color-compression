@@ -840,6 +840,8 @@ public:
 					else
 					{ // CAT=LM
 						case_lm += 1;
+						total_run_per_s[simplitig_it]+=1;
+
 					}
 				}
 			}
