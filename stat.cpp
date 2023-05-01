@@ -830,6 +830,7 @@ public:
 					if (hd <= bigD)
 					{ // CAT=LC
 						case_dlc += 1;
+						total_run_per_s[simplitig_it]+=1;
 						if(bigD==2){
 							sum_dlc_space += hd * lc + 3; // 101 = d>2 = 100 = d>1, d upto 4 per simp 2 bit
 						}else{
@@ -846,6 +847,7 @@ public:
 			{ // start of simplitig, so CAT=LM
 				skip = 0;
 				case_lm += 1;
+				total_run_per_s[simplitig_it]+=1;
 			}
 
 			if (spss_boundary[(it_kmer + 1) % num_kmers] == '1') //end
