@@ -1592,10 +1592,6 @@ int main (int argc, char* argv[]){
 		coless.method1_pass2();
 		time_end("pass2.");
 	}
-
-
 	//COLESS_Decompress cdec(num_kmers, M, C);
-
-
 	return EXIT_SUCCESS;
 }

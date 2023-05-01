@@ -42,7 +42,7 @@ uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
 
 bool TESTING_SPEED=false;
 bool DEBUG_MODE = false;
-const bool SINGLE_COLOR_METABIT = true; //if persimplitig_L == 1, force bigD=1, skip=0
+const bool SINGLE_COLOR_METABIT = false; //if persimplitig_L == 1, force bigD=1, skip=0
 const bool USE_MAX_UNIQ_CLASS_PER_SIMP = false;
 const int MAX_UNIQ_CLASS_PER_SIMP=8;
 
