@@ -37,8 +37,8 @@ bool NEW_DEBUG_MODE = false;
 bool DEBUG_MODE = false;
 
 const int MAX_UNIQ_CLASS_PER_SIMP=8; //force not taking
-const bool SINGLE_COLOR_METABIT = true; //if persimplitig_L == 1, force bigD=1, skip=0
-
+const bool SINGLE_COLOR_METABIT = false; //if persimplitig_L == 1, force bigD=1, skip=0
+const bool USE_MAX_UNIQ_CLASS_PER_SIMP = false;
 
 // namespace BinaryIO
 // {
@@ -1152,12 +1152,17 @@ public:
 				}
 				skip = 0;
 
-				//int per_simplitig_space_needed = useLocal * (2 + 1 + lm + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
-				int per_simplitig_space_needed = useLocal * (2 + 1 + ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)) + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
+				int per_simplitig_space_needed;
+				if(USE_MAX_UNIQ_CLASS_PER_SIMP){
+				 	per_simplitig_space_needed= useLocal * (2 + 1 + ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)) + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
+				}else{
+					per_simplitig_space_needed = useLocal * (2 + 1 + lm + sum_length_huff_uniq_nonrun + (ll+1) * case_lm + sum_dlc_space  + sum_skip_space) + (1 - useLocal) * (2 + 1 + sum_length_huff_nonrun + sum_dlc_space + case_lm + sum_skip_space);
+				}
+
 				if(l >= MAX_UNIQ_CLASS_PER_SIMP && useLocal==1){
 					per_simplitig_space_needed=9999999;
 				}
-				if(useLocal == 1 && bigD ==0 && l == 1){
+				if(SINGLE_COLOR_METABIT && useLocal == 1 && bigD ==0 && l == 1){
 					per_simplitig_space_needed=0;
 				}
 
@@ -1207,24 +1212,24 @@ public:
 						}
 					}
 					
-
 					if (per_simplitig_optimal_useLocal[simplitig_it] == 1)
 					{
-						
-						//
-						//MAX_UNIQ_CLASS_PER_SIMP write_number_at_loc(positions_local_table, optimal_ht.size(), lm, b_it_local_table);
 						if(SINGLE_COLOR_METABIT){
-							if(per_simplitig_l[simplitig_it] ==1){
-
-							}else{
+							if(per_simplitig_l[simplitig_it] == 1){ //single color: empty content
+							}else{ //not single color: non empty content
 								write_one(positions_local_table, b_it_local_table);
-								write_number_at_loc(positions_local_table, optimal_ht.size(), ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)), b_it_local_table);
+								if(USE_MAX_UNIQ_CLASS_PER_SIMP)
+									write_number_at_loc(positions_local_table, optimal_ht.size(), ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)), b_it_local_table);
+								else
+									write_number_at_loc(positions_local_table, optimal_ht.size(), lm, b_it_local_table);
 							}
 						}else{
 							write_one(positions_local_table, b_it_local_table);
-							write_number_at_loc(positions_local_table, optimal_ht.size(), ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)), b_it_local_table);
+							if(USE_MAX_UNIQ_CLASS_PER_SIMP)
+								write_number_at_loc(positions_local_table, optimal_ht.size(), ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)), b_it_local_table);
+							else
+								write_number_at_loc(positions_local_table, optimal_ht.size(), lm, b_it_local_table);
 						}
-
 
 						for (uint32_t ii = 0; ii < optimal_ht.size(); ii++)
 						{
@@ -1235,11 +1240,10 @@ public:
 					}
 					else
 					{
-						write_zero(positions_local_table, b_it_local_table);
+						write_zero(positions_local_table, b_it_local_table); //no local table, just 0 bit indicates that useLocalId=false
 					}
 
-					
-
+				
 					// if(DEBUG_MODE)
 					// 	optout.fs << "curr: simp:"<<simplitig_it<<"bigD:"<< bigD<<" ul:"<<useLocal<< " optbigD:"<< per_simplitig_optimal_bigD[simplitig_it] << " optLocal:" << per_simplitig_optimal_useLocal[simplitig_it] << " opspace:" << per_simplitig_optimal_space[simplitig_it] << endl;
 

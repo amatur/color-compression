@@ -27,7 +27,8 @@ using namespace std;
 using namespace sdsl;
 
 const int MAX_BUFFER_STRING=2048;
-const int MAX_UNIQ_CLASS_PER_SIMP=8;
+
+
 
 uint64_t written_kmer = 0;
 #include <unordered_map>
@@ -42,7 +43,8 @@ uint64_t CATEGORY_COLVEC_TWO = (uint64_t) 5; //101
 bool TESTING_SPEED=false;
 bool DEBUG_MODE = false;
 const bool SINGLE_COLOR_METABIT = true; //if persimplitig_L == 1, force bigD=1, skip=0
-
+const bool USE_MAX_UNIQ_CLASS_PER_SIMP = false;
+const int MAX_UNIQ_CLASS_PER_SIMP=8;
 
 namespace TimeMeasure
 {
@@ -614,13 +616,14 @@ public:
             //if(DEBUG_MODE) combodebug.fs<<"curr: " << per_simplitig_bigD<<" "<<per_simplitig_use_local_id<<" ";
             per_simplitig_use_local_id = bs_local.read_one_bit();
             if(per_simplitig_use_local_id == '1'){
-            
-                                //MAX_UNIQ_CLASS_PER_SIMP l_of_curr_simplitig = bs_local.read_uint(lm);
+                if(USE_MAX_UNIQ_CLASS_PER_SIMP){
                     l_of_curr_simplitig = bs_local.read_uint(ceil(log2(MAX_UNIQ_CLASS_PER_SIMP)));
-                    //int ll = ceil(log2(l));
-                    local_hash_table = bs_local.read_l_huff_codes(huff_root, l_of_curr_simplitig); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
-                    if(DEBUG_MODE)  cout<<l_of_curr_simplitig;
-
+                }else{
+                    l_of_curr_simplitig = bs_local.read_uint(lm);
+                } 
+                //int ll = ceil(log2(l));
+                local_hash_table = bs_local.read_l_huff_codes(huff_root, l_of_curr_simplitig); //0->(0,M-1), 1->(0,M-1) ... l*lm bits
+                if(DEBUG_MODE)  cout<<l_of_curr_simplitig;
             }
             //if(DEBUG_MODE)  combodebug.fs<<endl;
         }
