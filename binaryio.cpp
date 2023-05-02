@@ -75,6 +75,41 @@ namespace BinaryIO
 		delete[] blocks;
 		fout.close();
 	}
+	void convert_binary_bv_into_string_file(string filename, string outfilename){
+		ifstream infile(filename);
+		char uintbuffer[8];
+		infile.read ((char*)&uintbuffer, sizeof(uintbuffer));
+		uint64_t b_it = deserialise_64bit(uintbuffer);
+		vector<char> bv(b_it, '0');
+		const int buffer_size = 3;
+		uint8_t buffer[buffer_size];
+		uint64_t pos = 0;
+
+		int total_num_blocks = ceil(b_it/8);
+		while(total_num_blocks > 0){
+			infile.read((char *)&buffer,sizeof(buffer));
+			total_num_blocks-=buffer_size;
+			for(int j = 0; j<buffer_size; j++){
+				uint8_t i = 1;
+				while (true) {
+					if(i & buffer[j]){
+						bv[pos] = '1';
+					}
+					pos++;
+					if(i==0x80){
+						break;
+					}
+					i = i << 1; // Unset current bit and set the next bit in 'i'
+				}
+			}
+		}
+		// cout<<"writing bv: "<<endl;
+		// for(uint64_t i = 0; i< b_it; i++){
+		// 	cout<<bv[i];
+		// }
+		infile.close();
+		return bv;
+	}
 	vector<char> read_binary_bv_into_char_array(string filename){
 		ifstream infile(filename);
 		char uintbuffer[8];

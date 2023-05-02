@@ -746,8 +746,8 @@ public:
 				num_simplitig += 1;
 			}
 		}
-		vector<int> total_run_length_per_s(num_simplitig,0);
-		vector<int> total_run_per_s(num_simplitig,0);
+		vector<uint64_t> total_run_length_per_s(num_simplitig,0);
+		vector<uint64_t> total_run_per_s(num_simplitig,0);
 
 		string bv_line;
 
