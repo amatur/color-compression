@@ -439,4 +439,4 @@ rule f_to_ggcatess:
         "mega.essc",
         "mega.essd"
     shell:
-        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_ggcat_build ggcat build -k {params.k} -j 8 -l list_fa -o gg_unitigs.fa -s{params.ab} -p -e; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip  essAuxCompress -k {params.k} -i gg_unitigs.fa -t 1; essAuxDecompress -i kmers.esstip 1; cp kmers.esstip mega.essd; essAuxMFCompressC kmers.esstip; mv kmers.esstip.mfc mega.essc"
+        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_ggcat_build ggcat build -k {params.k} -j 8 -l list_fa -o gg_unitigs.fa -s{params.ab} -p -e; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip  essAuxCompress -k {params.k} -i gg_unitigs.fa -t 1; essAuxDecompress -i kmers.esstip 1; cp kmers.esstip.spss mega.essd; essAuxMFCompressC kmers.esstip; mv kmers.esstip.mfc mega.essc"
