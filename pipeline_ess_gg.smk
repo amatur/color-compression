@@ -438,7 +438,7 @@ rule f_to_ggcatess:
     output:
         "gg_unitigs.fa"
     shell:
-        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_ggcat_build ggcat build -k {params.k} -j 8 -l list_fa -o gg_unitigs.fa -s{params.ab} -p -e; 
+        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_ggcat_build ggcat build -k {params.k} -j 8 -l list_fa -o gg_unitigs.fa -s{params.ab} -p -e"
 
 rule ggcat_unitig_to_ess:
     input:
