@@ -140,19 +140,20 @@ elif config['option'] == 'create_essc':
         shell:
             "essDecompress {input} -f"
 elif config['option'] == '':
-    rule f_to_megaessc:
-        input:
-            expand(get_ext_folder_level0(EXTENSION)+"/{sample}"+EXTENSION,sample=SAMPLES)
-        params:
-            k=config["k"],
-            m=config["mem"],
-            l=dump_list_with_pref(SAMPLES, EXTENSION, "mega", get_ext_folder_level0(EXTENSION)+"/")
-        benchmark:
-            "benchmarks/mega_from_f.essc.txt"
-        output:
-            "mega.essc"
-        shell:
-            "essCompress -i mega -k{params.k}"
+    if (config['unitig'] != 'ggcat'):
+        rule f_to_megaessc:
+            input:
+                expand(get_ext_folder_level0(EXTENSION)+"/{sample}"+EXTENSION,sample=SAMPLES)
+            params:
+                k=config["k"],
+                m=config["mem"],
+                l=dump_list_with_pref(SAMPLES, EXTENSION, "mega", get_ext_folder_level0(EXTENSION)+"/")
+            benchmark:
+                "benchmarks/mega_from_f.essc.txt"
+            output:
+                "mega.essc"
+            shell:
+                "essCompress -i mega -k{params.k}"
 
 
 if (config['option'] == 'from_essc' or config['option'] == 'create_essc' or config['option'] == 'from_essd'):
@@ -288,15 +289,17 @@ if config['matrix_generator'] == 'genmatrix':
             "~/s/proj4/git/ESSColor/bin/genmatrix  -c list_kmc -o {output} -s -l mega.essd -k {params.k}"
 
 
-rule megaessc_to_megaessd:
-    input:
-        "mega.essc"
-    output:
-        "mega.essd"
-    benchmark:
-        "benchmarks/mega.essd.txt"
-    shell:
-        "essDecompress mega.essc"
+
+if (config['unitig'] != 'ggcat'):
+    rule megaessc_to_megaessd:
+        input:
+            "mega.essc"
+        output:
+            "mega.essd"
+        benchmark:
+            "benchmarks/mega.essd.txt"
+        shell:
+            "essDecompress mega.essc"
 
 
 
