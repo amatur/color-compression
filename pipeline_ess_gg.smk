@@ -196,8 +196,7 @@ else:
             expand(get_ext_folder_level0(EXTENSION)+"/{sample}"+EXTENSION,sample=SAMPLES)
         output:
             "{sample}.kmc.kmc_pre",
-            "{sample}.kmc.kmc_suf",
-            "meta.txt",
+            "{sample}.kmc.kmc_suf",[;]
             # temp("{sample}.kmc.kmc_pre"),
             # temp("{sample}.kmc.kmc_suf")
         params:
@@ -205,13 +204,12 @@ else:
             fol=get_ext_folder_level0(EXTENSION)+"/",
             ext=EXTENSION,
             ab=config["ab"],
-            m=config["mem"],
-            l=generate_list_of_filenames(SAMPLES, EXTENSION)
+            m=config["mem"]
         benchmark:
             "benchmarks/{sample}.f_to_kmc.txt"
         shell:
             #"mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci1 -fa {input} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample}"
-            "mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci{params.ab} -fm {params.fol}/{wildcards.sample}{params.ext} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample}; echo \"{params.l}\"> meta.txt"
+            "mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci{params.ab} -fm {params.fol}/{wildcards.sample}{params.ext} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample};"
       
 # rule essd_to_jf:
 #     input:
@@ -381,13 +379,15 @@ rule compress:
         "stat_m",
         "stat_nkmer_ess"
     params:
-        c=len(SAMPLES)
+        c=len(SAMPLES),
+        l=dump_list(SAMPLES, "", "meta.txt"),
     benchmark:
         "benchmarks/compress.txt"
     output:
         "bb_main",
         "bb_local_table",
-        "bb_map"
+        "bb_map",
+        "meta.txt"
         # "rrrbv_1_delta.sdsl",
         # "rrrbv_1.sdsl",
         # "rrrbv_1_skip.sdsl",
