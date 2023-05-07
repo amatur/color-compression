@@ -477,4 +477,4 @@ rule ggcat_unitig_to_ess:
         "mega.essc",
         "mega.essd"
     shell:
-        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip  essAuxCompress -k {params.k} -i {input} -t 1; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tipd  essAuxDecompress -i kmers.esstip 1; mv kmers.esstip.spss mega.essd; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip_mfc   essAuxMFCompressC kmers.esstip; mv kmers.esstip.mfc mega.essc"
+        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip  essAuxCompress -k {params.k} -i {input} -t 0; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_ess  essAuxDecompress -i kmers.ess 1; mv kmers.ess.spss mega.essd; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip_mfc   essAuxMFCompressC kmers.esstip; mv kmers.esstip.mfc mega.essc"
