@@ -387,6 +387,9 @@ rule compress:
         "bb_main",
         "bb_local_table",
         "bb_map",
+        "rrr_main",
+        "rrr_local_table",
+        "rrr_map",
         "meta.txt"
         # "rrrbv_1_delta.sdsl",
         # "rrrbv_1.sdsl",
