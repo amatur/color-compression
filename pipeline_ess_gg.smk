@@ -396,7 +396,7 @@ rule compress:
         # "rrrbv_1_skip.sdsl",
         # "rrr_bv_mapping.sdsl"
     shell:
-        "ess_color_compress -i uniq_ms.txt -d col_bitmatrix -c {params.c} -m $(cat stat_m) -k $(cat stat_nkmer_ess) -s ess_boundary_bit.txt -x 16"
+        "echo {params.l}; ess_color_compress -i uniq_ms.txt -d col_bitmatrix -c {params.c} -m $(cat stat_m) -k $(cat stat_nkmer_ess) -s ess_boundary_bit.txt -x 16"
 rule zip_compress:
     input:
         "rrr_main",
