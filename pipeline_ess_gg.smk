@@ -196,7 +196,7 @@ else:
             expand(get_ext_folder_level0(EXTENSION)+"/{sample}"+EXTENSION,sample=SAMPLES)
         output:
             "{sample}.kmc.kmc_pre",
-            "{sample}.kmc.kmc_suf",[;]
+            "{sample}.kmc.kmc_suf",
             # temp("{sample}.kmc.kmc_pre"),
             # temp("{sample}.kmc.kmc_suf")
         params:
