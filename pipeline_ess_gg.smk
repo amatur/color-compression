@@ -410,11 +410,11 @@ rule zip_compress:
 
 rule zip_compress_size:
     input: 
-        "ess_color.tar.gz"
+        "esscolor.tar.gz"
     output:
         "size_esscolor_mb"
-    shell:
-        "ls -l | grep ess_color.tar.gz | awk '{print  $5/1024.0/1024.0}' >  size_esscolor_mb; nkmer=$(cat stat_nkmer_ess); ls -l | grep ess_color.tar.gz | awk -v nk=$nkmer '{print  $5*8.0/$nk}' > size_esscolor_bitskmer"  
+        shell:
+            "ls -l | grep esscolor.tar.gz | awk '{print  $5/1024.0/1024.0}' >  size_esscolor_mb; nkmer=$(cat stat_nkmer_ess); ls -l | grep ess_color.tar.gz | awk -v nk=$nkmer '{print  $5*8.0/$nk}' > size_esscolor_bitskmer"  
 # rule all_stat:
 #     input: 
 #         "rrrbv_1_delta.sdsl",
