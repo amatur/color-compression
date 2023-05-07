@@ -197,7 +197,9 @@ else:
         output:
             "{sample}.kmc.kmc_pre",
             "{sample}.kmc.kmc_suf",
-            "meta.txt"
+            "meta.txt",
+            # temp("{sample}.kmc.kmc_pre"),
+            # temp("{sample}.kmc.kmc_suf")
         params:
             k=config["k"],
             fol=get_ext_folder_level0(EXTENSION)+"/",
@@ -207,11 +209,6 @@ else:
             l=dump_list_with_pref(SAMPLES, EXTENSION, "meta.txt", "")
         benchmark:
             "benchmarks/{sample}.f_to_kmc.txt"
-        output:
-            "{sample}.kmc.kmc_pre",
-            "{sample}.kmc.kmc_suf"
-            # temp("{sample}.kmc.kmc_pre"),
-            # temp("{sample}.kmc.kmc_suf")
         shell:
             #"mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci1 -fa {input} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample}"
             "mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci{params.ab} -fm {params.fol}/{wildcards.sample}{params.ext} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample}; "
