@@ -206,12 +206,12 @@ else:
             ext=EXTENSION,
             ab=config["ab"],
             m=config["mem"],
-            l=dump_list_with_pref(SAMPLES, EXTENSION, "meta.txt", "")
+            l=generate_list_of_filenames(SAMPLES, EXTENSION)
         benchmark:
             "benchmarks/{sample}.f_to_kmc.txt"
         shell:
             #"mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci1 -fa {input} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample}"
-            "mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci{params.ab} -fm {params.fol}/{wildcards.sample}{params.ext} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample}; echo {params.l}"
+            "mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci{params.ab} -fm {params.fol}/{wildcards.sample}{params.ext} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample}; echo \"{params.l}\"> meta.txt"
       
 # rule essd_to_jf:
 #     input:
