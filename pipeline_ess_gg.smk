@@ -282,6 +282,7 @@ if config['matrix_generator'] == 'genmatrix':
             "stat_nkmer_ess"
         params:
             l=dump_list(SAMPLES, ".kmc", "list_kmc"),
+            l2=dump_list(SAMPLES, EXTENSION, "meta.txt"),
             k=config["k"],
         benchmark:
             "benchmarks/genmatrix.txt"
@@ -380,7 +381,6 @@ rule compress:
         "stat_nkmer_ess"
     params:
         c=len(SAMPLES),
-        l=dump_list(SAMPLES, "", "meta.txt"),
     benchmark:
         "benchmarks/compress.txt"
     output:
@@ -390,13 +390,12 @@ rule compress:
         "rrr_main",
         "rrr_local_table",
         "rrr_map",
-        "meta.txt"
         # "rrrbv_1_delta.sdsl",
         # "rrrbv_1.sdsl",
         # "rrrbv_1_skip.sdsl",
         # "rrr_bv_mapping.sdsl"
     shell:
-        "echo {params.l}; ess_color_compress -i uniq_ms.txt -d col_bitmatrix -c {params.c} -m $(cat stat_m) -k $(cat stat_nkmer_ess) -s ess_boundary_bit.txt -x 16"
+        "ess_color_compress -i uniq_ms.txt -d col_bitmatrix -c {params.c} -m $(cat stat_m) -k $(cat stat_nkmer_ess) -s ess_boundary_bit.txt -x 16"
 rule zip_compress:
     input:
         "rrr_main",
