@@ -405,6 +405,8 @@ rule zip_compress:
         "meta.txt"
     output:
         "esscolor.tar.gz"
+    benchmark:
+        "benchmarks/final_gzip.txt"
     shell: 
         "mkdir esscolor; cp rrr_main rrr_local_table rrr_map mega.essc meta.txt esscolor/; tar cf esscolor.tar esscolor/;  gzip -v9 esscolor.tar; rm -rf esscolor/; "
 
