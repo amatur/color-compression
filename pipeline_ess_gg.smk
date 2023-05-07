@@ -90,7 +90,10 @@ rule all:
         "stat_nkmer_ess",
         "bb_main",
         "bb_local_table",
-        "bb_map"
+        "bb_map",
+        "ess_color.tar.gz",
+        "size_esscolor_mb"
+
 
 if config['option'] == 'from_essc':
     rule essc_to_essd:
@@ -193,13 +196,15 @@ else:
             expand(get_ext_folder_level0(EXTENSION)+"/{sample}"+EXTENSION,sample=SAMPLES)
         output:
             "{sample}.kmc.kmc_pre",
-            "{sample}.kmc.kmc_suf"
+            "{sample}.kmc.kmc_suf",
+            "meta.txt"
         params:
             k=config["k"],
             fol=get_ext_folder_level0(EXTENSION)+"/",
             ext=EXTENSION,
             ab=config["ab"],
-            m=config["mem"]
+            m=config["mem"],
+            l=dump_list_with_pref(SAMPLES, EXTENSION, "meta.txt", "")
         benchmark:
             "benchmarks/{sample}.f_to_kmc.txt"
         output:
@@ -209,7 +214,7 @@ else:
             # temp("{sample}.kmc.kmc_suf")
         shell:
             #"mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci1 -fa {input} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample}"
-            "mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci{params.ab} -fm {params.fol}/{wildcards.sample}{params.ext} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample}"
+            "mkdir -p kmc_tmp_dir_{wildcards.sample}; kmc -k{params.k} -m{params.m} -ci{params.ab} -fm {params.fol}/{wildcards.sample}{params.ext} {wildcards.sample}.kmc kmc_tmp_dir_{wildcards.sample}/; rm -rf kmc_tmp_dir_{wildcards.sample}; "
       
 # rule essd_to_jf:
 #     input:
@@ -392,7 +397,25 @@ rule compress:
         # "rrr_bv_mapping.sdsl"
     shell:
         "ess_color_compress -i uniq_ms.txt -d col_bitmatrix -c {params.c} -m $(cat stat_m) -k $(cat stat_nkmer_ess) -s ess_boundary_bit.txt -x 16"
+rule zip_compress:
+    input:
+        "rrr_main",
+        "rrr_local_table",
+        "rrr_map",
+        "mega.essc",
+        "meta.txt"
+    output:
+        "ess_color.tar.gz"
+    shell: 
+        "mkdir esscolor; cp rrr_main rrr_local_table rrr_map mega.essc meta.txt esscolor/; tar cf esscolor.tar esscolor/;  gzip -v9 esscolor.tar; rm -rf esscolor/; "
 
+rule zip_compress_size:
+    input: 
+        "ess_color.tar.gz"
+    output:
+        "size_esscolor_mb"
+    shell:
+        "ls -l | grep ess_color.tar.gz | awk '{print  $5/1024.0/1024.0}' >  size_esscolor_mb; nkmer=$(cat stat_nkmer_ess); ls -l | grep ess_color.tar.gz | awk -v nk=$nkmer '{print  $5*8.0/$nk}' > size_esscolor_bitskmer"  
 # rule all_stat:
 #     input: 
 #         "rrrbv_1_delta.sdsl",
@@ -452,4 +475,4 @@ rule ggcat_unitig_to_ess:
         "mega.essc",
         "mega.essd"
     shell:
-        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip  essAuxCompress -k {params.k} -i {input} -t 1; essAuxDecompress -i kmers.esstip 1; mv kmers.esstip.spss mega.essd; essAuxMFCompressC kmers.esstip; mv kmers.esstip.mfc mega.essc"
+        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip  essAuxCompress -k {params.k} -i {input} -t 1; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tipd  essAuxDecompress -i kmers.esstip 1; mv kmers.esstip.spss mega.essd; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip_mfc   essAuxMFCompressC kmers.esstip; mv kmers.esstip.mfc mega.essc"

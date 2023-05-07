@@ -5,9 +5,6 @@
 		},
 		{
 			"path": "../ESSColor"
-		},
-		{
-			"path": "../sshash"
 		}
 	],
 	"settings": {
@@ -102,7 +99,8 @@
 			"span": "cpp",
 			"regex": "cpp",
 			"valarray": "cpp",
-			"csignal": "cpp"
+			"csignal": "cpp",
+			"set": "cpp"
 		}
 	}
 }

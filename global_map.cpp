@@ -11,6 +11,161 @@ using namespace sdsl;
 
 #define SUPPORTED_COLOR 128
 
+
+class BitVectorESS{
+    int MAX_BLOCKS=2;
+    uint64_t bvs[MAX_BLOCKS];
+    void load_from_string(string bv){
+
+    }
+    string convert_to_string(){
+
+    }
+    int get_hd(BitVectorESS a, BitVectorESS b){
+        a[1],b[1]+ a[0],b[0]
+    }
+    vector<int> get_differing_bits(BitVectorESS a, BitVectorESS b){
+        
+    }
+}
+
+namespace BinaryIO
+{	
+	void serialise_64bit( char* dest, uint64_t n)
+	{
+		dest[0] = (n >> 56) & 0xff;
+		dest[1] = (n >> 48) & 0xff;
+		dest[2] = (n >> 40) & 0xff;
+		dest[3] = (n >> 32) & 0xff;
+		dest[4] = (n >> 24) & 0xff;
+		dest[5] = (n >> 16) & 0xff;
+		dest[6] = (n >>  8) & 0xff;
+		dest[7] = (n >>  0) & 0xff;
+	}
+	uint64_t deserialise_64bit( char buf[8])
+	{
+		uint64_t big_endian_value = (uint64_t)buf[7] + ((uint64_t)buf[6] << 8) + ((uint64_t)buf[5] << 16) + ((uint64_t)buf[4] << 24) + ((uint64_t)buf[3] << 32) + ((uint64_t)buf[2] << 40) + ((uint64_t)buf[1] << 48) + ((uint64_t)buf[0] << 56);
+		//uint64_t little_endian_value = (uint64_t)buf[0] + ((uint64_t)buf[1] << 8) + ((uint64_t)buf[2] << 16) + ((uint64_t)buf[3] << 24) + ((uint64_t)buf[4] << 32) + ((uint64_t)buf[5] << 40) + ((uint64_t)buf[6] << 48) + ((uint64_t)buf[7] << 56);
+		//cout<<big_endian_value<<endl;
+		return big_endian_value;
+	}
+	
+    uint64_t read_uint(string& str, uint64_t& b_it, int block_sz){ //convert_binary_string_to_uint
+        uint64_t res = 0;
+        //int block_sz = end - start + 1;
+        uint64_t end = block_sz + b_it - 1;
+// 		assert(block_sz==block_sz2);
+        uint64_t i = 0;
+        uint64_t j = end;
+
+        while(true){
+            if (str[j]=='1') {
+                res |= 1 << i;
+            }
+            i+=1;
+            if(j!=b_it){
+                j--;
+            }else{
+                break;
+            }
+        }
+        b_it += block_sz;
+        return res;
+    }
+
+	/** Write bitvector to disk given positions
+	 * @param b_it b_it indicates size of vector: if 8 length, then b_it = 8, bv 0 to 7 should have values
+	 **/
+	void write_binary_bv_from_pos_vector(vector<uint64_t>& positions, uint64_t &b_it, string filename){
+		ofstream fout(filename);
+		uint64_t total_num_blocks_req = ceil(b_it/8);
+		char* blocks = new char[total_num_blocks_req];
+		memset(blocks, 0, total_num_blocks_req*sizeof(blocks[0]));
+		for(uint64_t p : positions){
+			blocks[(int)floor(p/8)] |= (1<<(p%8)); //uint64_t block_id = floor(p/8); //uint8_t block_offset = p%8;
+		}
+
+		char char64_b_it[8];
+		serialise_64bit(char64_b_it, b_it);
+		fout.write((char *)char64_b_it, 8);
+
+		uint64_t i = 0;
+		while(i < total_num_blocks_req){
+			fout.write(&blocks[i++], 1);
+		}
+
+		delete[] blocks;
+		fout.close();
+	}
+	void convert_binary_bv_into_string_file(string filename, string outfilename){
+		ifstream infile(filename);
+		char uintbuffer[8];
+		infile.read ((char*)&uintbuffer, sizeof(uintbuffer));
+		uint64_t b_it = deserialise_64bit(uintbuffer);
+		vector<char> bv(b_it, '0');
+		const int buffer_size = 3;
+		uint8_t buffer[buffer_size];
+		uint64_t pos = 0;
+
+		int total_num_blocks = ceil(b_it/8);
+		while(total_num_blocks > 0){
+			infile.read((char *)&buffer,sizeof(buffer));
+			total_num_blocks-=buffer_size;
+			for(int j = 0; j<buffer_size; j++){
+				uint8_t i = 1;
+				while (true) {
+					if(i & buffer[j]){
+						bv[pos] = '1';
+					}
+					pos++;
+					if(i==0x80){
+						break;
+					}
+					i = i << 1; // Unset current bit and set the next bit in 'i'
+				}
+			}
+		}
+		// cout<<"writing bv: "<<endl;
+		// for(uint64_t i = 0; i< b_it; i++){
+		// 	cout<<bv[i];
+		// }
+		infile.close();
+		return bv;
+	}
+	vector<char> read_binary_bv_into_char_array(string filename){
+		ifstream infile(filename);
+		char uintbuffer[8];
+		infile.read ((char*)&uintbuffer, sizeof(uintbuffer));
+		uint64_t b_it = deserialise_64bit(uintbuffer);
+		vector<char> bv(b_it, '0');
+		const int buffer_size = 3;
+		uint8_t buffer[buffer_size];
+		uint64_t pos = 0;
+
+		int total_num_blocks = ceil(b_it/8);
+		while(total_num_blocks > 0){
+			infile.read((char *)&buffer,sizeof(buffer));
+			total_num_blocks-=buffer_size;
+			for(int j = 0; j<buffer_size; j++){
+				uint8_t i = 1;
+				while (true) {
+					if(i & buffer[j]){
+						bv[pos] = '1';
+					}
+					pos++;
+					if(i==0x80){
+						break;
+					}
+					i = i << 1; // Unset current bit and set the next bit in 'i'
+				}
+			}
+		}
+		infile.close();
+		return bv;
+	}
+} 
+using namespace BinaryIO;
+
 // DSU data structure
 // path compression + rank by union
   void write_number_at_loc_advanced_by_block_sz(vector<uint64_t> & positions, uint64_t num, uint64_t loc_advanced_by_block_sz, uint64_t block_sz){ //requires loc_advanced_by_block_sz += block_size; 
@@ -286,7 +441,65 @@ void MST_global(int M, int C, ifstream& cmp_keys_fs, ifstream&  hds_fs){
     uint64_t space_estimate = M*(log(1+M))+hdsum*(loc(C))+hdsum*1;
     
 }
+void test_decompression(int M, int C, string rrr_map_hd_filename = "rrr_map_hd", string rrr_map_hd_boundary_filename="rrr_map_hd_boundary"){
+    // bit_vector<> b(10000000, 0);
+    // b[b.size()/2] = 1;
+    // sd_vector<> sdb(b);
+    // store_to_file(sdb, "sdb.sdsl");
+    // sdb = sd_vector<>();
+    // cout << sdb.size() << endl; // 0
+    // load_from_file(sdb, "sdb.sdsl");
+    // cout << sdb.size() << endl; // 10000000 
 
+    rrr_vector<256> rrr_map_hd;      
+    load_from_file(rrr_map_hd, rrr_map_hd_filename);  //sdsl namespace
+       
+    rrr_vector<256> rrr_map_hd_boundary;      
+    load_from_file(rrr_map_hd_boundary, rrr_map_hd_boundary_filename);  //sdsl namespace
+     
+
+    int lc = ceil(log2(C));
+    stringstream buffer;
+    buffer << rrr_map_hd;
+    string hd_M = buffer.str();
+    uint64_t b_it = 0;
+    
+     size_t ones = rrr_vector<256>::rank_1_type(&rrr_map_hd_boundary)(rrr_map_hd.size()); 
+    rrr_vector<256>::select_1_type rrr_hd_sel(&rrr_map_hd_boundary);
+
+    
+
+// cout << rrr_map_hd << endl;
+    if(ones!=M){
+        cerr<<"Not matching"<<endl;
+        exit(4);
+    }
+
+    size_t prev_begin = 0;
+    for (size_t i=1; i <= M; ++i){
+        size_t block_len = rrr_hd_sel(i) - prev_begin + 1;
+        size_t numblocks = (block_len / lc);
+        vector<int> flip_loc;
+        while(numblocks){
+            flip_loc.push_back(read_uint(hd_M, b_it, lc));
+            numblocks--;
+        }
+        for (int f: flip_loc){
+            //global_table[i-1] = string(col_vector);
+        }
+   
+    }
+   
+    
+    
+        //for each select position
+        //end = sel
+        //read substr(0, end-start+1)
+        //read bit<size
+    }
+    //decompressed global table
+    //check diff of uniq_ms.txt, dec_global_table
+}
 void NONMST_global(string uniq_ms_filename, int M, int C){
     ifstream uniq_ms(uniq_ms_filename);
     string hd_line;
@@ -355,7 +568,8 @@ void NONMST_global(string uniq_ms_filename, int M, int C){
     }
     uniq_ms.close();
 
-    store_as_sdsl(positions_hd, b_it_hd, "rrr_map_hd" );	
+    //store_as_sdsl(positions_hd, b_it_hd, "rrr_map_hd" );	
+    write_binary_bv_from_pos_vector( positions_hd, b_it_hd, "rrr_map_hd" );
     store_as_sdsl(positions, b_it, "rrr_map_hd_boundary" );	
 
 }
