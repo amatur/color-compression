@@ -91,7 +91,7 @@ rule all:
         "bb_main",
         "bb_local_table",
         "bb_map",
-        "ess_color.tar.gz",
+        "esscolor.tar.gz",
         "size_esscolor_mb"
 
 
@@ -404,7 +404,7 @@ rule zip_compress:
         "mega.essc",
         "meta.txt"
     output:
-        "ess_color.tar.gz"
+        "esscolor.tar.gz"
     shell: 
         "mkdir esscolor; cp rrr_main rrr_local_table rrr_map mega.essc meta.txt esscolor/; tar cf esscolor.tar esscolor/;  gzip -v9 esscolor.tar; rm -rf esscolor/; "
 
