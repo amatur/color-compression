@@ -81,7 +81,7 @@ if config['ess'] == 'tip':
             "stat_nkmer_ess",
             "bb_main",
             "bb_local_table",
-            "bb_map",
+            #"bb_map",
             "esscolor.tar.gz",
             "size_esscolor_mb_tip"
 else:
@@ -107,7 +107,7 @@ else:
             "stat_nkmer_ess",
             "bb_main",
             "bb_local_table",
-            "bb_map",
+            #"bb_map",
             "esscolor.tar.gz",
             "size_esscolor_mb"
 
@@ -404,7 +404,7 @@ rule compress:
     output:
         "bb_main",
         "bb_local_table",
-        "bb_map",
+        #"bb_map",
         "rrr_main",
         "rrr_local_table",
         "rrr_map_hd",
