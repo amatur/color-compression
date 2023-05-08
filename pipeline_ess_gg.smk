@@ -68,31 +68,48 @@ def size_stat():
     f.write(str(coless_kb)+" "+str(tot_indi))
     f.close()
     
-rule all:
-    input:
-        # "ggout.fa.mfc",
-        # "ggout.colors.dat.gz",
-        # "ggout.stats.log.gz"
-        # #expand("esscs/{sample}"+EXTENSION+".essd",sample=SAMPLES),
-        # # expand("{sample}.kmers.gz",sample=SAMPLES),
-        "mega.essc",
-        "mega.essd",
-        # # "rrrbv_1_delta.sdsl",
-        # # "rrrbv_1.sdsl",
-        # # "rrrbv_1_skip.sdsl",
-        # # "rrr_bv_mapping.sdsl",
-        # # "stat_size",
-        "ess_boundary_bit.txt",
-        # "validate1",
-        "col_bitmatrix",
-        "uniq_ms.txt",
-        "stat_m",
-        "stat_nkmer_ess",
-        "bb_main",
-        "bb_local_table",
-        "bb_map",
-        "esscolor.tar.gz",
-        "size_esscolor_mb"
+
+if config['option'] == 'tip':    
+    rule all:
+        input:
+            "mega.essc",
+            "mega.essd",
+            "ess_boundary_bit.txt",
+            "col_bitmatrix",
+            "uniq_ms.txt",
+            "stat_m",
+            "stat_nkmer_ess",
+            "bb_main",
+            "bb_local_table",
+            "bb_map",
+            "esscolor.tar.gz",
+            "size_esscolor_mb_tip"
+else:
+    rule all:
+        input:
+            # "ggout.fa.mfc",
+            # "ggout.colors.dat.gz",
+            # "ggout.stats.log.gz"
+            # #expand("esscs/{sample}"+EXTENSION+".essd",sample=SAMPLES),
+            # # expand("{sample}.kmers.gz",sample=SAMPLES),
+            "mega.essc",
+            "mega.essd",
+            # # "rrrbv_1_delta.sdsl",
+            # # "rrrbv_1.sdsl",
+            # # "rrrbv_1_skip.sdsl",
+            # # "rrr_bv_mapping.sdsl",
+            # # "stat_size",
+            "ess_boundary_bit.txt",
+            # "validate1",
+            "col_bitmatrix",
+            "uniq_ms.txt",
+            "stat_m",
+            "stat_nkmer_ess",
+            "bb_main",
+            "bb_local_table",
+            "bb_map",
+            "esscolor.tar.gz",
+            "size_esscolor_mb"
 
 
 if config['option'] == 'from_essc':
@@ -413,14 +430,24 @@ rule zip_compress:
     shell: 
         "mkdir -p esscolor; gzip -v9 meta.txt; gzip -v9 frequency_sorted; gzip -v9 rrr_main; gzip -v9 rrr_local_table; gzip -v9 rrr_map; cp frequency_sorted.gz rrr_main.gz rrr_local_table.gz rrr_map.gz mega.essc meta.txt.gz esscolor/; tar cf esscolor.tar esscolor/;  gzip -v9 esscolor.tar; "
 
-rule zip_compress_size:
-    input: 
-        "esscolor.tar.gz"
-    output:
-        "size_esscolor_mb"
-    shell:
-        "ls -l | grep esscolor.tar.gz | awk '{{print $5/1024.0/1024.0}}' >  size_esscolor_mb;"
-        #" nkmer=$(cat stat_nkmer_ess); ls -l | grep ess_color.tar.gz | awk -v nk=$nkmer '{{print $5*8.0/$nk}}' > size_esscolor_bitskmer"  
+    
+if config['ess'] == 'tip':
+    rule zip_compress_size_tip:
+        input: 
+            "esscolor.tar.gz"
+        output:
+            "size_esscolor_mb_tip"
+        shell:
+            "ls -l | grep esscolor.tar.gz | awk '{{print $5/1024.0/1024.0}}' >  size_esscolor_mb_tip;"
+else:
+    rule zip_compress_size:
+        input: 
+            "esscolor.tar.gz"
+        output:
+            "size_esscolor_mb"
+        shell:
+            "ls -l | grep esscolor.tar.gz | awk '{{print $5/1024.0/1024.0}}' >  size_esscolor_mb;"
+            #" nkmer=$(cat stat_nkmer_ess); ls -l | grep ess_color.tar.gz | awk -v nk=$nkmer '{{print $5*8.0/$nk}}' > size_esscolor_bitskmer"  
 # rule all_stat:
 #     input: 
 #         "rrrbv_1_delta.sdsl",
@@ -452,32 +479,49 @@ rule zip_compress_size:
 #         #ls -ls gg* | awk \'{sum = sum + $6} END {print sum/1024.0/1024.0}\' > stat_mb_gg "
 #         /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip  essAuxCompress -k {params.k} -i gg_unitigs.fa -t 1; kmers.esstip 
 
+if config['unitig'] == 'ggcat':
+    rule f_to_ggcatess:
+        input:
+            expand(get_ext_folder_level0(EXTENSION)+"/{sample}"+EXTENSION,sample=SAMPLES)
+        params:
+            k=config["k"],
+            m=config["mem"],
+            ab=config["ab"],
+            l=dump_list_with_pref(SAMPLES, EXTENSION, "list_fa", get_ext_folder_level0(EXTENSION)+"/")
+        benchmark:
+            "benchmarks/f_to_ggcatess.txt"
+        output:
+            "gg_unitigs.fa"
+        shell:
+            "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_ggcat_build ggcat build -k {params.k} -j 8 -l list_fa -o gg_unitigs.fa -s{params.ab} -p -e"
 
-rule f_to_ggcatess:
-    input:
-        expand(get_ext_folder_level0(EXTENSION)+"/{sample}"+EXTENSION,sample=SAMPLES)
-    params:
-        k=config["k"],
-        m=config["mem"],
-        ab=config["ab"],
-        l=dump_list_with_pref(SAMPLES, EXTENSION, "list_fa", get_ext_folder_level0(EXTENSION)+"/")
-    benchmark:
-        "benchmarks/f_to_ggcatess.txt"
-    output:
-        "gg_unitigs.fa"
-    shell:
-        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_ggcat_build ggcat build -k {params.k} -j 8 -l list_fa -o gg_unitigs.fa -s{params.ab} -p -e"
+    
+if config['ess'] == 'tip':
+    rule ggcat_unitig_to_ess_tip:
+        input:
+            "gg_unitigs.fa" 
+        params:
+            k=config["k"],
+            m=config["mem"],
+        benchmark:
+            "benchmarks/ggcat_unitig_to_ess_tip.txt"
+        output:
+            "mega.essc",
+            "mega.essd"
+        shell:
+            "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_essauxc_tip  essAuxCompress -k {params.k} -i {input} -t 1; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_essauxd_tip  essAuxDecompress -i kmers.esstip 1; mv kmers.esstip.spss mega.essd; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_mfc_ess_tip   essAuxMFCompressC kmers.esstip; mv kmers.esstip.mfc mega.essc"
 
-rule ggcat_unitig_to_ess:
-    input:
-        "gg_unitigs.fa" 
-    params:
-        k=config["k"],
-        m=config["mem"],
-    benchmark:
-        "benchmarks/ggcat_unitig_to_ess.txt"
-    output:
-        "mega.essc",
-        "mega.essd"
-    shell:
-        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip  essAuxCompress -k {params.k} -i {input} -t 0; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_ess  essAuxDecompress -i kmers.ess 1; mv kmers.ess.spss mega.essd; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_mfc   essAuxMFCompressC kmers.ess; mv kmers.ess.mfc mega.essc"
+else:
+    rule ggcat_unitig_to_ess:
+        input:
+            "gg_unitigs.fa" 
+        params:
+            k=config["k"],
+            m=config["mem"],
+        benchmark:
+            "benchmarks/ggcat_unitig_to_ess.txt"
+        output:
+            "mega.essc",
+            "mega.essd"
+        shell:
+            "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_essauxc  essAuxCompress -k {params.k} -i {input} -t 0; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_essauxd  essAuxDecompress -i kmers.ess 1; mv kmers.ess.spss mega.essd; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_mfc_ess   essAuxMFCompressC kmers.ess; mv kmers.ess.mfc mega.essc"
