@@ -804,7 +804,7 @@ public:
 		uint64_t prev_lo = 0;
 		uint64_t prev_hi = 0;
 
-		global_table = new string[M];
+		//global_table = new string[M];
 		int hdsum = 0;
 		for(int i = 0 ; i< M; i++){
 			string uniq_ms_line;
@@ -812,10 +812,10 @@ public:
 
 			////
 			////
-			unsigned int idx = lookup(uniq_ms_line);		// returns an if in range (0 to M-1) 
-			assert(idx < M);
-			global_table[idx] = bv_line;
-			assert(x==idx);
+			//unsigned int idx = lookup(uniq_ms_line);		// returns an if in range (0 to M-1) 
+			//assert(idx < M);
+			//global_table[idx] = uniq_ms_line;
+			//assert(x==idx);
 			////
 			////
 			uint64_t lo = std::stoull(uniq_ms_line.substr(0,std::min(64,int(C))), nullptr, 2) ; 
@@ -884,13 +884,14 @@ public:
 		//LogFile log_num_color_in_class;
 		//log_num_color_in_class.init("log_num_color_in_class"); 
 		dedup_bitmatrix_file.rewind();
-		global_table = new string[M];
+		//global_table = new string[M];
 		for(int x=0; x<M; x++){
 			string bv_line;
 			getline(dedup_bitmatrix_file.fs, bv_line);
 			unsigned int idx = lookup(bv_line);		// returns an if in range (0 to M-1) 
+			if( idx != x ) {cout<<"color map fail"<<endl;exit(3);}
 			assert(idx < M);
-			global_table[idx] = bv_line;
+			//global_table[idx] = bv_line;
 			assert(x==idx);
 
 			array_lo[idx] = std::stoull(bv_line.substr(0,std::min(64,int(C))), nullptr, 2) ; 
