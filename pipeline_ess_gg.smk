@@ -480,4 +480,4 @@ rule ggcat_unitig_to_ess:
         "mega.essc",
         "mega.essd"
     shell:
-        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip  essAuxCompress -k {params.k} -i {input} -t 0; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_ess  essAuxDecompress -i kmers.ess 1; mv kmers.ess.spss mega.essd; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_mfc   essAuxMFCompressC mega.essd; mv mega.essd.mfc mega.essc"
+        "/usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_tip  essAuxCompress -k {params.k} -i {input} -t 0; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_ess  essAuxDecompress -i kmers.ess 1; mv kmers.ess.spss mega.essd; /usr/bin/time  -f \"%M\t%e\" --output-file=kb_sec_mfc   essAuxMFCompressC kmers.ess; mv kmers.ess.mfc mega.essc"
