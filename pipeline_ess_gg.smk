@@ -69,7 +69,7 @@ def size_stat():
     f.close()
     
 
-if config['option'] == 'tip':    
+if config['ess'] == 'tip':    
     rule all:
         input:
             "mega.essc",
