@@ -391,6 +391,7 @@ rule compress:
         "rrr_main",
         "rrr_local_table",
         "rrr_map",
+        "frequency_sorted"
         # "rrrbv_1_delta.sdsl",
         # "rrrbv_1.sdsl",
         # "rrrbv_1_skip.sdsl",
@@ -402,6 +403,7 @@ rule zip_compress:
         "rrr_main",
         "rrr_local_table",
         "rrr_map",
+        "frequency_sorted",
         "mega.essc",
         "meta.txt"
     output:
@@ -409,7 +411,7 @@ rule zip_compress:
     benchmark:
         "benchmarks/final_gzip.txt"
     shell: 
-        "mkdir -p esscolor; cp rrr_main rrr_local_table rrr_map mega.essc meta.txt esscolor/; tar cf esscolor.tar esscolor/;  gzip -v9 esscolor.tar; "
+        "mkdir -p esscolor; gzip -v9 meta.txt; gzip -v9 frequency_sorted; gzip -v9 rrr_main; gzip -v9 rrr_local_table; gzip -v9 rrr_map; cp frequency_sorted.gz rrr_main.gz rrr_local_table.gz rrr_map.gz mega.essc meta.txt.gz esscolor/; tar cf esscolor.tar esscolor/;  gzip -v9 esscolor.tar; "
 
 rule zip_compress_size:
     input: 
