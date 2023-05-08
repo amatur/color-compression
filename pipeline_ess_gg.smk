@@ -407,19 +407,17 @@ rule compress:
         "bb_map",
         "rrr_main",
         "rrr_local_table",
-        "rrr_map",
+        "rrr_map_hd",
+        "rrr_map_hd_boundary",
         "frequency_sorted"
-        # "rrrbv_1_delta.sdsl",
-        # "rrrbv_1.sdsl",
-        # "rrrbv_1_skip.sdsl",
-        # "rrr_bv_mapping.sdsl"
     shell:
         "ess_color_compress -i uniq_ms.txt -d col_bitmatrix -c {params.c} -m $(cat stat_m) -k $(cat stat_nkmer_ess) -s ess_boundary_bit.txt -x 16"
 rule zip_compress:
     input:
         "rrr_main",
         "rrr_local_table",
-        "rrr_map",
+        "rrr_map_hd",
+        "rrr_map_hd_boundary",
         "frequency_sorted",
         "mega.essc",
         "meta.txt"
@@ -428,7 +426,7 @@ rule zip_compress:
     benchmark:
         "benchmarks/final_gzip.txt"
     shell: 
-        "mkdir -p esscolor; gzip -v9 meta.txt; gzip -v9 frequency_sorted; gzip -v9 rrr_main; gzip -v9 rrr_local_table; gzip -v9 rrr_map; cp frequency_sorted.gz rrr_main.gz rrr_local_table.gz rrr_map.gz mega.essc meta.txt.gz esscolor/; tar cf esscolor.tar esscolor/;  gzip -v9 esscolor.tar; "
+        "mkdir -p esscolor; gzip -v9 meta.txt; gzip -v9 frequency_sorted; gzip -v9 rrr_main; gzip -v9 rrr_local_table; gzip -v9 rrr_map_hd; gzip -v9 rrr_map_hd_boundary ; cp frequency_sorted.gz rrr_main.gz rrr_local_table.gz rrr_map_hd.gz rrr_map_hd_boundary.gz mega.essc meta.txt.gz esscolor/; tar cf esscolor.tar esscolor/;  gzip -v9 esscolor.tar; "
 
     
 if config['ess'] == 'tip':
