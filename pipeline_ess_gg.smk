@@ -242,7 +242,8 @@ if config['matrix_generator'] == 'jc':
         output:
             "jc_matrix.tsv"
         params:
-            l=concat_list_kmers(SAMPLES)
+            l=concat_list_kmers(SAMPLES),
+            l2=dump_list(SAMPLES, EXTENSION, "meta.txt"),
         benchmark:
             "benchmarks/joincounts.txt"
         shell:
@@ -408,7 +409,7 @@ rule zip_compress:
     benchmark:
         "benchmarks/final_gzip.txt"
     shell: 
-        "mkdir esscolor; cp rrr_main rrr_local_table rrr_map mega.essc meta.txt esscolor/; tar cf esscolor.tar esscolor/;  gzip -v9 esscolor.tar; rm -rf esscolor/; "
+        "mkdir -p esscolor; cp rrr_main rrr_local_table rrr_map mega.essc meta.txt esscolor/; tar cf esscolor.tar esscolor/;  gzip -v9 esscolor.tar; "
 
 rule zip_compress_size:
     input: 
