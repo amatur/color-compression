@@ -11,21 +11,54 @@ using namespace sdsl;
 
 #define SUPPORTED_COLOR 128
 
+    void flip_bit(string& s, int pos){
+        if(s[C-pos-1] == '1')  {
+            s[C-pos-1]='0';
+        } else{
+            s[C-pos-1]='1';
+        }
+    }
+class ColorBitVector{
+    int MAX_COLORS=128;
+    int C;
+    uint64_t bvs[MAX_COLORS/64];
 
-class BitVectorESS{
-    int MAX_BLOCKS=2;
-    uint64_t bvs[MAX_BLOCKS];
     void load_from_string(string bv){
 
     }
     string convert_to_string(){
 
     }
-    int get_hd(BitVectorESS a, BitVectorESS b){
+    int get_hd(ColorBitVector& a, ColorBitVector& b){
         a[1],b[1]+ a[0],b[0]
     }
-    vector<int> get_differing_bits(BitVectorESS a, BitVectorESS b){
-        
+    vector<int> get_differing_bits(ColorBitVector& a, ColorBitVector& b){
+        vector<int> differing_bits;
+        uint64_t prev_bv_lo = a[0];
+        uint64_t curr_bv_lo = b[0];
+
+        uint64_t prev_bv_hi = a[1];
+        uint64_t curr_bv_hi = b[1];
+        for (int i_bit = 0; i_bit < 64 && i_bit < C; i_bit += 1)
+        {
+            if (((prev_bv_lo >> i_bit) & 1) != ((curr_bv_lo >> i_bit) & 1))
+            {
+                if(C<64){
+                    differing_bits.push_back(i_bit); //0 to 64
+                }else{
+                    differing_bits.push_back(C-64+i_bit); //36 to 99
+                }
+            }
+        }
+        for (int i_bit = 64; i_bit < C; i_bit += 1)
+        {
+            int actual_i_bit = i_bit - 64;  // 0 to C-65, 35
+            if (((prev_bv_hi >> actual_i_bit) & 1) != ((curr_bv_hi >> actual_i_bit) & 1))
+            {
+                differing_bits.push_back(actual_i_bit);
+            }
+        }
+        return differing_bits;
     }
 }
 
